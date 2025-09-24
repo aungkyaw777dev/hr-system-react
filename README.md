@@ -75,11 +75,11 @@ Clone this repository to your desired folder:
 
 Installations:
 
-- npm install
+- pnpm install
 
 ### Usage
 
-- npm run dev
+- pnpm run dev
 
 ### Run Tests <a name="runtests"></a>
 
