@@ -75,7 +75,7 @@ Clone this repository to your desired folder:
 
 Installations:
 
-- pnpm install
+- npm install
 
 ### Usage
 
