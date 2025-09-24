@@ -123,6 +123,7 @@ Installations:
 ## 🧾 Documentation <a name="documentations"></a>
 
 - [React](https://react.dev/learn)
+- [Typescript](https://www.typescriptlang.org/docs)
 
 ## 🔭 Future Features <a name="features"></a>
 
