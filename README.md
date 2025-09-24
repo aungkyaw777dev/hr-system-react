@@ -122,7 +122,6 @@ Installations:
 
 ## 🧾 Documentation <a name="documentations"></a>
 
-- [PNPM](https://pnpm.io/motivation)
 - [React](https://react.dev/learn)
 
 ## 🔭 Future Features <a name="features"></a>
