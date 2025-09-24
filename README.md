@@ -43,7 +43,7 @@
 
 This is a group project for Human Resource System.
 
-- Human Resource System front-end to record employee attendance, check-in, check-out and backlog.
+- Human Resource System front-end to record employee attendance, check-in, check-out, backlog and payroll.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
