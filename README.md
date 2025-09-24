@@ -60,7 +60,6 @@ In order to run this project you need:
 - Code editor like [Visual Studio](https://code.visualstudio.com/download) or 
     [Sublime Text](https://www.sublimetext.com/download)
 - [Latest Node version](https://nodejs.org/en/download)
-- [PNPM](https://pnpm.io/installation)
 - [Docker Desktop for windows](https://www.docker.com/products/docker-desktop/)
 
 ### Setup
@@ -80,10 +79,7 @@ Installations:
 
 ### Usage
 
-- pnpm --filter web dev
-- pnpm --filter mobile start
-- pnpm --filter server dev
-- docker compose up
+- npm run dev
 
 ### Run Tests <a name="runtests"></a>
 
