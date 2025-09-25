@@ -60,7 +60,6 @@ In order to run this project you need:
 - Code editor like [Visual Studio](https://code.visualstudio.com/download) or 
     [Sublime Text](https://www.sublimetext.com/download)
 - [Latest Node version](https://nodejs.org/en/download)
-- [Docker Desktop for windows](https://www.docker.com/products/docker-desktop/)
 
 ### Setup
 
