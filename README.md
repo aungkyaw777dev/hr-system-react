@@ -17,7 +17,7 @@
   - [Usage](#usage)
   - [Run Tests](#runtests)
 
-- [👥 Author](#authors)
+- [👥 Authors](#authors)
 - [🧾Documentation](#documentations)
 - [🔭 Future Features](#features)
 - [🤝 Contribution](#contributing)
@@ -130,7 +130,7 @@ Using a UI component from shadcn
 
 <!-- AUTHORS -->
 
-## 👥 Author <a name="authors"></a>
+## 👥 Authors <a name="authors"></a>
 
 👤 **May Mon Hnin**
 
