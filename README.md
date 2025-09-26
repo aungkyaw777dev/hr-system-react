@@ -110,15 +110,15 @@ Using a UI component from shadcn
 
 - When creating a Pull Request:
 
-- Provide a clear, concise description of your changes.
+  - Provide a clear, concise description of your changes.
 
-- Use bullet points to summarize what you did, e.g.:
+  - Use bullet points to summarize what you did, e.g.:
 
-- Added login form validation
+    - Added login form validation
 
-- Fixed navbar alignment issue
+    - Fixed navbar alignment issue
 
-- Refactored API call structure
+    - Refactored API call structure
 
 ### Usage
 
