@@ -183,7 +183,8 @@ Using a UI component from shadcn
 - [PNPM](https://pnpm.io/)
 - [Shadcn](https://ui.shadcn.com/)
 - [Lucide Icon](https://lucide.dev/)
-- [Redux Tool Kit](https://redux-toolkit.js.org/)
+- [React Hook Form](https://react-hook-form.com/get-started)
+- [Zustand](https://zustand.docs.pmnd.rs/getting-started/introduction)
 
 ## 🔭 Future Features <a name="features"></a>
 
