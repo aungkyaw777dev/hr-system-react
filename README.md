@@ -61,7 +61,8 @@ In order to run this project you need:
 - Code editor like [Visual Studio](https://code.visualstudio.com/download)
 - [Node version - 20](https://nodejs.org/en/download)
 - [NVM](https://github.com/coreybutler/nvm-windows/releases)
-
+- [PNPM](https://pnpm.io/installation)
+  
 ### Setup <a name="setup"></a>
 
 Clone this repository to your desired folder:
