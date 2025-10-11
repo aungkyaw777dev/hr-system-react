@@ -1,50 +1,77 @@
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import { useState } from "react";
-import { Eye, EyeClosed } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-export default function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isEyeOn, setIsEyeOn] = useState(true);
-  const handleSubmit = () => {
-    navigate("/dashboard");
+"use client";
+
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters long"),
+});
+
+export default function LoginForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
   };
+
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form action="" className="flex gap-2 flex-col w-[90%] md:w-[40%]">
-        <h1 className="text-2xl font-bold mb-4 w-full">Login</h1>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full"
-        />
-        <div className="relative w-full ">
-          <Input
-            type={isEyeOn ? "text" : "password"}
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {isEyeOn ? (
-            <Eye
-              className="absolute right-2 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 cursor-pointer"
-              onClick={() => setIsEyeOn(!isEyeOn)}
-            />
-          ) : (
-            <EyeClosed
-              className="absolute right-2 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 cursor-pointer"
-              onClick={() => setIsEyeOn(!isEyeOn)}
-            />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-sm mx-auto space-y-4 p-6 bg-white rounded-xl shadow"
+      >
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </div>
-        <Button type="submit" onClick={handleSubmit}>
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" className="w-full">
           Login
         </Button>
       </form>
-    </div>
+    </Form>
   );
 }
