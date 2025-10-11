@@ -58,9 +58,9 @@ To get a local copy up and running, follow these steps.
 
 In order to run this project you need:
 
-- Code editor like [Visual Studio](https://code.visualstudio.com/download) or
-  [Sublime Text](https://www.sublimetext.com/download)
-- [Latest Node version](https://nodejs.org/en/download)
+- Code editor like [Visual Studio](https://code.visualstudio.com/download)
+- [Node version - 20](https://nodejs.org/en/download)
+- [NVM](https://github.com/coreybutler/nvm-windows/releases)
 
 ### Setup <a name="setup"></a>
 
@@ -74,6 +74,8 @@ Clone this repository to your desired folder:
 ### Install <a name="install"></a>
 
 Installations:
+
+- nvm use
 
 - pnpm install
 
