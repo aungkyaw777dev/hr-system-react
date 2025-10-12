@@ -97,6 +97,6 @@
   }
 
   .sidebar-btn {
-    @apply hover:bg-accent p-3 w-full text-center
+    @apply hover:bg-accent p-2 w-full text-center
   }
 }

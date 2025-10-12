@@ -8,11 +8,11 @@ export default function MainLayout() {
             <header className="h-[80px]">
                 <Header />
             </header>
-            <div className="flex h-[calc(100vh-80px)]">
-                <aside className="w-64 overflow-auto">
+            <div className="flex flex-1">
+                <aside className="w-64">
                     <Sidebar />
                 </aside>
-                <main className="flex-1 overflow-auto">
+                <main className="flex-1">
                     <Outlet />
                 </main>
             </div>
