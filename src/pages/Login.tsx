@@ -68,7 +68,7 @@ export default function LoginForm() {
           )}
         />
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full bg-primary">
           Login
         </Button>
       </form>
