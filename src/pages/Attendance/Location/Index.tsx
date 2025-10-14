@@ -1,4 +1,4 @@
-export default function Attendance() {
+export default function () {
     return (
         <div></div>
     )

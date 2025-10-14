@@ -1,0 +1,225 @@
+import { useState } from "react"
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { capitalizeCamelCase } from "../../lib/utils"
+import {
+    Edit,
+    Trash2,
+    FolderUp,
+    Plus,
+    ChevronsRight,
+    ChevronsLeft,
+    Search,
+    Calendar1Icon
+} from "lucide-react"
+import { Input } from "../../components/ui/input"
+
+export default function AttendanceList() {
+    const data = [
+        { id: 1, name: "Alice Johnson", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 2, name: "Bob Smith", checkinTime: "09:15 AM", checkoutTime: "05:10 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 3, name: "Charlie Brown", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 4, name: "Diana Prince", checkinTime: "09:05 AM", checkoutTime: "04:55 PM", date: "2025-10-01", workingHours: "7h 50m", status: "Present" },
+        { id: 5, name: "Ethan White", checkinTime: "09:45 AM", checkoutTime: "04:30 PM", date: "2025-10-01", workingHours: "6h 45m", status: "Late" },
+        { id: 6, name: "Fiona Green", checkinTime: "08:50 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h 10m", status: "Present" },
+        { id: 7, name: "George Miller", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 8, name: "Hannah Lee", checkinTime: "09:10 AM", checkoutTime: "05:05 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 9, name: "Ian Black", checkinTime: "09:30 AM", checkoutTime: "04:40 PM", date: "2025-10-01", workingHours: "7h 10m", status: "Late" },
+        { id: 10, name: "Jane Doe", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 11, name: "Kevin Hart", checkinTime: "09:05 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 12, name: "Laura King", checkinTime: "09:20 AM", checkoutTime: "04:50 PM", date: "2025-10-01", workingHours: "7h 30m", status: "Late" },
+        { id: 13, name: "Michael Scott", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 14, name: "Nina Patel", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 15, name: "Oscar Wilde", checkinTime: "09:10 AM", checkoutTime: "05:05 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 16, name: "Paula Abdul", checkinTime: "09:35 AM", checkoutTime: "04:45 PM", date: "2025-10-01", workingHours: "7h 10m", status: "Late" },
+        { id: 17, name: "Quincy Adams", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 18, name: "Rachel Green", checkinTime: "08:55 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h 5m", status: "Present" },
+        { id: 19, name: "Steve Rogers", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 20, name: "Tina Fey", checkinTime: "09:15 AM", checkoutTime: "04:55 PM", date: "2025-10-01", workingHours: "7h 40m", status: "Late" },
+        { id: 21, name: "Uma Thurman", checkinTime: "09:05 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 22, name: "Victor Hugo", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 23, name: "Wendy Darling", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 24, name: "Xander Cage", checkinTime: "09:20 AM", checkoutTime: "04:50 PM", date: "2025-10-01", workingHours: "7h 30m", status: "Late" },
+        { id: 25, name: "Yara Shahidi", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
+        { id: 26, name: "Zachary Levi", checkinTime: "09:10 AM", checkoutTime: "05:05 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
+        { id: 27, name: "Aaron Paul", checkinTime: "09:30 AM", checkoutTime: "04:40 PM", date: "2025-10-01", workingHours: "7h 10m", status: "Late" },
+        { id: 28, name: "Betty White", checkinTime: "-", checkoutTime: "-", date: "2025-10-01", workingHours: "0h", status: "Absent" },
+        { id: 29, name: "Carl Jung", checkinTime: "08:50 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h 10m", status: "Present" },
+        { id: 30, name: "Daisy Ridley", checkinTime: "09:05 AM", checkoutTime: "04:55 PM", date: "2025-10-01", workingHours: "7h 50m", status: "Present" },
+    ]
+
+    const [currentPage, setCurrentPage] = useState(1)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [date, setDate] = useState<{
+        from: Date | undefined
+        to: Date | undefined
+    }>({ from: undefined, to: undefined })
+    const totalPages = Math.ceil(data.length / rowsPerPage)
+    const startIndex = (currentPage - 1) * rowsPerPage
+    const currentData = data.slice(startIndex, startIndex + rowsPerPage)
+    const totalRows = data.length
+    const startRow = (currentPage - 1) * rowsPerPage + 1;
+    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+    const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
+    const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+    return (
+        <div className="p-6 w-full flex-1">
+            <div className="flex justify-between flex-col md:flex-row gap-2">
+                <p>Attendance</p>
+                {/* date picker */}
+                <div className="grid gap-2">
+                    <Popover >
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "justify-start text-left font-normal w-[250px]",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                <Calendar1Icon className="mr-2 h-4 w-4" />
+                                {date?.from ? (
+                                    date.to ? (
+                                        <>
+                                            {format(date.from, "LLL dd, y")}/{format(date.to, "LLL dd, y")}
+                                        </>
+                                    ) : (
+                                        format(date.from, "LLL dd, y")
+                                    )
+                                ) : (
+                                    <span>Pick a date range</span>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-primary text-white" align="start">
+                            <Calendar
+                                mode="range"
+                                selected={date}
+                                onSelect={setDate}
+                                numberOfMonths={2}
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+                {/* search */}
+                <div className="relative w-full md:w-[20%]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                        type="text"
+                        placeholder="Search..."
+                        className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9"// Add left padding so text doesn’t overlap the icon
+                    />
+                </div>
+                {/* buttons */}
+                <Button variant="outline"><FolderUp />Export</Button>
+                <Button variant="outline"><Plus />Add new</Button>
+            </div>
+            <Table className="w-full overflow-auto">
+                <TableCaption>Attendance List.</TableCaption>
+                <TableHeader>
+                    <TableRow >
+                        {
+                            Object.keys(data[0]).map((columnName) => (
+                                <TableHead key={columnName}>{
+                                    columnName === 'id' ? "No" : capitalizeCamelCase(columnName)
+                                }</TableHead>
+                            ))
+                        }
+                        <TableHead>Action</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {currentData.map((user, index) => (
+                        <TableRow key={index}
+                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                        >
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{user.name}</TableCell>
+                            <TableCell>{user.checkinTime}</TableCell>
+                            <TableCell>{user.checkoutTime}</TableCell>
+                            <TableCell>{user.date}</TableCell>
+                            <TableCell>{user.workingHours}</TableCell>
+                            <TableCell>{user.status}</TableCell>
+                            <TableCell className="flex ">
+                                <Edit />
+                                <Trash2 />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+
+            {/* Paginations */}
+            <div className="flex items-center justify-between p-4 border-t">
+                {/* Left: Showing rows */}
+                <div className="text-sm text-muted-foreground">
+                    {startRow}–{endRow} of {totalRows}
+                </div>
+
+                {/* Middle: Page buttons */}
+
+                <div className="flex space-x-1">
+                    <button
+                        onClick={goPrev}
+                        disabled={currentPage === 1}
+                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        <ChevronsLeft />
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`px-3 py-1 rounded ${page === currentPage
+                                ? "bg-primary text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        onClick={goNext}
+                        disabled={currentPage === totalPages}
+                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        <ChevronsRight />
+                    </button>
+                </div>
+
+                {/* Right: Rows per page */}
+                <div className="flex items-center space-x-2">
+                    <span className="text-sm text-muted-foreground">Rows per page:</span>
+                    <select
+                        value={rowsPerPage}
+                        onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setCurrentPage(1); // reset page
+                        }}
+                        className="border rounded px-2 py-1 text-sm"
+                    >
+                        {[10, 20, 30, 50].map((n) => (
+                            <option key={n} value={n}>
+                                {n}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+        </div >
+    )
+}
