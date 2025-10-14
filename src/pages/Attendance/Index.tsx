@@ -19,7 +19,9 @@ import {
     Trash2,
     FolderUp,
     Plus,
+    ChevronRight,
     ChevronsRight,
+    ChevronLeft,
     ChevronsLeft,
     Search,
     Calendar1Icon
@@ -74,6 +76,8 @@ export default function AttendanceList() {
     const endRow = Math.min(currentPage * rowsPerPage, totalRows);
     const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+    const goToLast = () => setCurrentPage(totalPages);
+    const goToFirst = () => setCurrentPage(1)
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2">
@@ -173,11 +177,18 @@ export default function AttendanceList() {
 
                 <div className="flex space-x-1">
                     <button
-                        onClick={goPrev}
+                        onClick={goToFirst}
                         disabled={currentPage === 1}
                         className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                     >
                         <ChevronsLeft />
+                    </button>
+                    <button
+                        onClick={goPrev}
+                        disabled={currentPage === 1}
+                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        <ChevronLeft />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
@@ -193,6 +204,13 @@ export default function AttendanceList() {
                     ))}
                     <button
                         onClick={goNext}
+                        disabled={currentPage === totalPages}
+                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        <ChevronRight />
+                    </button>
+                    <button
+                        onClick={goToLast}
                         disabled={currentPage === totalPages}
                         className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                     >
