@@ -4,7 +4,9 @@ import { useState } from "react";
 
 export default function Sidebar() {
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+    const [isBacklogSubMenuOpen, setIsBacklogSubMenuOpen] = useState(false);
     const toggleSubmenu = () => setIsSubMenuOpen(!isSubMenuOpen);
+    const toggleBacklogSubmenu = () => setIsBacklogSubMenuOpen(!isBacklogSubMenuOpen);
     return (
         <div>
             <div className="flex flex-col items-center">
@@ -13,7 +15,21 @@ export default function Sidebar() {
                 <Link to="/menu" className="sidebar-btn"> Menu</Link>
                 <Link to="/role" className="sidebar-btn">Role & Permission</Link>
                 <Link to="/employee" className="sidebar-btn">Employee</Link>
-                <Link to="/backlog" className="sidebar-btn">Backlog Module</Link>
+                <div className="sidebar-btn flex w-full justify-center items-center" onClick={toggleBacklogSubmenu}>
+                    <span className="me-2 cursor-pointer">Backlog Module</span>
+                    <ChevronDown className={`mt-2 text-sm transition-transform duration-300 ${isBacklogSubMenuOpen ? "rotate-180" : "rotate-0"}`} size={14} />
+                </div>
+                {isBacklogSubMenuOpen &&
+                    <ul className="w-full">
+                        <li className="sidebar-btn">
+                            <Link to="/backlog">Backlog</Link>
+                        </li>
+                        <li className="sidebar-btn">
+                            <Link to="/project" >Project</Link>
+                        </li>
+                    </ul>
+                }
+               
                 <div className="sidebar-btn flex w-full justify-center items-center" onClick={toggleSubmenu}>
                     <span className="me-2 cursor-pointer">Attendance Module</span>
                     <ChevronDown className={`mt-2 text-sm transition-transform duration-300 ${isSubMenuOpen ? "rotate-180" : "rotate-0"}`} size={14} />
