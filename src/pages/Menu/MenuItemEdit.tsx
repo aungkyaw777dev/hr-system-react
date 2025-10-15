@@ -97,7 +97,9 @@ function MenuItemEdit() {
               <Input
                 type="text"
                 value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
+                onChange={(e) =>
+                  setSortOrder(e.target.value.replace(/\D/g, ""))
+                }
                 placeholder="Enter Sort Order"
                 className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
               />
