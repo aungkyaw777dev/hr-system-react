@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import MainLayout from "./layout/MainLayout";
+import MainLayout from "./layouts/MainLayout";
 import Attendance from "./pages/Attendance/Index";
-import Location from "./pages/Attendance/Location";
+import Location from "./pages/Attendance/Location/Index";
 function App() {
   return (
     <>
