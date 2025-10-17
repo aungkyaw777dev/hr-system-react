@@ -7,12 +7,12 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+} from "../../components/ui/table"
+import { Calendar } from "../../components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover"
 import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "../../lib/utils"
+import { Button } from "../../components/ui/button"
 import { capitalizeCamelCase } from "../../lib/utils"
 import {
     Edit,
@@ -27,8 +27,10 @@ import {
     Calendar1Icon
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
+import { useNavigate } from "react-router-dom"
 
 export default function AttendanceList() {
+    const navigate = useNavigate()
     const data = [
         { id: 1, name: "Alice Johnson", checkinTime: "09:00 AM", checkoutTime: "05:00 PM", date: "2025-10-01", workingHours: "8h", status: "Present" },
         { id: 2, name: "Bob Smith", checkinTime: "09:15 AM", checkoutTime: "05:10 PM", date: "2025-10-01", workingHours: "7h 55m", status: "Present" },
@@ -78,10 +80,14 @@ export default function AttendanceList() {
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
     const goToLast = () => setCurrentPage(totalPages);
     const goToFirst = () => setCurrentPage(1)
+
+    const goToCreatForm = () => {
+        navigate("/attendance/create")
+    }
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2">
-                <p>Attendance</p>
+                <p>Add New Attendance</p>
                 {/* date picker */}
                 <div className="grid gap-2">
                     <Popover >
@@ -129,7 +135,7 @@ export default function AttendanceList() {
                 </div>
                 {/* buttons */}
                 <Button variant="outline"><FolderUp />Export</Button>
-                <Button variant="outline"><Plus />Add new</Button>
+                <Button variant="outline" onClick={goToCreatForm}><Plus />Add new</Button>
             </div>
             <Table className="w-full overflow-auto">
                 <TableCaption>Attendance List.</TableCaption>
