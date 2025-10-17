@@ -35,8 +35,8 @@ export default function AttendanceForm() {
 
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("In 2 days")
-    const [date, setDate] = useState<"" | undefined>()
-    const [month, setMonth] = useState<"" | undefined>()
+    const [date, setDate] = useState<Date | undefined>()
+    const [month, setMonth] = useState<Date | undefined>()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -136,7 +136,7 @@ export default function AttendanceForm() {
                                     className="bg-background pr-10"
                                     onChange={(e) => {
                                         setValue(e.target.value)
-                                        const date = formatDate(e.target.value)
+                                        const date = parseDate(e.target.value)
                                         if (date) {
                                             setDate(date)
                                             setMonth(date)

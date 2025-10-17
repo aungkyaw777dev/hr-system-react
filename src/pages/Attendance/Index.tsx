@@ -86,16 +86,16 @@ export default function AttendanceList() {
     }
     return (
         <div className="p-6 w-full flex-1">
-            <div className="flex justify-between flex-col md:flex-row gap-2">
-                <p>Add New Attendance</p>
+            <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
+                <p className="">Add New Attendance</p>
                 {/* date picker */}
                 <div className="grid gap-2">
                     <Popover >
                         <PopoverTrigger asChild>
                             <Button
-                                variant={"outline"}
+
                                 className={cn(
-                                    "justify-start text-left font-normal w-[250px]",
+                                    "justify-start text-left font-normal w-[250px] outline-btn",
                                     !date && "text-muted-foreground"
                                 )}
                             >
@@ -113,7 +113,7 @@ export default function AttendanceList() {
                                 )}
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-primary text-white" align="start">
+                        <PopoverContent className="w-auto p-0 bg-primary-500 text-white" align="start">
                             <Calendar
                                 mode="range"
                                 selected={date}
@@ -125,8 +125,8 @@ export default function AttendanceList() {
                 </div>
 
                 {/* search */}
-                <div className="relative w-full md:w-[20%]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <div className="relative w-full md:w-[20%] text-primary-800">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primay-800 h-4 w-4" />
                     <Input
                         type="text"
                         placeholder="Search..."
@@ -134,13 +134,12 @@ export default function AttendanceList() {
                     />
                 </div>
                 {/* buttons */}
-                <Button variant="outline"><FolderUp />Export</Button>
-                <Button variant="outline" onClick={goToCreatForm}><Plus />Add new</Button>
+                <Button className="outline-btn"><FolderUp />Export</Button>
+                <Button className="outline-btn" onClick={goToCreatForm}><Plus />Add new</Button>
             </div>
-            <Table className="w-full overflow-auto">
-                <TableCaption>Attendance List.</TableCaption>
-                <TableHeader>
-                    <TableRow >
+            <Table className="w-full overflow-auto shadow-sm rounded-md">
+                <TableHeader className="bg-primary-300">
+                    <TableRow className="border-none">
                         {
                             Object.keys(data[0]).map((columnName) => (
                                 <TableHead key={columnName}>{
@@ -154,7 +153,7 @@ export default function AttendanceList() {
                 <TableBody>
                     {currentData.map((user, index) => (
                         <TableRow key={index}
-                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                            className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
                         >
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{user.name}</TableCell>
@@ -164,8 +163,8 @@ export default function AttendanceList() {
                             <TableCell>{user.workingHours}</TableCell>
                             <TableCell>{user.status}</TableCell>
                             <TableCell className="flex ">
-                                <Edit />
-                                <Trash2 />
+                                <Edit className="text-primary-500 cursor-pointer" />
+                                <Trash2 className="text-error-400 cursor-pointer" />
                             </TableCell>
                         </TableRow>
                     ))}
@@ -185,14 +184,14 @@ export default function AttendanceList() {
                     <button
                         onClick={goToFirst}
                         disabled={currentPage === 1}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronsLeft />
                     </button>
                     <button
                         onClick={goPrev}
                         disabled={currentPage === 1}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronLeft />
                     </button>
@@ -201,8 +200,8 @@ export default function AttendanceList() {
                             key={page}
                             onClick={() => setCurrentPage(page)}
                             className={`px-3 py-1 rounded ${page === currentPage
-                                ? "bg-primary text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                ? "bg-primary-500 text-natural-50"
+                                : "bg-natural-50 text-black hover:bg-gray-200"
                                 }`}
                         >
                             {page}
@@ -211,14 +210,14 @@ export default function AttendanceList() {
                     <button
                         onClick={goNext}
                         disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronRight />
                     </button>
                     <button
                         onClick={goToLast}
                         disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronsRight />
                     </button>
@@ -226,14 +225,14 @@ export default function AttendanceList() {
 
                 {/* Right: Rows per page */}
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">Rows per page:</span>
+                    <span className="text-sm text-muted-foreground">Rows/page:</span>
                     <select
                         value={rowsPerPage}
                         onChange={(e) => {
                             setRowsPerPage(Number(e.target.value));
                             setCurrentPage(1); // reset page
                         }}
-                        className="border rounded px-2 py-1 text-sm"
+                        className="border rounded px-2 py-1 text-sm p-3"
                     >
                         {[10, 20, 30, 50].map((n) => (
                             <option key={n} value={n}>
