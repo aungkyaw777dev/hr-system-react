@@ -7,10 +7,18 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+} from "../../components/ui/table"
+import { Button } from "../../components/ui/button"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "../../components/ui/alert-dialog"
 import { capitalizeCamelCase } from "../../lib/utils"
 import {
     Edit,
@@ -22,9 +30,11 @@ import {
     Search,
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function BacklogList() {
-    const data = [
+    const navigate = useNavigate()
+    const initialData = [
         { id: 1, taskCode: "PJ1234", taskName: "UI Design", assignee: "Chan Lay", projectName: "HR System" },
         { id: 2, taskCode: "PJ1235", taskName: "API Development", assignee: "Bob Smith", projectName: "HR System" },
         { id: 3, taskCode: "PJ1236", taskName: "Database Migration", assignee: "Charlie Brown", projectName: "HR System" },
@@ -57,41 +67,81 @@ export default function BacklogList() {
         { id: 30, taskCode: "PJ1263", taskName: "Pilot Testing", assignee: "Daisy Ridley", projectName: "HR System" },
     ]
 
+    const [data, setData] = useState(initialData)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [taskToDelete, setTaskToDelete] = useState<number | null>(null)
+
     const totalPages = Math.ceil(data.length / rowsPerPage)
     const startIndex = (currentPage - 1) * rowsPerPage
     const currentData = data.slice(startIndex, startIndex + rowsPerPage)
     const totalRows = data.length
-    const startRow = (currentPage - 1) * rowsPerPage + 1;
-    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
-    const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
-    const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+    const startRow = (currentPage - 1) * rowsPerPage + 1
+    const endRow = Math.min(currentPage * rowsPerPage, totalRows)
+    const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1))
+    const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages))
+
+    const handleRowClick = (taskId: number) => {
+        navigate(`/backlog/${taskId}`)
+    }
+
+    const handleEdit = (e: React.MouseEvent, taskId: number) => {
+        e.stopPropagation()
+        navigate(`/backlog/edit/${taskId}`)
+    }
+
+    const handleDelete = (e: React.MouseEvent, taskId: number) => {
+        e.stopPropagation()
+        setTaskToDelete(taskId)
+        setDeleteDialogOpen(true)
+    }
+    const confirmDelete = () => {
+        // Remove the item from the array
+        setData(prevData => prevData.filter(item => item.id !== taskToDelete))
+        
+        // Reset to page 1 if current page becomes empty
+        const newTotalPages = Math.ceil((data.length - 1) / rowsPerPage)
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+            setCurrentPage(newTotalPages)
+        }
+        
+        // Close dialog and reset
+        setDeleteDialogOpen(false)
+        setTaskToDelete(null)
+        
+        // When connecting to API, you would call it here:
+        // await deleteTaskAPI(taskToDelete)
+    }
+
+    const cancelDelete = () => {
+        setDeleteDialogOpen(false)
+        setTaskToDelete(null)
+    }
+
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2">
                 <p>Backlog Group Listing</p>
-                {/* search */}
                 <div className="relative w-full md:w-[20%]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                         type="text"
                         placeholder="Search..."
-                        className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9"// Add left padding so text doesn’t overlap the icon
+                        className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9"
                     />
                 </div>
-                {/* buttons */}
                 <div className="flex justify-between flex-col md:flex-row gap-2">
                     <Button variant="outline"><FolderUp />Export</Button>
-                <Button variant="outline"><Plus />Create</Button>
+                    <Link to="/backlog/create"><Button variant="outline"><Plus />Create</Button></Link>
                 </div>
             </div>
             <Table className="w-full overflow-auto">
                 <TableCaption>Backlog Group Listing</TableCaption>
                 <TableHeader>
-                    <TableRow >
+                    <TableRow>
                         {
-                            Object.keys(data[0]).map((columnName) => (
+                            Object.keys(initialData[0]).map((columnName) => (
                                 <TableHead key={columnName}>{
                                     columnName === 'id' ? "No" : capitalizeCamelCase(columnName)
                                 }</TableHead>
@@ -102,31 +152,35 @@ export default function BacklogList() {
                 </TableHeader>
                 <TableBody>
                     {currentData.map((user, index) => (
-                        <TableRow key={index}
-                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                        <TableRow 
+                            key={user.id}
+                            onClick={() => handleRowClick(user.id)}
+                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors cursor-pointer"
                         >
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{startIndex + index + 1}</TableCell>
                             <TableCell>{user.taskCode}</TableCell>
                             <TableCell>{user.taskName}</TableCell>
                             <TableCell>{user.assignee}</TableCell>
                             <TableCell>{user.projectName}</TableCell>
-                            <TableCell className="flex ">
-                                <Edit />
-                                <Trash2 />
+                            <TableCell className="flex gap-2">
+                                <Edit 
+                                    className="cursor-pointer hover:text-blue-600" 
+                                    onClick={(e) => handleEdit(e, user.id)}
+                                />
+                                <Trash2 
+                                    className="cursor-pointer hover:text-red-600" 
+                                    onClick={(e) => handleDelete(e, user.id)}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
 
-            {/* Paginations */}
             <div className="flex items-center justify-between p-4 border-t">
-                {/* Left: Showing rows */}
                 <div className="text-sm text-muted-foreground">
                     {startRow}–{endRow} of {totalRows}
                 </div>
-
-                {/* Middle: Page buttons */}
 
                 <div className="flex space-x-1">
                     <button
@@ -157,14 +211,13 @@ export default function BacklogList() {
                     </button>
                 </div>
 
-                {/* Right: Rows per page */}
                 <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">Rows per page:</span>
                     <select
                         value={rowsPerPage}
                         onChange={(e) => {
-                            setRowsPerPage(Number(e.target.value));
-                            setCurrentPage(1); // reset page
+                            setRowsPerPage(Number(e.target.value))
+                            setCurrentPage(1)
                         }}
                         className="border rounded px-2 py-1 text-sm"
                     >
@@ -177,6 +230,28 @@ export default function BacklogList() {
                 </div>
             </div>
 
-        </div >
+            {/* Delete Confirmation Modal */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-md">
+                            <div className="flex gap-3"><Trash2 className="h-6 w-6 text-gray-600" /> Are you sure you want to delete this record?</div>
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                            onClick={confirmDelete}
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
     )
 }
