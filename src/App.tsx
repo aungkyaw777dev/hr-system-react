@@ -1,4 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import Attendance from "./pages/Attendance/Index";
+import Location from "./pages/Attendance/Location";
+import Dashboard from "./pages/Dashboard";
+import LoginPage from "./pages/Login";
+import MenuItem from "./pages/Menu/MenuItem";
+import MenuItemCreate from "./pages/Menu/MenuItemCreate";
+import MenuItemEdit from "./pages/Menu/MenuItemEdit";
 import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layouts/MainLayout";
@@ -29,6 +37,10 @@ function App() {
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/attendance/create" element={<AttendanceCreate />}></Route>
             <Route path="/location" element={<Location />}></Route>
+
+            <Route path="/menuitem" element={<MenuItem />}></Route>
+            <Route path="/menuitem/create" element={<MenuItemCreate />} />
+            <Route path="/menuitem/edit" element={<MenuItemEdit />} />
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeForm />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeForm />} />
