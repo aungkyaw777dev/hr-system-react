@@ -27,7 +27,6 @@ import {
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { useNavigate } from "react-router-dom"
-
 export default function AttendanceList() {
     const navigate = useNavigate()
     const data = [
@@ -242,6 +241,24 @@ export default function AttendanceList() {
                 </div>
             </div>
 
-        </div >
-    )
+        {/* Right: Rows per page */}
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <select
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setCurrentPage(1); // reset page
+            }}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            {[10, 20, 30, 50].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+  );
 }
