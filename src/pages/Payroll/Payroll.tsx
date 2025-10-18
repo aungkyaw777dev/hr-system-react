@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import PayrollDelete from "./PayrollDelete"
 import {
     Table,
     TableBody,
@@ -18,14 +17,15 @@ import {
     Plus,
     ChevronsRight,
     ChevronsLeft,
-    Search
+    Search,
+    ChevronLeft
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 
 
 export default function PayrollList() {
     const navigate = useNavigate();
-    const [data, setData] = useState([
+    const [data] = useState([
   { id: 1, name: "Aung Min", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 8.0, grossPay: 400000, netPay: 380000 },
   { id: 2, name: "Thiri Kyaw", payrollDate: "2025-09-30", status: "Complete", totalHours: 160.0, leaveHours: 9.5, grossPay: 380000, netPay: 355000 },
   { id: 3, name: "Min Thu", payrollDate: "2025-09-30", status: "Pending", totalHours: 170.0, leaveHours: 25.0, grossPay: 390000, netPay: 340000 },
@@ -58,9 +58,9 @@ export default function PayrollList() {
   { id: 30, name: "Mya Hla", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 9.0, grossPay: 400000, netPay: 380000 },
 ]);
 
-    const [deleteOpen, setDeleteOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
+    // const [deleteOpen, setDeleteOpen] = useState(false);
+    // const [selectedId, setSelectedId] = useState<number | null>(null);
+    // const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
 
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -72,33 +72,35 @@ export default function PayrollList() {
     const endRow = Math.min(currentPage * rowsPerPage, totalRows);
     const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-    const requestDelete = (row: { id: number; name: string }) => {
-        setSelectedId(row.id)
-        setSelectedName(row.name)
-        setDeleteOpen(true)
-    }
+    const goToLast = () => setCurrentPage(totalPages);
+    const goToFirst = () => setCurrentPage(1)
+    // const requestDelete = (row: { id: number; name: string }) => {
+    //     setSelectedId(row.id)
+    //     setSelectedName(row.name)
+    //     setDeleteOpen(true)
+    // }
 
-    const confirmDelete = () => {
-        if (selectedId == null) return
-        setData(prev => prev.filter(r => r.id !== selectedId))
-        // adjust pagination if current page becomes empty
-        const newTotal = data.length - 1
-        const newTotalPages = Math.max(1, Math.ceil(newTotal / rowsPerPage))
-        if (currentPage > newTotalPages) setCurrentPage(newTotalPages)
-        setDeleteOpen(false)
-        setSelectedId(null)
-        setSelectedName(undefined)
-    }
+    // const confirmDelete = () => {
+    //     if (selectedId == null) return
+    //     setData(prev => prev.filter(r => r.id !== selectedId))
+    //     // adjust pagination if current page becomes empty
+    //     const newTotal = data.length - 1
+    //     const newTotalPages = Math.max(1, Math.ceil(newTotal / rowsPerPage))
+    //     if (currentPage > newTotalPages) setCurrentPage(newTotalPages)
+    //     setDeleteOpen(false)
+    //     setSelectedId(null)
+    //     setSelectedName(undefined)
+    // }
 
-    const cancelDelete = () => {
-        setDeleteOpen(false)
-        setSelectedId(null)
-        setSelectedName(undefined)
-    }
+    // const cancelDelete = () => {
+    //     setDeleteOpen(false)
+    //     setSelectedId(null)
+    //     setSelectedName(undefined)
+    // }
 
     return (
         <div className="p-6 w-full flex-1">
-            <div className="flex justify-between flex-col md:flex-row gap-2">
+            <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
                 <p>Payroll</p>
                 {/* date picker */}
                 {/* <div className="grid gap-2">
@@ -137,8 +139,8 @@ export default function PayrollList() {
                 </div> */}
 
                 {/* search */}
-                <div className="relative w-full md:w-[20%]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <div className="relative w-full md:w-[20%] text-primary-800">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-800 h-4 w-4" />
                     <Input
                         type="text"
                         placeholder="Search..."
@@ -146,13 +148,13 @@ export default function PayrollList() {
                     />
                 </div>
                 {/* buttons */}
-                <Button variant="outline"><FolderUp />Export</Button>
-                <Button variant="outline" onClick={() => navigate("/payroll/create")}><Plus />Add new</Button>
+                <Button className="outline-btn"><FolderUp />Export</Button>
+                <Button className="outline-btn" onClick={() => navigate("/payroll/create")}><Plus />Add new</Button>
             </div>
-            <Table className="w-full overflow-auto">
+            <Table className="w-full overflow-auto shadow-sm rounded-md">
                 {/* <TableCaption>Attendance List.</TableCaption> */}
-                <TableHeader>
-                    <TableRow >
+                <TableHeader className="bg-primary-300">
+                    <TableRow className="border-none">
                         {
                             Object.keys(data[0]).map((columnName) => (
                                 <TableHead key={columnName}>{
@@ -166,7 +168,7 @@ export default function PayrollList() {
                 <TableBody>
                     {currentData.map((user, index) => (
                         <TableRow key={index}
-                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                            className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
                             onClick={() => navigate(`/payroll/${user.id}/detail`, { state: user })}
                         >
                             <TableCell>{index + 1}</TableCell>
@@ -180,14 +182,13 @@ export default function PayrollList() {
                             <TableCell className="flex gap-2">
                                 <button
                                     onClick={() => navigate(`/payroll/${user.id}/edit`, { state: user })}
-                                    className="text-gray-700 hover:text-primary cursor-pointer"
+                                    className="text-primary-500 cursor-pointer"
                                     aria-label="Edit"
                                 >
                                     <Edit />
                                 </button>
                                 <button
-                                    onClick={() => requestDelete(user)}
-                                    className="text-gray-700 hover:text-destructive cursor-pointer"
+                                    className="text-error-400 cursor-pointer"
                                     aria-label="Delete"
                                 >
                                     <Trash2 />
@@ -209,19 +210,26 @@ export default function PayrollList() {
 
                 <div className="flex space-x-1">
                     <button
-                        onClick={goPrev}
+                        onClick={goToFirst}
                         disabled={currentPage === 1}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronsLeft />
+                    </button>
+                    <button
+                        onClick={goPrev}
+                        disabled={currentPage === 1}
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                        <ChevronLeft />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
                             key={page}
                             onClick={() => setCurrentPage(page)}
                             className={`px-3 py-1 rounded ${page === currentPage
-                                ? "bg-primary text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                ? "bg-primary-500 text-natural-50"
+                                : "bg-natural-50 text-black hover:bg-gray-200"
                                 }`}
                         >
                             {page}
@@ -230,7 +238,14 @@ export default function PayrollList() {
                     <button
                         onClick={goNext}
                         disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                        <ChevronsRight />
+                    </button>
+                    <button
+                        onClick={goToLast}
+                        disabled={currentPage === totalPages}
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronsRight />
                     </button>
@@ -238,14 +253,14 @@ export default function PayrollList() {
 
                 {/* Right: Rows per page */}
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">Rows per page:</span>
+                    <span className="text-sm text-muted-foreground">Rows/page:</span>
                     <select
                         value={rowsPerPage}
                         onChange={(e) => {
                             setRowsPerPage(Number(e.target.value));
                             setCurrentPage(1); // reset page
                         }}
-                        className="border rounded px-2 py-1 text-sm"
+                        className="border rounded px-2 py-1 text-sm p-3"
                     >
                         {[10, 20, 30, 50].map((n) => (
                             <option key={n} value={n}>
@@ -256,12 +271,12 @@ export default function PayrollList() {
                 </div>
             </div>
             {/* Delete confirmation */}
-            <PayrollDelete
+            {/* <PayrollDelete
                 open={deleteOpen}
                 employeeName={selectedName}
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
-            />
+            /> */}
         </div >
     )
 }
