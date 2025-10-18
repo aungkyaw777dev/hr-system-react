@@ -1,4 +1,5 @@
-import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -8,6 +9,9 @@ export default function Sidebar() {
 
   const [isSubMenuItemOpen, setIsSubMenuItemOpen] = useState(false);
   const toglemenuItem = () => setIsSubMenuItemOpen(!isSubMenuItemOpen);
+  const [isBackLogMenuOpen, setIsBackLogMenuOpen] = useState(false);
+  const toggleSubmenu = () => setIsSubMenuOpen(!isSubMenuOpen);
+  const toggleBackLogMenu = () => setIsBackLogMenuOpen(!isBackLogMenuOpen);
   return (
     <div>
       <div className="flex flex-col items-center">
@@ -36,6 +40,10 @@ export default function Sidebar() {
             </li>
           </ul>
         )}
+        <Link to="/menu" className="sidebar-btn">
+          {" "}
+          Menu
+        </Link>
         <Link to="/role" className="sidebar-btn">
           Role & Permission
         </Link>
@@ -45,6 +53,36 @@ export default function Sidebar() {
         <Link to="/backlog" className="sidebar-btn">
           Backlog Module
         </Link>
+        <div
+          className="sidebar-btn flex w-full justify-center items-center"
+          onClick={toggleSubmenu}
+        >
+          <span className="me-2 cursor-pointer">Attendance Module</span>
+          <ChevronDown
+            className={`mt-2 text-sm transition-transform duration-300 ${
+              isSubMenuOpen ? "rotate-180" : "rotate-0"
+        <div
+          className="sidebar-btn flex w-full justify-center items-center"
+          onClick={toggleBackLogMenu}
+        >
+          <span className="me-2 cursor-pointer">Backlog Module</span>
+          <ChevronDown
+            className={`mt-2 text-sm transition-transform duration-300 ${
+              isBackLogMenuOpen ? "rotate-180" : "rotate-0"
+            }`}
+            size={14}
+          />
+        </div>
+        {isBackLogMenuOpen && (
+          <ul className="w-full">
+            <li className="sidebar-btn">
+              <Link to="/backlog">Backlog</Link>
+            </li>
+            <li className="sidebar-btn">
+              <Link to="/project">Project</Link>
+            </li>
+          </ul>
+        )}
         <div
           className="sidebar-btn flex w-full justify-center items-center"
           onClick={toggleSubmenu}
