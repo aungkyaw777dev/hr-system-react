@@ -7,6 +7,7 @@ import Location from "./pages/Attendance/Location/Index";
 import Employee from "./pages/Employee/Index";
 import EmployeeForm from "./components/employee/EmployeeForm";
 import EmployeeView from "./pages/Employee/View";
+import AttendanceCreate from "./pages/Attendance/Create"
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />}></Route>
             <Route path="/attendance" element={<Attendance />}></Route>
+            <Route path="/attendance/create" element={<AttendanceCreate />}></Route>
             <Route path="/location" element={<Location />}></Route>
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeForm />}></Route>
