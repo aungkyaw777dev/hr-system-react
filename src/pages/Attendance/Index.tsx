@@ -260,6 +260,5 @@ export default function AttendanceList() {
           </select>
         </div>
       </div>
-    </div>
   );
 }
