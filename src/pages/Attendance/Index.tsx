@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
     Table,
     TableBody,
@@ -27,6 +27,16 @@ import {
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { useNavigate } from "react-router-dom"
+  Edit,
+  Trash2,
+  FolderUp,
+  Plus,
+  ChevronsRight,
+  ChevronsLeft,
+  Search,
+  Calendar1Icon,
+} from "lucide-react";
+import { Input } from "../../components/ui/input";
 
 export default function AttendanceList() {
     const navigate = useNavigate()
@@ -170,14 +180,14 @@ export default function AttendanceList() {
                 </TableBody>
             </Table>
 
-            {/* Paginations */}
-            <div className="flex items-center justify-between p-4 border-t">
-                {/* Left: Showing rows */}
-                <div className="text-sm text-muted-foreground">
-                    {startRow}–{endRow} of {totalRows}
-                </div>
+      {/* Paginations */}
+      <div className="flex items-center justify-between p-4 border-t">
+        {/* Left: Showing rows */}
+        <div className="text-sm text-muted-foreground">
+          {startRow}–{endRow} of {totalRows}
+        </div>
 
-                {/* Middle: Page buttons */}
+        {/* Middle: Page buttons */}
 
                 <div className="flex space-x-1">
                     <button
