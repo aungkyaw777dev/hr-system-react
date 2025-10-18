@@ -1,8 +1,9 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import PayrollDelete from "./PayrollDelete"
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -21,8 +22,10 @@ import {
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 
+
 export default function PayrollList() {
-    const data = [
+    const navigate = useNavigate();
+    const [data, setData] = useState([
   { id: 1, name: "Aung Min", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 8.0, grossPay: 400000, netPay: 380000 },
   { id: 2, name: "Thiri Kyaw", payrollDate: "2025-09-30", status: "Complete", totalHours: 160.0, leaveHours: 9.5, grossPay: 380000, netPay: 355000 },
   { id: 3, name: "Min Thu", payrollDate: "2025-09-30", status: "Pending", totalHours: 170.0, leaveHours: 25.0, grossPay: 390000, netPay: 340000 },
@@ -53,7 +56,11 @@ export default function PayrollList() {
   { id: 28, name: "Khaing Min", payrollDate: "2025-09-30", status: "Pending", totalHours: 160.0, leaveHours: 22.0, grossPay: 385000, netPay: 345000 },
   { id: 29, name: "Soe Htet", payrollDate: "2025-09-30", status: "Complete", totalHours: 178.0, leaveHours: 5.0, grossPay: 415000, netPay: 400000 },
   { id: 30, name: "Mya Hla", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 9.0, grossPay: 400000, netPay: 380000 },
-];
+]);
+
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
 
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -65,6 +72,30 @@ export default function PayrollList() {
     const endRow = Math.min(currentPage * rowsPerPage, totalRows);
     const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+    const requestDelete = (row: { id: number; name: string }) => {
+        setSelectedId(row.id)
+        setSelectedName(row.name)
+        setDeleteOpen(true)
+    }
+
+    const confirmDelete = () => {
+        if (selectedId == null) return
+        setData(prev => prev.filter(r => r.id !== selectedId))
+        // adjust pagination if current page becomes empty
+        const newTotal = data.length - 1
+        const newTotalPages = Math.max(1, Math.ceil(newTotal / rowsPerPage))
+        if (currentPage > newTotalPages) setCurrentPage(newTotalPages)
+        setDeleteOpen(false)
+        setSelectedId(null)
+        setSelectedName(undefined)
+    }
+
+    const cancelDelete = () => {
+        setDeleteOpen(false)
+        setSelectedId(null)
+        setSelectedName(undefined)
+    }
+
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2">
@@ -116,7 +147,7 @@ export default function PayrollList() {
                 </div>
                 {/* buttons */}
                 <Button variant="outline"><FolderUp />Export</Button>
-                <Button variant="outline"><Plus />Add new</Button>
+                <Button variant="outline" onClick={() => navigate("/payroll/create")}><Plus />Add new</Button>
             </div>
             <Table className="w-full overflow-auto">
                 {/* <TableCaption>Attendance List.</TableCaption> */}
@@ -136,6 +167,7 @@ export default function PayrollList() {
                     {currentData.map((user, index) => (
                         <TableRow key={index}
                             className="odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                            onClick={() => navigate(`/payroll/${user.id}/detail`, { state: user })}
                         >
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{user.name}</TableCell>
@@ -145,9 +177,21 @@ export default function PayrollList() {
                             <TableCell>{user.leaveHours}</TableCell>
                             <TableCell>{user.grossPay}</TableCell>
                             <TableCell>{user.netPay}</TableCell>
-                            <TableCell className="flex ">
-                                <Edit />
-                                <Trash2 />
+                            <TableCell className="flex gap-2">
+                                <button
+                                    onClick={() => navigate(`/payroll/${user.id}/edit`, { state: user })}
+                                    className="text-gray-700 hover:text-primary cursor-pointer"
+                                    aria-label="Edit"
+                                >
+                                    <Edit />
+                                </button>
+                                <button
+                                    onClick={() => requestDelete(user)}
+                                    className="text-gray-700 hover:text-destructive cursor-pointer"
+                                    aria-label="Delete"
+                                >
+                                    <Trash2 />
+                                </button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -211,7 +255,13 @@ export default function PayrollList() {
                     </select>
                 </div>
             </div>
-
+            {/* Delete confirmation */}
+            <PayrollDelete
+                open={deleteOpen}
+                employeeName={selectedName}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div >
     )
 }

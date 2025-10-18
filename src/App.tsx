@@ -5,6 +5,9 @@ import MainLayout from "./layouts/MainLayout";
 import Attendance from "./pages/Attendance/Index";
 import Location from "./pages/Attendance/Location/Index";
 import Payroll from "./pages/Payroll/Payroll";
+import PayrollCreate from "./pages/Payroll/PayrollCreate";
+import PayrollEdit from "./pages/Payroll/PayrollEdit";
+import PayrollDetail from "./pages/Payroll/PayrollDetail";
 function App() {
   return (
     <>
@@ -16,6 +19,9 @@ function App() {
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/location" element={<Location />}></Route>
             <Route path="/payroll" element={<Payroll />}></Route>
+            <Route path="/payroll/create" element={<PayrollCreate />}></Route>
+            <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
+            <Route path="/payroll/:id/detail" element={<PayrollDetail />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
