@@ -28,6 +28,8 @@ import {
     ChevronsRight,
     ChevronsLeft,
     Search,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
@@ -81,6 +83,8 @@ export default function BacklogList() {
     const endRow = Math.min(currentPage * rowsPerPage, totalRows)
     const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1))
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages))
+     const goToLast = () => setCurrentPage(totalPages)
+    const goToFirst = () => setCurrentPage(1)
 
     const handleRowClick = (taskId: number) => {
         navigate(`/backlog/${taskId}`)
@@ -100,18 +104,15 @@ export default function BacklogList() {
         // Remove the item from the array
         setData(prevData => prevData.filter(item => item.id !== taskToDelete))
         
-        // Reset to page 1 if current page becomes empty
         const newTotalPages = Math.ceil((data.length - 1) / rowsPerPage)
         if (currentPage > newTotalPages && newTotalPages > 0) {
             setCurrentPage(newTotalPages)
         }
         
-        // Close dialog and reset
         setDeleteDialogOpen(false)
         setTaskToDelete(null)
         
-        // When connecting to API, you would call it here:
-        // await deleteTaskAPI(taskToDelete)
+       
     }
 
     const cancelDelete = () => {
@@ -121,7 +122,7 @@ export default function BacklogList() {
 
     return (
         <div className="p-6 w-full flex-1">
-            <div className="flex justify-between flex-col md:flex-row gap-2">
+            <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
                 <p>Backlog Group Listing</p>
                 <div className="relative w-full md:w-[20%]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -132,14 +133,13 @@ export default function BacklogList() {
                     />
                 </div>
                 <div className="flex justify-between flex-col md:flex-row gap-2">
-                    <Button variant="outline"><FolderUp />Export</Button>
-                    <Link to="/backlog/create"><Button variant="outline"><Plus />Create</Button></Link>
+                    <Button className="outline-btn"><FolderUp />Export</Button>
+                    <Link to="/backlog/create"><Button className="outline-btn"><Plus />Create</Button></Link>
                 </div>
             </div>
-            <Table className="w-full overflow-auto">
-                <TableCaption>Backlog Group Listing</TableCaption>
-                <TableHeader>
-                    <TableRow>
+            <Table className="w-full overflow-auto shadow-sm rounded-md">
+                <TableHeader className="bg-primary-300">
+                    <TableRow className="border-none">
                         {
                             Object.keys(initialData[0]).map((columnName) => (
                                 <TableHead key={columnName}>{
@@ -155,7 +155,7 @@ export default function BacklogList() {
                         <TableRow 
                             key={user.id}
                             onClick={() => handleRowClick(user.id)}
-                            className="odd:bg-accent even:bg-white hover:bg-accent transition-colors cursor-pointer"
+                            className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
                         >
                             <TableCell>{startIndex + index + 1}</TableCell>
                             <TableCell>{user.taskCode}</TableCell>
@@ -164,11 +164,11 @@ export default function BacklogList() {
                             <TableCell>{user.projectName}</TableCell>
                             <TableCell className="flex gap-2">
                                 <Edit 
-                                    className="cursor-pointer hover:text-blue-600" 
+                                    className="text-primary-500 cursor-pointer" 
                                     onClick={(e) => handleEdit(e, user.id)}
                                 />
                                 <Trash2 
-                                    className="cursor-pointer hover:text-red-600" 
+                                    className="text-error-400 cursor-pointer" 
                                     onClick={(e) => handleDelete(e, user.id)}
                                 />
                             </TableCell>
@@ -183,20 +183,27 @@ export default function BacklogList() {
                 </div>
 
                 <div className="flex space-x-1">
+                     <button
+                        onClick={goToFirst}
+                        disabled={currentPage === 1}
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                        <ChevronsLeft />
+                    </button>
                     <button
                         onClick={goPrev}
                         disabled={currentPage === 1}
                         className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                     >
-                        <ChevronsLeft />
+                        <ChevronLeft />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
                             key={page}
                             onClick={() => setCurrentPage(page)}
                             className={`px-3 py-1 rounded ${page === currentPage
-                                ? "bg-primary text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                ? "bg-primary-500 text-natural-50"
+                                : "bg-natural-50 text-black hover:bg-gray-200"
                                 }`}
                         >
                             {page}
@@ -205,7 +212,14 @@ export default function BacklogList() {
                     <button
                         onClick={goNext}
                         disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                        <ChevronRight />
+                    </button>
+                    <button
+                        onClick={goToLast}
+                        disabled={currentPage === totalPages}
+                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
                     >
                         <ChevronsRight />
                     </button>
@@ -219,7 +233,7 @@ export default function BacklogList() {
                             setRowsPerPage(Number(e.target.value))
                             setCurrentPage(1)
                         }}
-                        className="border rounded px-2 py-1 text-sm"
+                        className="border rounded px-2 py-1 text-sm p-3"
                     >
                         {[10, 20, 30, 50].map((n) => (
                             <option key={n} value={n}>
@@ -232,7 +246,7 @@ export default function BacklogList() {
 
             {/* Delete Confirmation Modal */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent  className="bg-secondary-50">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-md">
                             <div className="flex gap-3"><Trash2 className="h-6 w-6 text-gray-600" /> Are you sure you want to delete this record?</div>
@@ -245,7 +259,7 @@ export default function BacklogList() {
                         <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
                         <AlertDialogAction 
                             onClick={confirmDelete}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 text-white"
                         >
                             Delete
                         </AlertDialogAction>
