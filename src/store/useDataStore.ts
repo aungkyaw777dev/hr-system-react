@@ -1,22 +1,25 @@
 import { create } from "zustand";
 
 interface FetchConfig {
-  url: string,
-  method?: string,
-  body?: any,
-  headers?: Record<string, string>
+  url: string;
+  method?: string;
+  body?: any;
+  headers?: Record<string, string>;
 }
 export const useDataStore = create((set) => ({
   data: [],
   loading: false,
   error: null,
 
-
   // Fetch data from API
-  fetchData: async ({ url, method = "GET", body, headers = {} }: FetchConfig) => {
+  fetchData: async ({
+    url,
+    method = "GET",
+    body,
+    headers = {},
+  }: FetchConfig) => {
     set({ loading: true, error: null });
     try {
-
       const defaultHeaders = {
         "Content-Type": "application/json",
         ...(headers || {}),

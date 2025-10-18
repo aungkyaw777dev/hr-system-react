@@ -85,7 +85,7 @@ export default function AttendanceList() {
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
-                <p className="">Add New Attendance</p>
+                <p className="">Attendance List</p>
                 {/* date picker */}
                 <div className="grid gap-2">
                     <Popover >

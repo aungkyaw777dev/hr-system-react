@@ -49,8 +49,50 @@ export default function AttendanceForm() {
         },
     });
 
-    const calculateAttendance = () => {
-    }
+    const calculateAttendanceStatus = (checkIn:string , checkOut:string) =>{
+  // Convert to minutes since midnight
+  const toMinutes = (timeStr:string) => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const checkInMinutes = toMinutes(checkIn);
+  const checkOutMinutes = toMinutes(checkOut);
+  const start = toMinutes("09:00");
+  const end = toMinutes("17:00");
+
+  // Default
+  let status = "present";
+
+  if (checkInMinutes > checkOutMinutes) {
+    
+  }
+  // Late logic
+  if (checkInMinutes > start && checkInMinutes <= toMinutes("12:00")) {
+    status = "late";
+  } else if (checkInMinutes > toMinutes("12:00") && checkInMinutes <= toMinutes("14:00")) {
+    status = "half-day";
+  } else if (checkInMinutes > toMinutes("14:00")) {
+    status = "absent";
+  }
+
+  // Early departure logic
+  if (checkOutMinutes < end && status === "present") {
+    status = "early-departure";
+  }
+
+  // Late + early both
+  if (
+    checkInMinutes > start &&
+    checkOutMinutes < end &&
+    checkInMinutes <= toMinutes("14:00")
+  ) {
+    status = "half-day";
+  }
+
+  return status;
+}
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log(values);
     };
