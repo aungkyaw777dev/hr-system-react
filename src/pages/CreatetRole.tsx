@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const CreateRole: React.FC = () => {
   return (
-    <div className="bg-gray-100 p-6 md:p-8">
+    <div className="w-full p-8">
       {/* Main content wrapper */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-md max-w-4xl mx-auto">
         
