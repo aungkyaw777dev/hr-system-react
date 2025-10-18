@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -33,19 +32,18 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
-/* ---------------------- DATA (unchanged) ---------------------- */
 export type DemoProject = {
   id: number;
   code: string;
   name: string;
   status: "ASDF" | "OPEN" | "DONE";
-  startDate: string; // 10/7/2025
-  endDate: string; // 10/7/2025
+  startDate: string;
+  endDate: string; 
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const demoProjects: DemoProject[] = Array.from(
-  { length: 300 },
+  { length: 100 },
   (_, i) => ({
     id: i + 1,
     code: "PJ1234",
