@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 onlyBuiltDependencies:
-=======
 ignoredBuiltDependencies:
->>>>>>> develop
   - '@tailwindcss/oxide'
   - esbuild
