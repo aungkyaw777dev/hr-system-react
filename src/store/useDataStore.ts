@@ -6,6 +6,7 @@ interface FetchConfig {
   body?: any;
   headers?: Record<string, string>;
 }
+
 export const useDataStore = create((set) => ({
   data: [],
   loading: false,

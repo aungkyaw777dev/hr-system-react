@@ -110,7 +110,7 @@
   --black: oklch(0 0 0);
   --white: oklch(1 0 0);
   --text: oklch(0.012 0.013 262);
-  --destructive : oklch(0.588 0.257 26.5);
+  --destructive: oklch(0.56 0.26 27.46);
 }
 
 /* .dark {
