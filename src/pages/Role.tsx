@@ -22,10 +22,20 @@ const rolesData: RoleType[] = [
   { no: 7, name: 'Sales Person' },
   { no: 8, name: 'Receptionist' },
   
+  
 ];
 
 // Define the component using React.FC (Functional Component)
 const Role: React.FC = () => {
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const totalPages = Math.ceil(rolesData.length / rowsPerPage);
+  const totalRows = rolesData.length;
+  const startRow = (currentPage - 1) * rowsPerPage + 1;
+  const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+  const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ roleToDelete, setRoleToDelete ] = useState<RoleType | null>(null);
@@ -48,9 +58,9 @@ const Role: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 p-6 md:p-8">
+    <div className="p-6 w-full flex-1">
       {/* Main content wrapper */}
-      <div className="bg-white p-6 md:p-8 rounded-lg shadow-md">
+      <div className="p-6 md:p-8 rounded-lg shadow-md">
         
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
@@ -67,18 +77,18 @@ const Role: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full justify-between">
             <thead>
-              <tr className="text-gray-500 font-semibold text-sm">
-                <th className="py-3 pr-4 text-left">No</th>
-                <th className="py-3 pr-4 text-center">Role Name</th>
-                <th className="py-3 pr-4 text-right">Action</th>
+              <tr className="font-bold text-m">
+                <th className="py-4 text-center">No</th>
+                <th className="py-4 text-center ">Role Name</th>
+                <th className="text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {rolesData.map((role: RoleType) => (
-                <tr key={role.no} className="border-t border-gray-200">
-                  <td className="py-4 pr-4">{role.no}</td>
-                  <td className="py-4 pr-4 text-gray-800 font-medium text-center">{role.name}</td>
-                  <td className="py-4 pr-4">
+                <tr key={role.no} className="odd:bg-accent even:bg-white hover:bg-accent transition-colors">
+                  <td className="py-4 text-center">{role.no}</td>
+                  <td className="py-4 text-center">{role.name}</td>
+                  <td className="py-4 text-right">
                     <div className="flex justify-end items-center gap-4">
                       <Link 
                         to="/role/update"
@@ -104,15 +114,28 @@ const Role: React.FC = () => {
         </div>
 
         {/* Pagination Section */}
-        <div className="flex justify-center items-center mt-6">
-          <nav className="flex items-center gap-2">
-            <button className="p-2 rounded-md hover:bg-gray-200 disabled:text-gray-300">
+        <div className="flex items-center justify-center p-4 border-t">
+          <nav className="flex space-x-1">
+            <button 
+            onClick={goPrev}
+            disabled={currentPage === 1}
+            className="p-2 rounded-md hover:bg-gray-200 disabled:text-gray-300">
               <ChevronLeft size={20} />
             </button>
-            <button className="w-8 h-8 rounded-md bg-gray-800 text-white text-sm">1</button>
-            <button className="w-8 h-8 rounded-md hover:bg-gray-200 text-sm">2</button>
-            <button className="w-8 h-8 rounded-md hover:bg-gray-200 text-sm">3</button>
-            <button className="p-2 rounded-md hover:bg-gray-200">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-3 py-1 rounded ${
+                page === currentPage
+                  ? "bg-primary text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+            <button onClick={goNext} disabled={currentPage === totalPages} className="p-2 rounded-md hover:bg-gray-200">
               <ChevronRight size={20} />
             </button>
           </nav>

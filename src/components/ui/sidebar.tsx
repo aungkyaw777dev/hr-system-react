@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, } from "lucide-react";
 import { useState } from "react";
 
 export default function Sidebar() {
