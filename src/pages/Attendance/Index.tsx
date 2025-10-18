@@ -27,16 +27,6 @@ import {
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { useNavigate } from "react-router-dom"
-  Edit,
-  Trash2,
-  FolderUp,
-  Plus,
-  ChevronsRight,
-  ChevronsLeft,
-  Search,
-  Calendar1Icon,
-} from "lucide-react";
-import { Input } from "../../components/ui/input";
 
 export default function AttendanceList() {
     const navigate = useNavigate()
