@@ -54,7 +54,7 @@ const Role: React.FC = () => {
         
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Role</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-Black-800">Role</h1>
           <Link 
             to="/role/create"
             className="flex items-center gap-2 bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">

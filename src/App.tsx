@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Role from "./pages/Role";
-import CreateRole from "./pages/CreatetRole";
+import Role from "./pages/Role/Role";
+import CreateRole from "./pages/Role/CreatetRole";
 import UpdateRole from "./pages/UpdateRole";
-import ViewRole from "./pages/ViewRole";
+import ViewRole from "./pages/Role/ViewRole";
 
 import MainLayout from "./layouts/MainLayout";
 import Attendance from "./pages/Attendance/Index";
