@@ -9,6 +9,9 @@ import ProjectList from "./pages/BackLog/Project/Index";
 import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
 import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
 import { ProjectEdit } from "./pages/BackLog/Project/ProjectEdit";
+import Employee from "./pages/Employee/Index";
+import EmployeeForm from "./components/employee/EmployeeForm";
+import EmployeeView from "./pages/Employee/View";
 function App() {
   return (
     <>
@@ -24,6 +27,10 @@ function App() {
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/location" element={<Location />}></Route>
+            <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/employee/new" element={<EmployeeForm />}></Route>
+            <Route path="/employee/edit/:code" element={<EmployeeForm />} />
+            <Route path="/employee/view/:code" element={<EmployeeView />} />
           </Route>
         </Routes>
       </BrowserRouter>
