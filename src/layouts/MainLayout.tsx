@@ -14,10 +14,10 @@ export default function MainLayout() {
             <div className="flex flex-1">
                 <aside className={`w-[300px] bg-natural-50 text-text shadow-lg z-30
                     transition-transform duration-300
-                    ${isSidebarOpen ? "fixed top-[80px] h-[calc(100vh-80px)]" : "hidden lg:block"}
+                    ${isSidebarOpen ? "relative" : "hidden lg:block"}
                     lg:translate-x-0
                 `}>
-                    <div className="h-full bg-primary">
+                    <div className="h-full bg-primary overflow-y-auto">
                         <Sidebar />
                     </div>
                 </aside>

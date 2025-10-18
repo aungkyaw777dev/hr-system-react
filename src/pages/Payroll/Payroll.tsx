@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import PayrollDelete from "./PayrollDelete"
 import {
     Table,
     TableBody,
@@ -25,7 +24,7 @@ import { Input } from "../../components/ui/input"
 
 export default function PayrollList() {
     const navigate = useNavigate();
-    const [data, setData] = useState([
+    const data = [
   { id: 1, name: "Aung Min", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 8.0, grossPay: 400000, netPay: 380000 },
   { id: 2, name: "Thiri Kyaw", payrollDate: "2025-09-30", status: "Complete", totalHours: 160.0, leaveHours: 9.5, grossPay: 380000, netPay: 355000 },
   { id: 3, name: "Min Thu", payrollDate: "2025-09-30", status: "Pending", totalHours: 170.0, leaveHours: 25.0, grossPay: 390000, netPay: 340000 },
@@ -56,11 +55,11 @@ export default function PayrollList() {
   { id: 28, name: "Khaing Min", payrollDate: "2025-09-30", status: "Pending", totalHours: 160.0, leaveHours: 22.0, grossPay: 385000, netPay: 345000 },
   { id: 29, name: "Soe Htet", payrollDate: "2025-09-30", status: "Complete", totalHours: 178.0, leaveHours: 5.0, grossPay: 415000, netPay: 400000 },
   { id: 30, name: "Mya Hla", payrollDate: "2025-09-30", status: "Complete", totalHours: 176.0, leaveHours: 9.0, grossPay: 400000, netPay: 380000 },
-]);
+];
 
-    const [deleteOpen, setDeleteOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
+    // const [deleteOpen, setDeleteOpen] = useState(false);
+    // const [selectedId, setSelectedId] = useState<number | null>(null);
+    // const [selectedName, setSelectedName] = useState<string | undefined>(undefined);
 
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -72,29 +71,29 @@ export default function PayrollList() {
     const endRow = Math.min(currentPage * rowsPerPage, totalRows);
     const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
     const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-    const requestDelete = (row: { id: number; name: string }) => {
-        setSelectedId(row.id)
-        setSelectedName(row.name)
-        setDeleteOpen(true)
-    }
+    // const requestDelete = (row: { id: number; name: string }) => {
+    //     setSelectedId(row.id)
+    //     setSelectedName(row.name)
+    //     setDeleteOpen(true)
+    // }
 
-    const confirmDelete = () => {
-        if (selectedId == null) return
-        setData(prev => prev.filter(r => r.id !== selectedId))
-        // adjust pagination if current page becomes empty
-        const newTotal = data.length - 1
-        const newTotalPages = Math.max(1, Math.ceil(newTotal / rowsPerPage))
-        if (currentPage > newTotalPages) setCurrentPage(newTotalPages)
-        setDeleteOpen(false)
-        setSelectedId(null)
-        setSelectedName(undefined)
-    }
+    // const confirmDelete = () => {
+    //     if (selectedId == null) return
+    //     setData(prev => prev.filter(r => r.id !== selectedId))
+    //     // adjust pagination if current page becomes empty
+    //     const newTotal = data.length - 1
+    //     const newTotalPages = Math.max(1, Math.ceil(newTotal / rowsPerPage))
+    //     if (currentPage > newTotalPages) setCurrentPage(newTotalPages)
+    //     setDeleteOpen(false)
+    //     setSelectedId(null)
+    //     setSelectedName(undefined)
+    // }
 
-    const cancelDelete = () => {
-        setDeleteOpen(false)
-        setSelectedId(null)
-        setSelectedName(undefined)
-    }
+    // const cancelDelete = () => {
+    //     setDeleteOpen(false)
+    //     setSelectedId(null)
+    //     setSelectedName(undefined)
+    // }
 
     return (
         <div className="p-6 w-full flex-1">
@@ -186,7 +185,6 @@ export default function PayrollList() {
                                     <Edit />
                                 </button>
                                 <button
-                                    onClick={() => requestDelete(user)}
                                     className="text-gray-700 hover:text-destructive cursor-pointer"
                                     aria-label="Delete"
                                 >
@@ -256,12 +254,12 @@ export default function PayrollList() {
                 </div>
             </div>
             {/* Delete confirmation */}
-            <PayrollDelete
+            {/* <PayrollDelete
                 open={deleteOpen}
                 employeeName={selectedName}
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
-            />
+            /> */}
         </div >
     )
 }
