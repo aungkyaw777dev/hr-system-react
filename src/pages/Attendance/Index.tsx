@@ -115,7 +115,7 @@ export default function AttendanceList() {
                             <Calendar
                                 mode="range"
                                 selected={date}
-                                onSelect={setDate}
+                                onSelect={(dateRange) => setDate({from: dateRange?.from, to: dateRange?.to})}
                                 numberOfMonths={2}
                             />
                         </PopoverContent>
