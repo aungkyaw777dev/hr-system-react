@@ -4,14 +4,24 @@ import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layouts/MainLayout";
 import Attendance from "./pages/Attendance/Index";
 import Location from "./pages/Attendance/Location/Index";
+import BackLog from "./pages/BackLog/Index";
+import ProjectList from "./pages/BackLog/Project/Index";
+import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
+import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
+import { ProjectEdit } from "./pages/BackLog/Project/ProjectEdit";
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes >
+        <Routes>
           <Route path="/" element={<LoginPage />}></Route>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />}></Route>
+            <Route path="/backlog" element={<BackLog />}></Route>
+            <Route path="/project" element={<ProjectList />}></Route>
+            <Route path="/projects/new" element={<ProjectCreate />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/projects/:id/edit" element={<ProjectEdit />} />
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/location" element={<Location />}></Route>
           </Route>
