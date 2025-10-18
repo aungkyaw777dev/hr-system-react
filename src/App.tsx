@@ -7,6 +7,10 @@ import Location from "./pages/Attendance/Location/Index";
 import Employee from "./pages/Employee/Index";
 import EmployeeForm from "./components/employee/EmployeeForm";
 import EmployeeView from "./pages/Employee/View";
+import Payroll from "./pages/Payroll/Payroll";
+import PayrollCreate from "./pages/Payroll/PayrollCreate";
+import PayrollEdit from "./pages/Payroll/PayrollEdit";
+import PayrollDetail from "./pages/Payroll/PayrollDetail";
 function App() {
   return (
     <>
@@ -21,6 +25,10 @@ function App() {
             <Route path="/employee/new" element={<EmployeeForm />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeForm />} />
             <Route path="/employee/view/:code" element={<EmployeeView />} />
+            <Route path="/payroll" element={<Payroll />}></Route>
+            <Route path="/payroll/create" element={<PayrollCreate />}></Route>
+            <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
+            <Route path="/payroll/:id/detail" element={<PayrollDetail />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
