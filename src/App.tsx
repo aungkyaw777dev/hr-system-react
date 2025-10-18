@@ -1,4 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import BacklogCreate from "./pages/Backlog/Create";
+import BacklogDetail from "./pages/Backlog/Detail";
+import Backlog from "./pages/Backlog/Index";
+import BacklogEdit from "./pages/Backlog/Edit";
 import MainLayout from "./layouts/MainLayout";
 import Attendance from "./pages/Attendance/Index";
 import Location from "./pages/Attendance/Location";
@@ -7,7 +11,6 @@ import LoginPage from "./pages/Login";
 import MenuItem from "./pages/Menu/MenuItem";
 import MenuItemCreate from "./pages/Menu/MenuItemCreate";
 import MenuItemEdit from "./pages/Menu/MenuItemEdit";
-import BackLog from "./pages/BackLog/Index";
 import ProjectList from "./pages/BackLog/Project/Index";
 import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
 import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
@@ -24,7 +27,10 @@ function App() {
           <Route path="/" element={<LoginPage />}></Route>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />}></Route>
-            <Route path="/backlog" element={<BackLog />}></Route>
+            <Route path="/backlog" element={<Backlog />}></Route>
+            <Route path="/backlog/:id" element={<BacklogDetail />} />
+            <Route path="/backlog/create" element={<BacklogCreate/>}></Route>
+            <Route path="/backlog/edit/:id" element={<BacklogEdit/>}></Route>
             <Route path="/project" element={<ProjectList />}></Route>
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
@@ -32,7 +38,6 @@ function App() {
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/attendance/create" element={<AttendanceCreate />}></Route>
             <Route path="/location" element={<Location />}></Route>
-
             <Route path="/menuitem" element={<MenuItem />}></Route>
             <Route path="/menuitem/create" element={<MenuItemCreate />} />
             <Route path="/menuitem/edit" element={<MenuItemEdit />} />
