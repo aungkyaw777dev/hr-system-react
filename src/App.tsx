@@ -1,26 +1,45 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import MainLayout from "./layout/MainLayout";
-import Attendance from "./pages/Attendance";
 import Role from "./pages/Role";
 import CreateRole from "./pages/CreatetRole";
 import UpdateRole from "./pages/UpdateRole";
 import ViewRole from "./pages/ViewRole";
 
+import MainLayout from "./layouts/MainLayout";
+import Attendance from "./pages/Attendance/Index";
+import Location from "./pages/Attendance/Location/Index";
+import BackLog from "./pages/BackLog/Index";
+import ProjectList from "./pages/BackLog/Project/Index";
+import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
+import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
+import { ProjectEdit } from "./pages/BackLog/Project/ProjectEdit";
+import Employee from "./pages/Employee/Index";
+import EmployeeForm from "./components/employee/EmployeeForm";
+import EmployeeView from "./pages/Employee/View";
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes >
+        <Routes>
           <Route path="/" element={<LoginPage />}></Route>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />}></Route>
+            <Route path="/backlog" element={<BackLog />}></Route>
+            <Route path="/project" element={<ProjectList />}></Route>
+            <Route path="/projects/new" element={<ProjectCreate />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/projects/:id/edit" element={<ProjectEdit />} />
             <Route path="/attendance" element={<Attendance />}></Route>
             <Route path="/role" element={<Role />}></Route>
             <Route path="/role/create" element={<CreateRole />}></Route>
             <Route path="/role/update" element={<UpdateRole/>}></Route>
             <Route path="/role/view" element={<ViewRole/>}></Route>
+            <Route path="/location" element={<Location />}></Route>
+            <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/employee/new" element={<EmployeeForm />}></Route>
+            <Route path="/employee/edit/:code" element={<EmployeeForm />} />
+            <Route path="/employee/view/:code" element={<EmployeeView />} />
           </Route>
         </Routes>
       </BrowserRouter>

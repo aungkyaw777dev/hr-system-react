@@ -14,10 +14,41 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-900: var(--secondary-900);
+  --color-natural-50: var(--natural-50);
+  --color-natural-100: var(--natural-100);
+  --color-natural-200: var(--natural-200);
+  --color-natural-300: var(--natural-300);
+  --color-natural-400: var(--natural-400);
+  --color-natural-500: var(--natural-500);
+  --color-natural-600: var(--natural-600);
+  --color-natural-700: var(--natural-700);
+  --color-natural-800: var(--natural-800);
+  --color-natural-900: var(--natural-900);
+  --color-error-400: var(--error-400);
+  --color-white: var(--white);
+  --color-black: var(--black);
+  --color-text:var(--text);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -45,9 +76,40 @@
   --font-sans: "Inter", ui-sans-serif, system-ui;
   --radius: 10px;
   --background: oklch(1 0 0);  /*oklch -white */
-  --primary: oklch(0.262 0.001 264);  /*oklch - #343434 */
-  --secondary: oklch(0.86 0.013 250);   /* #D1D5DC in OKLCH */
-  --accent: oklch(0.82 0.018 270); /* #CFCDD9 in OKLCH */
+  --primary-50:  oklch(0.954 0.035 156.7);
+  --primary-100: oklch(0.89 0.083 152.9);
+  --primary-200: oklch(0.82 0.119 162.4);
+  --primary-300: oklch(0.76 0.144 162.8);
+  --primary-400: oklch(0.73 0.161 162.8);
+  --primary-500: oklch(0.69 0.169 162.3); 
+  --primary-600: oklch(0.64 0.158 162.4);
+  --primary-700: oklch(0.53 0.137 162.6);
+  --primary-800: oklch(0.44 0.115 162.5);
+  --primary-900: oklch(0.36 0.092 162.5);
+  --secondary-50:  oklch(0.951 0.024 92.3);   /* #F7F2E6 */
+  --secondary-100: oklch(0.926 0.049 93.0);   /* #E7D6B1 */
+  --secondary-200: oklch(0.896 0.081 92.7);   /* #DBC28B */
+  --secondary-300: oklch(0.857 0.118 91.5);   /* #CAA755 */
+  --secondary-400: oklch(0.817 0.145 90.1);   /* #C09535 */
+  --secondary-500: oklch(0.763 0.170 91.0);   /* #B07B02 */
+  --secondary-600: oklch(0.711 0.167 92.1);   /* #A07002 */
+  --secondary-700: oklch(0.592 0.180 91.5);   /* #7D5701 */
+  --secondary-800: oklch(0.488 0.188 93.0);   /* #614401 */
+  --secondary-900: oklch(0.378 0.194 94.0);   /* #4A3401 */ /* #F7F2E6 in oklch */
+  --natural-50:  oklch(0.999 0.005 122.5);  /* #FAFBFB */
+  --natural-100: oklch(0.975 0.012 123.0);  /* #F0F3F1 */
+  --natural-200: oklch(0.956 0.017 123.2);  /* #E8EDEB */
+  --natural-300: oklch(0.930 0.024 123.1);  /* #DEE4E2 */
+  --natural-400: oklch(0.911 0.029 123.0);  /* #D8DFDC */
+  --natural-500: oklch(0.884 0.036 123.0);  /* #CED7D3 */
+  --natural-600: oklch(0.843 0.046 123.0);  /* #BBC4C0 */
+  --natural-700: oklch(0.740 0.060 122.5);  /* #929996 */
+  --natural-800: oklch(0.624 0.065 123.0);  /* #717674 */
+  --natural-900: oklch(0.504 0.070 123.0);  /* #575A59 */
+  --error-400: oklch(0.726 0.202 36.5);
+  --black: oklch(0 0 0);
+  --white: oklch(1 0 0);
+  --text: oklch(0.012 0.013 262);
 }
 
 /* .dark {
@@ -97,6 +159,14 @@
   }
 
   .sidebar-btn {
-    @apply hover:bg-accent p-2 w-full text-center
+    @apply hover:bg-accent ms-4 p-4 w-full text-left shadow-xs flex gap-1
+  }
+
+  .pagination-btn {
+    @apply  bg-natural-100 text-black hover:bg-primary-500 hover:text-natural-50
+  }
+
+  .outline-btn {
+    @apply border border-primary-500! text-primary-500! bg-natural-50 hover:bg-primary-500 hover:text-natural-50!
   }
 }
