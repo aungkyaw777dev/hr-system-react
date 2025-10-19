@@ -123,7 +123,7 @@ export default function BacklogList() {
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
-                <p>Backlog Group Listing</p>
+                <p className="font-semibold">Backlog Group Listing</p>
                 <div className="relative w-full md:w-[20%]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
