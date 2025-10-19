@@ -4,17 +4,12 @@ import BacklogDetail from "./pages/BackLog/Detail";
 import Backlog from "./pages/BackLog/Index";
 import BacklogEdit from "./pages/BackLog/Edit";
 import MainLayout from "./layouts/MainLayout";
-import Location from "./pages/Attendance/Location/Index";
 import LocationCreate from "./pages/Attendance/Location/LocationCreate";
 import LocationEdit from "./pages/Attendance/Location/LocationEdit";
 import LocationDetail from "./pages/Attendance/Location/LocationDetail";
 import { AttendanceList } from "./pages/Attendance/Index";
 import { CreateAttendance } from "./pages/Attendance/Create";
 import { UpdateAttendance } from "./pages/Attendance/[id]";
-import Location from "./pages/Attendance/Location/Index";
-import Employee from "./pages/Employee/Index";
-import EmployeeForm from "./components/employee/EmployeeForm";
-import EmployeeView from "./pages/Employee/View";
 import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
@@ -48,7 +43,7 @@ function App() {
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
-           
+
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
             <Route path="/location/edit/:id" element={<LocationEdit />} />
