@@ -388,7 +388,7 @@ export default function BacklogDetail() {
         <p className="font-semibold">Backlog Information</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-50">
         <div className="space-y-8">
           <div>
             <label className="block text-sm font-medium mb-3">Task Code</label>
@@ -396,7 +396,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.taskCode}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -408,7 +408,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.taskDescription}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -420,7 +420,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.projectName}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -431,9 +431,9 @@ export default function BacklogDetail() {
                 type="text"
                 value={task.startDate}
                 disabled
-                className="w-full pl-10 pr-4 py-4 rounded-md text-sm bg-gray-100"
+                className="w-full pl-10 py-3 rounded-md text-sm bg-natural-500"
               />
-              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 " />
             </div>
           </div>
           <div>
@@ -444,7 +444,7 @@ export default function BacklogDetail() {
               type="text"
               value={`${task.workingHours} hours`}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
         </div>
@@ -456,7 +456,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.taskName}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -466,7 +466,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.assignee}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -478,7 +478,7 @@ export default function BacklogDetail() {
               type="text"
               value={task.status}
               disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
+              className="w-full p-3 rounded-md text-sm bg-natural-500"
             />
           </div>
 
@@ -489,9 +489,9 @@ export default function BacklogDetail() {
                 type="text"
                 value={task.dueDate}
                 disabled
-                className="w-full pl-10 pr-4 py-4 rounded-md text-sm bg-gray-100"
+                className="w-full pl-10 p-3 rounded-md text-sm bg-natural-500"
               />
-              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
             </div>
           </div>
         </div>
@@ -499,7 +499,7 @@ export default function BacklogDetail() {
       {/* back button */}
       <div className="mt-4 mr-5 flex justify-end">
         <Button
-          className="py-3 px-8 bg-gray-200" variant={"default"}
+          className="outline-btn"
           onClick={() => navigate("/backlog")}
         >
           Back

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/ui/button";
-import { Calendar1Icon, X ,RefreshCcw, ChevronDown} from "lucide-react";
+import { Calendar1Icon,RefreshCcw, ChevronDown, Check} from "lucide-react";
 import { Calendar } from "../../components/ui/calendar";
 import {
   Popover,
@@ -10,6 +10,7 @@ import {
 } from "../../components/ui/popover";
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogHeader,
@@ -506,10 +507,6 @@ const mockAssignees = [
     // await createTaskAPI(formData)
   };
 
-  const handleCloseModal = () => {
-    setShowSuccessModal(false);
-    navigate("/backlog");
-  };
 
   return (
     <div className="py-6 px-10 w-full flex-1">
@@ -517,16 +514,17 @@ const mockAssignees = [
         <p className="font-semibold">Backlog Information</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-50">
         <div className="space-y-8">
           <div>
             <label className="block text-sm font-medium mb-3">Task Code</label>
             <input
               type="text"
+              disabled
               name="taskCode"
               value={formData.taskCode}
               onChange={handleInputChange}
-              className="w-full px-4 pr-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full p-3 rounded-md text-sm bg-natural-500 "
               placeholder="Enter task code"
             />
           </div>
@@ -540,7 +538,7 @@ const mockAssignees = [
               name="taskDescription"
               value={formData.taskDescription}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="Enter task description"
             />
           </div>
@@ -553,7 +551,7 @@ const mockAssignees = [
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
+                  className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
                 >
                   <span className={formData.projectName ? "" : "text-gray-400"}>
                     {formData.projectName || "Select project name"}
@@ -561,13 +559,13 @@ const mockAssignees = [
                   <ChevronDown className="h-4 w-4 text-gray-400" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-primary text-white" align="start">
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-primary-500 text-white" align="start">
                 <div className="max-h-60 overflow-auto">
                   {mockProjects.map((project) => (
                     <button
                       key={project}
                       onClick={() => handleProjectSelect(project)}
-                      className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                      className="w-full p-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
                     >
                       {project}
                     </button>
@@ -584,7 +582,7 @@ const mockAssignees = [
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal px-4 py-4 h-auto",
+                    "w-full justify-start text-left font-normal p-3 h-auto border-gray-300",
                     !startDate && "text-muted-foreground"
                   )}
                 >
@@ -597,7 +595,7 @@ const mockAssignees = [
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-auto p-0 bg-primary text-white"
+                className="w-auto p-0 bg-primary-500 text-white"
                 align="start"
               >
                 <Calendar
@@ -619,7 +617,7 @@ const mockAssignees = [
               name="workingHours"
               value={formData.workingHours}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="Enter working hours"
             />
           </div>
@@ -633,7 +631,7 @@ const mockAssignees = [
               name="taskName"
               value={formData.taskName}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="Enter task name"
             />
           </div>
@@ -644,7 +642,7 @@ const mockAssignees = [
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
+                  className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
                 >
                   <span className={formData.assignee ? "" : "text-gray-400"}>
                     {formData.assignee || "Select assignee name"}
@@ -652,13 +650,13 @@ const mockAssignees = [
                   <ChevronDown className="h-4 w-4 text-gray-400" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-primary text-white" align="start">
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-primary-500 text-white" align="start">
                 <div className="max-h-60 overflow-auto">
                   {mockAssignees.map((assignee) => (
                     <button
                       key={assignee}
                       onClick={() => handleAssigneeSelect(assignee)}
-                      className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                      className="w-full p-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
                     >
                       {assignee}
                     </button>
@@ -677,7 +675,7 @@ const mockAssignees = [
               name="status"
               value={formData.status}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full p-3 rounded-md text-sm border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="Enter task status"
             />
           </div>
@@ -689,7 +687,7 @@ const mockAssignees = [
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal px-4 py-4 h-auto",
+                    "w-full justify-start text-left font-normal p-3 h-auto border-gray-300",
                     !dueDate && "text-muted-foreground"
                   )}
                 >
@@ -702,7 +700,7 @@ const mockAssignees = [
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-auto p-0 bg-primary text-white"
+                className="w-auto p-0 bg-primary-500 text-white"
                 align="start"
               >
                 <Calendar
@@ -719,15 +717,14 @@ const mockAssignees = [
 
       <div className="mt-4 mr-5 flex justify-end gap-3">
         <Button
-          className="py-3 px-8 bg-gray-200"
-          variant={"default"}
+          className="outline-btn"
+     
           onClick={() => navigate("/backlog")}
         >
           Cancel
         </Button>
         <Button
-          className="py-3 px-8 bg-[#CED7D3]"
-          variant={"default"}
+          className="outline-btn"
           onClick={handleSubmit}
           disabled={!hasFormChanged()}
         >
@@ -736,22 +733,19 @@ const mockAssignees = [
       </div>
 
       {/* Success Modal */}
-      <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <AlertDialogContent className="max-w-md">
-          <button
-            onClick={handleCloseModal}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="h-7 w-7" />
-          </button>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-center pt-2"><RefreshCcw className="h-20 w-20 text-gray-500 m-auto"/></AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-lg mt-4 mb-6">
-              Updated successfully!
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-        </AlertDialogContent>
-      </AlertDialog>
+   <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+  <AlertDialogContent className="max-w-md bg-primary-50">
+        <div className="absolute left-1/2 -translate-x-1/2 top-[-15%] bg-primary-100 rounded-full p-3">
+      <div className="w-15 m-auto bg-primary-400 rounded-full text-center">
+        <Check className="h-15 w-15 text-white m-auto"/>
+      </div>
+    </div>
+    <AlertDialogDescription className="text-center text-lg font-semibold mt-10 mb-3">
+      Updated Successful!
+    </AlertDialogDescription>
+    <AlertDialogCancel onClick={() => navigate("/backlog")} className="m-auto w-40 bg-primary-400 text-white hover:bg-primary-500 hover:text-white">OK</AlertDialogCancel>
+  </AlertDialogContent>
+</AlertDialog>
     </div>
   );
 }

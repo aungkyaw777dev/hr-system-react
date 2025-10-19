@@ -1,12 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import BacklogCreate from "./pages/Backlog/Create";
-import BacklogDetail from "./pages/Backlog/Detail";
-import Backlog from "./pages/Backlog/Index";
-import BacklogEdit from "./pages/Backlog/Edit";
+import BacklogCreate from "./pages/BackLog/Create";
+import BacklogDetail from "./pages/BackLog/Detail";
+import Backlog from "./pages/BackLog/Index";
+import BacklogEdit from "./pages/BackLog/Edit";
 import MainLayout from "./layouts/MainLayout";
 import { AttendanceList } from "./pages/Attendance/Index";
 import { CreateAttendance } from "./pages/Attendance/Create";
 import { UpdateAttendance } from "./pages/Attendance/[id]";
+import Location from "./pages/Attendance/Location/Index";
+import Employee from "./pages/Employee/Index";
+import EmployeeForm from "./components/employee/EmployeeForm";
+import EmployeeView from "./pages/Employee/View";
 import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
@@ -51,6 +55,10 @@ function App() {
             ></Route>
 
             <Route path="/location" element={<Location />}></Route>
+            <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/employee/new" element={<EmployeeForm />}></Route>
+            <Route path="/employee/edit/:code" element={<EmployeeForm />} />
+            <Route path="/employee/view/:code" element={<EmployeeView />} />
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>
             <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
