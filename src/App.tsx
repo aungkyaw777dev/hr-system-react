@@ -4,6 +4,10 @@ import BacklogDetail from "./pages/BackLog/Detail";
 import Backlog from "./pages/BackLog/Index";
 import BacklogEdit from "./pages/BackLog/Edit";
 import MainLayout from "./layouts/MainLayout";
+import Location from "./pages/Attendance/Location/Index";
+import LocationCreate from "./pages/Attendance/Location/LocationCreate";
+import LocationEdit from "./pages/Attendance/Location/LocationEdit";
+import LocationDetail from "./pages/Attendance/Location/LocationDetail";
 import { AttendanceList } from "./pages/Attendance/Index";
 import { CreateAttendance } from "./pages/Attendance/Create";
 import { UpdateAttendance } from "./pages/Attendance/[id]";
@@ -44,6 +48,11 @@ function App() {
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
+           
+            <Route path="/location" element={<Location />}></Route>
+            <Route path="/location/create" element={<LocationCreate />}></Route>
+            <Route path="/location/edit/:id" element={<LocationEdit />} />
+            <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
             <Route
               path="/attendance/create"
