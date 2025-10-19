@@ -1,7 +1,5 @@
-import AttendanceForm from "../../components/ui/attendanceForm"
+import AttendanceForm from "../../components/ui/attendanceForm";
 
-export default function CreateAttendance() {
-    return (
-        <AttendanceForm />
-    )
+export function CreateAttendance() {
+  return <AttendanceForm />;
 }
