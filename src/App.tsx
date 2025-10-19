@@ -1,4 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import Role from "./pages/Role/Role";
+import CreateRole from "./pages/Role/CreatetRole";
+import UpdateRole from "./pages/UpdateRole";
+import ViewRole from "./pages/Role/ViewRole";
 import BacklogCreate from "./pages/BackLog/Create";
 import BacklogDetail from "./pages/BackLog/Detail";
 import Backlog from "./pages/BackLog/Index";
@@ -43,6 +48,10 @@ function App() {
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
+            <Route path="/role" element={<Role />}></Route>
+            <Route path="/role/create" element={<CreateRole />}></Route>
+            <Route path="/role/update" element={<UpdateRole/>}></Route>
+            <Route path="/role/view" element={<ViewRole/>}></Route>
 
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
