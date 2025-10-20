@@ -1,12 +1,8 @@
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import { ArrowLeft, Calendar1Icon } from "lucide-react";
+import BacklogForm from "../../components/ui/backlogForm";
 
-export default function BacklogDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const allData = [
+ const mockData = [
     {
       id: 1,
       taskCode: "PJ1234",
@@ -369,142 +365,36 @@ export default function BacklogDetail() {
     },
   ];
 
-  const task = allData.find((t) => t.id === parseInt(id));
+
+export function BacklogDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [task, setTask] = useState<any>(null);
+
+  useEffect(() => {
+    const foundTask = mockData.find((t) => t.id === parseInt(id || "0"));
+    if (foundTask) {
+      setTask(foundTask);
+    }
+  }, [id]);
 
   if (!task) {
     return (
       <div className="p-10 w-full flex-1">
         <p className="text-red-500">Task not found</p>
-        <Button onClick={() => navigate("/backlog")} className="mt-4">
-          <ArrowLeft className="mr-2" /> Back to List
-        </Button>
       </div>
     );
   }
 
   return (
-    <div className="py-6 px-10 w-full flex-1">
-      <div className="flex items-center gap-4 mb-6">
-        <p className="font-semibold">Backlog Information</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-100">
-        <div className="space-y-8">
-          <div>
-            <label className="block text-sm font-medium mb-3">Task Code</label>
-            <input
-              type="text"
-              value={task.taskCode}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-3">
-              Task Description
-            </label>
-            <input
-              type="text"
-              value={task.taskDescription}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-3">
-              Project Name
-            </label>
-            <input
-              type="text"
-              value={task.projectName}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-3">Start Date</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={task.startDate}
-                disabled
-                className="w-full pl-10 pr-4 py-4 rounded-md text-sm bg-gray-100"
-              />
-              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-3">
-              Working Hours
-            </label>
-            <input
-              type="text"
-              value={`${task.workingHours} hours`}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-8 pr-5">
-          <div>
-            <label className="block text-sm font-medium mb-3">Task Name</label>
-            <input
-              type="text"
-              value={task.taskName}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-3">Assignee</label>
-            <input
-              type="text"
-              value={task.assignee}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-3">
-              Task Status
-            </label>
-            <input
-              type="text"
-              value={task.status}
-              disabled
-              className="w-full px-4 py-4 rounded-md text-sm bg-gray-100"
-            />
-          </div>
-
-           <div>
-            <label className="block text-sm font-medium mb-3">Due Date</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={task.dueDate}
-                disabled
-                className="w-full pl-10 pr-4 py-4 rounded-md text-sm bg-gray-100"
-              />
-              <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* back button */}
-      <div className="mt-4 mr-5 flex justify-end">
-        <Button
-          className="py-3 px-8 bg-gray-200" variant={"default"}
-          onClick={() => navigate("/backlog")}
-        >
-          Back
-        </Button>
-      </div>
-    </div>
+    <BacklogForm
+      mode="view"
+      initialData={task}
+      onSubmit={() => {}}
+      onCancel={() => navigate("/backlog")}
+    />
   );
 }
+
+
+
