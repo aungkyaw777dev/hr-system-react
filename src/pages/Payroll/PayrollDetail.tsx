@@ -328,13 +328,6 @@ export default function PayrollDetail() {
                     >
                         BACK
                     </Button>
-                    <Button
-                        variant="outline"
-                        onClick={handleUpdate}
-                        className="px-6 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200"
-                    >
-                        UPDATE
-                    </Button>
                 </div>
             </div>
         </div>

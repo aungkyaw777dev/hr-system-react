@@ -13,16 +13,16 @@ import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
 import PayrollDetail from "./pages/Payroll/PayrollDetail";
-import Location from "./pages/Attendance/Location";
+// import Location from "./pages/Attendance/Location";
 import Dashboard from "./pages/Dashboard";
 import LoginPage from "./pages/Login";
 import MenuItem from "./pages/Menu/MenuItem";
 import MenuItemCreate from "./pages/Menu/MenuItemCreate";
 import MenuItemEdit from "./pages/Menu/MenuItemEdit";
-import ProjectList from "./pages/BackLog/Project/Index";
-import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
-import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
-import { ProjectEdit } from "./pages/BackLog/Project/ProjectEdit";
+import ProjectList from "./pages/Backlog/Project/Index";
+import { ProjectDetails } from "./pages/Backlog/Project/ProjectDetails";
+import { ProjectCreate } from "./pages/Backlog/Project/ProjectCreate";
+import { ProjectEdit } from "./pages/Backlog/Project/ProjectEdit";
 import AttendanceCreate from "./pages/Attendance/Create"
 function App() {
   return (
