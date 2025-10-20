@@ -143,11 +143,11 @@
   }
 
   .sidebar-btn {
-    @apply hover:bg-primary-500 mx-2 p-4 w-full text-left shadow-sm flex gap-1 rounded-md;
+    @apply hover:bg-primary-500 hover:text-natural-50 mx-2 p-4 w-full shadow-sm flex gap-1 rounded-md;
   }
 
   .pagination-btn {
-    @apply  bg-natural-100 text-black hover:bg-primary-500 hover:text-natural-50;
+    @apply  bg-primary-500 text-natural-50 hover:bg-primary-700 hover:text-natural-50;
   }
   
   .outline-btn {

@@ -24,7 +24,7 @@ export default function MainLayout() {
                         <img src={Logo} alt="logo" className="w-30" />
                         <X className="me-2 cursor-pointer" onClick={() => setIsSidebarOpen(false)} />
                     </div>
-                    <div className="h-full w-full bg-primary">
+                    <div className="h-full w-full bg-primary flex justify-center">
                         <Sidebar onClose={() => setIsSidebarOpen(false)} />
                     </div>
                 </aside>

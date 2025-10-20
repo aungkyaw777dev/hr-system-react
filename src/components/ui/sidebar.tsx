@@ -7,7 +7,8 @@ import {
   LogOut,
   DollarSign,
   LayoutTemplate,
-  Clock
+  Clock,
+  ChevronUp
 } from 'lucide-react';
 import { useState } from "react";
 
@@ -29,27 +30,27 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         <UserRound />Role
       </Link>
       <div
-        className="sidebar-btn flex w-full"
-        onClick={() => {
-          toglemenuItem();
-          onClose()
-        }
+        className="sidebar-btn flex w-full justify-between"
+        onClick={() =>
+          toglemenuItem()
         }
       >
         <span className="cursor-pointer flex gap-1"><LayoutDashboard />Menu</span>
-        <ChevronDown
+        <ChevronUp
           className={`mt-2 text-sm transition-transform duration-300 ${isSubMenuItemOpen ? "rotate-180" : "rotate-0"
             }`}
           size={14}
         />
       </div>
-      {isSubMenuItemOpen && (
-        <ul className="w-full">
-          <li className="sidebar-btn">
-            <Link to="/menuitem" onClick={onClose}>Menu Item</Link>
-          </li>
-        </ul>
-      )}
+      {
+        isSubMenuItemOpen && (
+          <ul className="w-full">
+            <li className="sidebar-btn" onClick={onClose}>
+              <Link to="/menuitem" >Menu Item</Link>
+            </li>
+          </ul>
+        )
+      }
       <Link to="/role" onClick={onClose} className="sidebar-btn">
         <UserRound />Role & Permission
       </Link>
@@ -57,55 +58,59 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         <UsersRound />Employee
       </Link>
       <div
-        className="sidebar-btn flex w-full"
+        className="sidebar-btn w-full justify-between"
         onClick={toggleBackLogMenu}
       >
         <span className="cursor-pointer flex gap-1"><LayoutTemplate />Backlog Module</span>
-        <ChevronDown
+        <ChevronUp
           className={`mt-2 text-sm transition-transform duration-300 ${isBackLogMenuOpen ? "rotate-180" : "rotate-0"
             }`}
           size={14}
         />
       </div>
-      {isBackLogMenuOpen && (
-        <ul className="w-full">
-          <li className="sidebar-btn" onClick={onClose}>
-            <Link to="/backlog">Backlog</Link>
-          </li>
-          <li className="sidebar-btn" onClick={onClose}>
-            <Link to="/project">Project</Link>
-          </li>
-        </ul>
-      )}
+      {
+        isBackLogMenuOpen && (
+          <ul className="w-full">
+            <li className="sidebar-btn" onClick={onClose}>
+              <Link to="/backlog">Backlog</Link>
+            </li>
+            <li className="sidebar-btn" onClick={onClose}>
+              <Link to="/project">Project</Link>
+            </li>
+          </ul>
+        )
+      }
       <div
-        className="sidebar-btn flex w-full"
+        className="sidebar-btn flex w-full justify-between"
         onClick={() => {
           toggleSubmenu();
         }}
       >
         <span className="cursor-pointer flex gap-1"><Clock />Attendance Module</span>
-        <ChevronDown
+        <ChevronUp
           className={`mt-2 text-sm transition-transform duration-300 ${isSubMenuOpen ? "rotate-180" : "rotate-0"
             }`}
           size={14}
         />
       </div>
-      {isSubMenuOpen && (
-        <ul className="w-full">
-          <li className="sidebar-btn" onClick={onClose}>
-            <Link to="/location" >Location</Link>
-          </li>
-          <li className="sidebar-btn" onClick={onClose}>
-            <Link to="/attendance" >Attendance</Link>
-          </li>
-        </ul>
-      )}
+      {
+        isSubMenuOpen && (
+          <ul className="w-full">
+            <li className="sidebar-btn" onClick={onClose}>
+              <Link to="/location" >Location</Link>
+            </li>
+            <li className="sidebar-btn" onClick={onClose}>
+              <Link to="/attendance" >Attendance</Link>
+            </li>
+          </ul>
+        )
+      }
       <Link to="/payroll" onClick={onClose} className="sidebar-btn">
         <DollarSign /> Payroll
       </Link>
       <Link to="/logout" onClick={onClose} className="sidebar-btn">
         <LogOut /> Logout
       </Link>
-    </div>
+    </div >
   );
 }
