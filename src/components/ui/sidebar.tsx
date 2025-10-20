@@ -70,7 +70,7 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       {isBackLogMenuOpen && (
         <ul className="w-full">
           <li className="sidebar-btn" onClick={onClose}>
-            <Link to="/backlog" >Backlog</Link>
+            <Link to="/backlog">Backlog</Link>
           </li>
           <li className="sidebar-btn" onClick={onClose}>
             <Link to="/project">Project</Link>
@@ -92,11 +92,11 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       </div>
       {isSubMenuOpen && (
         <ul className="w-full">
-          <li className="sidebar-btn">
-            <Link to="/location" onClick={onClose}>Location</Link>
+          <li className="sidebar-btn" onClick={onClose}>
+            <Link to="/location" >Location</Link>
           </li>
-          <li className="sidebar-btn">
-            <Link to="/attendance" onClick={onClose}>Attendance</Link>
+          <li className="sidebar-btn" onClick={onClose}>
+            <Link to="/attendance" >Attendance</Link>
           </li>
         </ul>
       )}

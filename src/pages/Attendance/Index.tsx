@@ -28,10 +28,12 @@ import {
   ChevronsLeft,
   Search,
   Calendar1Icon,
+  Download,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 export function AttendanceList() {
   const navigate = useNavigate();
   const data = [
@@ -418,10 +420,22 @@ export function AttendanceList() {
           />
         </div>
         {/* buttons */}
-        <Button className="outline-btn">
-          <FolderUp />
-          Export
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="outline-btn">
+            <div className="flex p-1 items-center rounded-md">
+              <Download size={16} />
+              Export
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-25 bg-natural-50">
+            <DropdownMenuItem>
+              PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              Excel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button className="outline-btn" onClick={goToCreatForm}>
           <Plus />
           Add new
