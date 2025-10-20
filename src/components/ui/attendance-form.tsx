@@ -144,11 +144,13 @@ export default function AttendanceForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col md:flex-row w-full p-2 mt-4"
+          className="flex flex-col w-full p-2 ms-4"
         >
-          <div className="w-full flex flex-col md:flex-row gap-3">
-            <p className="ms-8 text-bold text-xl">Add New Attendance</p>
+          <div className="w-full flex flex-col gap-6 mb-6">
+            <p className="font-bold text-xl">{!code ? 'Add New Attendance' : 'Update Attendance'}</p>
+          </div>
 
+          <div className="w-full flex gap-6 flex-col md:flex-row">
             <div className="w-full md:w-[30%] flex gap-4 flex-col">
               <FormField
                 control={form.control}

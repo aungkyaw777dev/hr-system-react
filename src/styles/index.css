@@ -143,7 +143,7 @@
   }
 
   .sidebar-btn {
-    @apply hover:bg-accent ms-4 p-4 w-full text-left shadow-xs flex gap-1;
+    @apply hover:bg-primary-500 mx-2 p-4 w-full text-left shadow-sm flex gap-1 rounded-md;
   }
 
   .pagination-btn {

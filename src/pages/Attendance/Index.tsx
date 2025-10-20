@@ -6,17 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import { Calendar } from "../../components/ui/calendar";
+} from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../components/ui/popover";
+} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "../../lib/utils";
-import { Button } from "../../components/ui/button";
-import { capitalizeCamelCase } from "../../lib/utils";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
@@ -29,7 +29,7 @@ import {
   Search,
   Calendar1Icon,
 } from "lucide-react";
-import { Input } from "../../components/ui/input";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
 export function AttendanceList() {
@@ -467,95 +467,75 @@ export function AttendanceList() {
         </TableBody>
       </Table>
 
-      {/* Paginations */}
-      <div className="flex items-center justify-between p-4 border-t">
-        {/* Left: Showing rows */}
-        <div className="text-sm text-muted-foreground">
-          {startRow}–{endRow} of {totalRows}
-        </div>
-
-        {/* Middle: Page buttons */}
-
-        <div className="flex space-x-1">
-          <button
-            onClick={goToFirst}
-            disabled={currentPage === 1}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-          >
-            <ChevronsLeft />
-          </button>
-          <button
-            onClick={goPrev}
-            disabled={currentPage === 1}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-          >
-            <ChevronLeft />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      <div className="flex flex-col md:flex-row items-center gap-2">
+        {/* Paginations */}
+        <div className="w-full flex items-center justify-center md:justify-around p-4 border-t flex-col md:flex-row gap-3 ">
+          {/* Left: Showing rows */}
+          <div className="text-sm text-muted-foreground">
+            {startRow}–{endRow} of {totalRows}
+          </div>
+          {/* Middle: Page buttons */}
+          <div className="flex space-x-1">
             <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${page === currentPage
-                ? "bg-primary-500 text-natural-50"
-                : "bg-natural-50 text-black hover:bg-gray-200"
-                }`}
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
-              {page}
+              <ChevronsLeft />
             </button>
-          ))}
-          <button
-            onClick={goNext}
-            disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-          >
-            <ChevronRight />
-          </button>
-          <button
-            onClick={goToLast}
-            disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-          >
-            <ChevronsRight />
-          </button>
-        </div>
-
-        {/* Right: Rows per page */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Rows/page:</span>
-          <select
-            value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1); // reset page
-            }}
-            className="border rounded px-2 py-1 text-sm p-3"
-          >
-            {[10, 20, 30, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
+            <button
+              onClick={goPrev}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronLeft />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${page === currentPage
+                  ? "bg-primary-500 text-natural-50"
+                  : "bg-natural-50 text-black hover:bg-gray-200"
+                  }`}
+              >
+                {page}
+              </button>
             ))}
-          </select>
+            <button
+              onClick={goNext}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronRight />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronsRight />
+            </button>
+          </div>
+          {/* Right: Rows per page */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">Rows/page:</span>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1); // reset page
+              }}
+              className="border rounded px-2 py-1 text-sm p-3"
+            >
+              {[10, 20, 30, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
-
-      {/* Right: Rows per page */}
-      <div className="flex items-center space-x-2">
-        <span className="text-sm text-muted-foreground">Rows per page:</span>
-        <select
-          value={rowsPerPage}
-          onChange={(e) => {
-            setRowsPerPage(Number(e.target.value));
-            setCurrentPage(1); // reset page
-          }}
-          className="border rounded px-2 py-1 text-sm"
-        >
-          {[10, 20, 30, 50].map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
-          ))}
-        </select>
       </div>
 
       <AlertDialog />
