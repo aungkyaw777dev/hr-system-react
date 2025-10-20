@@ -4,10 +4,10 @@ import Role from "./pages/Role/Role";
 import CreateRole from "./pages/Role/CreatetRole";
 import UpdateRole from "./pages/UpdateRole";
 import ViewRole from "./pages/Role/ViewRole";
-import {BacklogCreate }from "./pages/Backlog/Create";
-import {BacklogDetail} from "./pages/Backlog/Detail";
+import { BacklogCreate } from "./pages/Backlog/Create";
+import { BacklogDetail } from "./pages/Backlog/Detail";
 import Backlog from "./pages/Backlog/Index";
-import {BacklogEdit} from "./pages/Backlog/Edit";
+import { BacklogEdit } from "./pages/Backlog/Edit";
 import MainLayout from "./layouts/MainLayout";
 import LocationCreate from "./pages/Attendance/Location/LocationCreate";
 import LocationEdit from "./pages/Attendance/Location/LocationEdit";
@@ -50,8 +50,8 @@ function App() {
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
             <Route path="/role" element={<Role />}></Route>
             <Route path="/role/create" element={<CreateRole />}></Route>
-            <Route path="/role/update" element={<UpdateRole/>}></Route>
-            <Route path="/role/view" element={<ViewRole/>}></Route>
+            <Route path="/role/update" element={<UpdateRole />}></Route>
+            <Route path="/role/view" element={<ViewRole />}></Route>
 
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
