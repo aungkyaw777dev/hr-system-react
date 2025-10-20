@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Role from "./pages/Role/Role";
 import CreateRole from "./pages/Role/CreatetRole";
-import UpdateRole from "./pages/UpdateRole";
+import UpdateRole from "./pages/Role/UpdateRole";
 import ViewRole from "./pages/Role/ViewRole";
 import { BacklogCreate } from "./pages/Backlog/Create";
 import { BacklogDetail } from "./pages/Backlog/Detail";
@@ -19,7 +19,7 @@ import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
 import PayrollDetail from "./pages/Payroll/PayrollDetail";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard/Index";
 import LoginPage from "./pages/Login";
 import MenuItem from "./pages/Menu/MenuItem";
 import MenuItemCreate from "./pages/Menu/MenuItemCreate";

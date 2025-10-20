@@ -26,13 +26,15 @@ export function SuccessDialog({
 }: SuccessDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
-        <AlertDialogHeader className="items-center">
-          <div className="mb-4">
-            <div className="mx-auto w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center">
+      <AlertDialogContent className="max-w-md max-h-xs flex flex-col gap-6 border-none">
+        <div className="relative flex flex-col items-center text-center">
+          <div className="mb-4 absolute -top-20 bg-white rounded-full p-4">
+            <div className="mx-auto w-18 h-18 bg-primary-500 rounded-full flex items-center justify-center">
               <Check className="h-10 w-10 text-white" strokeWidth={3} />
             </div>
           </div>
+        </div>
+        <AlertDialogHeader className="items-center mt-2">
           <AlertDialogTitle className="text-xl text-center">
             {title}
           </AlertDialogTitle>
@@ -43,7 +45,7 @@ export function SuccessDialog({
         <AlertDialogFooter className="sm:justify-center">
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-10"
+            className="bg-primary-500 hover:bg-emerald-600 text-white px-10"
           >
             OK
           </AlertDialogAction>
