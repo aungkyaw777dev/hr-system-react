@@ -362,22 +362,21 @@ export function AttendanceList() {
     navigate(`/attendance/${code}/update`);
   };
 
-  const deleteAttendance = (code: string) => {};
+  const deleteAttendance = (code: string) => { };
   return (
     <div className="p-6 w-full flex-1">
       <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
-        <p className="">Attendance List</p>
+        <p className="text-3xl font-semibold">Attendance</p>
         {/* date picker */}
         <div className="grid gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 className={cn(
-                  "justify-start text-left font-normal w-[250px] outline-btn",
+                  "justify-between text-left font-normal w-[250px] outline-btn font-semibold",
                   !date && "text-muted-foreground"
                 )}
               >
-                <Calendar1Icon className="mr-2 h-4 w-4" />
                 {date?.from ? (
                   date.to ? (
                     <>
@@ -390,10 +389,11 @@ export function AttendanceList() {
                 ) : (
                   <span>Pick a date range</span>
                 )}
+                <Calendar1Icon className="mr-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-auto p-0 bg-primary-500 text-white"
+              className="w-auto p-0 bg-natural-50"
               align="start"
             >
               <Calendar
@@ -427,7 +427,7 @@ export function AttendanceList() {
           Add new
         </Button>
       </div>
-      <Table className="w-full overflow-auto shadow-sm rounded-md">
+      <Table className="w-full overflow-auto">
         <TableHeader className="bg-primary-300">
           <TableRow className="border-none">
             {Object.keys(data[0]).map((columnName) => (
@@ -495,11 +495,10 @@ export function AttendanceList() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
-                  ? "bg-primary-500 text-natural-50"
-                  : "bg-natural-50 text-black hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1 rounded ${page === currentPage
+                ? "bg-primary-500 text-natural-50"
+                : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
             >
               {page}
             </button>

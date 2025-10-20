@@ -21,7 +21,8 @@ import {
 import { Calendar } from "./calendar";
 import { ChevronDownIcon, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { SuccessDialog } from "./SuccessDialog";
 
 const formSchema = z.object({
   employeeCode: z.string().nonempty("Employee Code cannot be empty!"),
@@ -40,8 +41,9 @@ const formSchema = z.object({
 });
 export default function AttendanceForm() {
   const { code } = useParams();
-  console.log(code);
   const [open, setOpen] = useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,11 +80,8 @@ export default function AttendanceForm() {
     // Reference points
     const START_TIME = toMinutes("09:00");
     const LATE_THRESHOLD = toMinutes("10:00");
-    const LATE_THRESHOLD_EVENING = toMinutes("14:00");
     const EARLY_DEPARTURE_THRESHOLD = toMinutes("16:30");
     const END_TIME = toMinutes("17:00");
-    const HALF_MORNING_END_TIME = toMinutes("12:00");
-    const HALF_EVENING_START_TIME = toMinutes("13:00");
 
     // Validate inputs
     if (!checkIn || !checkOut) return "absent";
@@ -112,23 +111,6 @@ export default function AttendanceForm() {
       status = "half-day";
     }
 
-    // //half-day MORNING working logic
-    // if (
-    //   checkInMinutes < LATE_THRESHOLD &&
-    //   checkOutMinutes >= HALF_MORNING_END_TIME &&
-    //   checkOutMinutes < EARLY_DEPARTURE_THRESHOLD
-    // ) {
-    //   status = "half-day";
-    // }
-
-    // //half-day evening working logic
-    // if (
-    //   checkInMinutes < HALF_EVENING_START_TIME &&
-    //   checkInMinutes <= LATE_THRESHOLD_EVENING &&
-    //   checkOutMinutes >= END_TIME
-    // ) {
-    //   status = "half-day";
-    // }
     if (
       checkOutMinutes >= EARLY_DEPARTURE_THRESHOLD &&
       checkOutMinutes < END_TIME &&
@@ -146,8 +128,16 @@ export default function AttendanceForm() {
     return status;
   };
 
+  const handleSuccessConfirm = () => {
+    setSuccessDialogOpen(false);
+    navigate("/location");
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    setTimeout(() => {
+      setSuccessDialogOpen(true);
+    }, 500);
   };
   return (
     <div className="w-full">
@@ -346,6 +336,11 @@ export default function AttendanceForm() {
           </div>
         </form>
       </Form>
+      <SuccessDialog
+        open={successDialogOpen}
+        onOpenChange={setSuccessDialogOpen}
+        onConfirm={handleSuccessConfirm}
+      />
     </div>
   );
 }
