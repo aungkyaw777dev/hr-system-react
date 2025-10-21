@@ -28,147 +28,169 @@ import {
 } from "../../components/ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useParams, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-
 import { useEffect } from "react";
 
-export default function EmployeeForm() {
-  const { code } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const formSchema = z
-    .object({
-      code: z
-        .string()
-        .min(3, "Code must be at least 3 characters")
-        .max(20, "Code must be less than 20 characters")
-        .regex(
-          /^[A-Za-z0-9_-]+$/,
-          "Code can only contain letters, numbers, underscores, or hyphens"
-        ),
-
-      photo: z.string().url("Photo must be a valid URL"),
-
-      name: z
-        .string()
-        .min(6, "Name must be at least 6 characters")
-        .max(50, "Name must be less than 50 characters")
-        .regex(/^[A-Za-z\s]+$/, "Name can only contain letters and spaces"),
-
-      role: z.string().min(1, "Please choose a role"),
-
-      email: z.string().email("Invalid email address"),
-
-      phone: z
-        .string()
-        .regex(
-          /^\+?[0-9]{10,15}$/,
-          "Phone number must be valid and contain 10–15 digits"
-        ),
-
-      startDate: z.date().optional(),
-
-      resignDate: z.date().optional(),
-    })
+export const employeeSchema = z.object({
+  EmployeeCode: z
+    .string()
+    .min(1, "EmployeeCode is required")
+    .regex(/^\d+$/, "EmployeeCode must be numeric"),
+  Username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must be at most 30 characters"),
+  Password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(15, "Password must be at most 15 characters"),
+  Salary: z
+    .number()
+    .positive("Salary must be a positive number")
+    .max(10000000, "Salary too high"),
+  Name: z.string().min(2, "Name is required").max(60, "Name too long"),
+  Role: z.enum([
+    "Manager",
+    "Developer",
+    "Designer",
+    "HR",
+    "Accountant",
+    "Sales Executive",
+  ]),
+  Email: z.string().email("Invalid email address"),
+  PhoneNo: z
+    .string()
+    .regex(/^09\d{9}$/, "Phone number must start with 09 and have 11 digits"),
+  StartDate: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), "StartDate must be a valid date"),
+  ResignDate: z
+    .string()
     .refine(
-      (data) => {
-        if (data.startDate && data.resignDate) {
-          return data.resignDate >= data.startDate;
-        }
-        return true;
-      },
-      {
-        message: "End date must be after start date",
-        path: ["endDate"],
-      }
-    );
+      (val) => !isNaN(Date.parse(val)),
+      "ResignDate must be a valid date"
+    ),
+});
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+type EmployeeFormValues = z.infer<typeof employeeSchema>;
+
+interface EmployeeFormProps {
+  mode: "create" | "edit";
+  defaultValues?: Partial<EmployeeFormValues>;
+  onSubmit: (values: EmployeeFormValues) => void;
+  onCancel: () => void;
+}
+
+export default function EmployeeForm({
+  mode,
+  defaultValues,
+  onSubmit,
+  onCancel,
+}: EmployeeFormProps) {
+  const form = useForm<EmployeeFormValues>({
+    resolver: zodResolver(employeeSchema),
     defaultValues: {
-      code: "",
-      photo: "",
-      name: "",
-      role: "",
-      email: "",
-      phone: "",
-      startDate: undefined,
-      resingDate: undefined,
+      EmployeeCode: "",
+      Username: "",
+      Password: "",
+      Salary: 0,
+      Name: "",
+      Role: "Developer",
+      Email: "",
+      PhoneNo: "",
+      StartDate: "",
+      ResignDate: "",
+      ...defaultValues,
     },
   });
 
-  const employeeFromState = location.state?.employee;
   useEffect(() => {
-    if (employeeFromState) {
-      form.reset({
-        code: employeeFromState.code,
-        photo: employeeFromState.photo,
-        name: employeeFromState.name,
-        role: employeeFromState.role,
-        email: employeeFromState.email,
-        phone: employeeFromState.phoneNo,
-        startDate: employeeFromState.startDate,
-        resingDate: employeeFromState.endDate,
-      });
+    if (defaultValues) {
+      form.reset(defaultValues);
     }
-  }, [employeeFromState]);
+  }, [defaultValues, form]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    if (code) {
-      console.log("Updating employee:", code, values);
-      // API call to update employee by code
-      navigate("/employee");
-    } else {
-      console.log("Creating new employee:", values);
-      // API call to create a new employee
-      navigate("/employee");
-    }
-  }
-
-  function onReset() {
+  function handleReset() {
     form.reset();
     form.clearErrors();
   }
 
   return (
     <div className="flex-1 p-6">
-      <h2 className="text-2xl font-semibold mb-6 text-center sm:text-left">
-        {code ? "Edit Employee" : "Create Employee"}
+      <h2 className="text-2xl font-bold mb-6 text-center sm:text-left text-primary-500">
+        {mode === "edit" ? "Edit Employee" : "Create Employee"}
       </h2>
 
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          onReset={onReset}
+          onReset={handleReset}
           className="space-y-6"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
             {/* Employee Code */}
             <FormField
               control={form.control}
-              name="code"
+              name="EmployeeCode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Employee Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter employee code" {...field} />
+                    <Input {...field} disabled={mode === "edit"} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Photo */}
+            {/* Username */}
             <FormField
               control={form.control}
-              name="photo"
+              name="Username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Photo</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Photo URL or filename" {...field} />
+                    <Input placeholder="Enter username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="Password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Salary */}
+            <FormField
+              control={form.control}
+              name="Salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter salary amount"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,7 +200,7 @@ export default function EmployeeForm() {
             {/* Name */}
             <FormField
               control={form.control}
-              name="name"
+              name="Name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -193,7 +215,7 @@ export default function EmployeeForm() {
             {/* Role */}
             <FormField
               control={form.control}
-              name="role"
+              name="Role"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
@@ -203,19 +225,13 @@ export default function EmployeeForm() {
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-50">
-                        <SelectItem value="Director">Director</SelectItem>
-                        <SelectItem value="Executive">Executive</SelectItem>
                         <SelectItem value="Manager">Manager</SelectItem>
-                        <SelectItem value="Operation">Operation</SelectItem>
-                        <SelectItem value="Receptionist">
-                          Receptionist
-                        </SelectItem>
-                        <SelectItem value="Sales">Sales</SelectItem>
-                        <SelectItem value="Office Staff">
-                          Office Staff
-                        </SelectItem>
-                        <SelectItem value="Cleaning Staff">
-                          Cleaning Staff
+                        <SelectItem value="Developer">Developer</SelectItem>
+                        <SelectItem value="Designer">Designer</SelectItem>
+                        <SelectItem value="HR">HR</SelectItem>
+                        <SelectItem value="Accountant">Accountant</SelectItem>
+                        <SelectItem value="Sales Executive">
+                          Sales Executive
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -228,22 +244,22 @@ export default function EmployeeForm() {
             {/* Email */}
             <FormField
               control={form.control}
-              name="email"
+              name="Email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter email address" {...field} />
+                    <Input placeholder="Enter email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Phone */}
+            {/* PhoneNo */}
             <FormField
               control={form.control}
-              name="phone"
+              name="PhoneNo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone No.</FormLabel>
@@ -258,7 +274,7 @@ export default function EmployeeForm() {
             {/* Start Date */}
             <FormField
               control={form.control}
-              name="startDate"
+              name="StartDate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Start Date</FormLabel>
@@ -271,15 +287,19 @@ export default function EmployeeForm() {
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value
-                            ? format(field.value, "PPP")
+                            ? format(new Date(field.value), "PPP")
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(date?.toISOString() ?? "")
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -290,13 +310,13 @@ export default function EmployeeForm() {
               )}
             />
 
-            {/* End Date */}
+            {/* Resign Date */}
             <FormField
               control={form.control}
-              name="resingDate"
+              name="ResignDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Resing Date</FormLabel>
+                  <FormLabel>Resign Date</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -306,15 +326,19 @@ export default function EmployeeForm() {
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value
-                            ? format(field.value, "PPP")
+                            ? format(new Date(field.value), "PPP")
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(date?.toISOString() ?? "")
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -328,15 +352,20 @@ export default function EmployeeForm() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
-            <Button type="reset" variant="outline" className="w-full sm:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto text-primary-500"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="outline"
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto bg-primary-500 border-0 text-white"
             >
-              {code ? "Update" : "Create"}
+              {mode === "edit" ? "Update" : "Create"}
             </Button>
           </div>
         </form>
