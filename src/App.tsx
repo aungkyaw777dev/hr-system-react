@@ -1,8 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import BacklogCreate from "./pages/BackLog/Create";
-import BacklogDetail from "./pages/BackLog/Detail";
-import Backlog from "./pages/BackLog/Index";
-import BacklogEdit from "./pages/BackLog/Edit";
+
+import Role from "./pages/Role/Role";
+import CreateRole from "./pages/Role/CreatetRole";
+import UpdateRole from "./pages/Role/UpdateRole";
+import ViewRole from "./pages/Role/ViewRole";
+import { BacklogCreate } from "./pages/Backlog/Create";
+import { BacklogDetail } from "./pages/Backlog/Detail";
+import Backlog from "./pages/Backlog/Index";
+import { BacklogEdit } from "./pages/Backlog/Edit";
 import MainLayout from "./layouts/MainLayout";
 import LocationCreate from "./pages/Attendance/Location/LocationCreate";
 import LocationEdit from "./pages/Attendance/Location/LocationEdit";
@@ -14,15 +19,15 @@ import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
 import PayrollDetail from "./pages/Payroll/PayrollDetail";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard/Index";
 import LoginPage from "./pages/Login";
 import MenuItem from "./pages/Menu/MenuItem";
 import MenuItemCreate from "./pages/Menu/MenuItemCreate";
 import MenuItemEdit from "./pages/Menu/MenuItemEdit";
-import ProjectList from "./pages/BackLog/Project/Index";
-import { ProjectDetails } from "./pages/BackLog/Project/ProjectDetails";
-import { ProjectCreate } from "./pages/BackLog/Project/ProjectCreate";
-import { ProjectEdit } from "./pages/BackLog/Project/ProjectEdit";
+import ProjectList from "./pages/Backlog/Project/Index";
+import { ProjectDetails } from "./pages/Backlog/Project/ProjectDetails";
+import { ProjectCreate } from "./pages/Backlog/Project/ProjectCreate";
+import { ProjectEdit } from "./pages/Backlog/Project/ProjectEdit";
 import Employee from "./pages/Employee/Index";
 import EmployeeView from "./pages/Employee/View";
 import Location from "./pages/Attendance/Location/Index";
@@ -44,6 +49,10 @@ function App() {
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
+            <Route path="/role" element={<Role />}></Route>
+            <Route path="/role/create" element={<CreateRole />}></Route>
+            <Route path="/role/update" element={<UpdateRole />}></Route>
+            <Route path="/role/view" element={<ViewRole />}></Route>
 
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
