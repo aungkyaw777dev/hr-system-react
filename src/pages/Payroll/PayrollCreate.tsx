@@ -17,11 +17,16 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Calendar, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
 export default function PayrollCreate() {
   const navigate = useNavigate();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date(2025, 9, 6, 8, 30));
+  const [isTaxOpen, setIsTaxOpen] = useState(false);
+  const [taxSearch, setTaxSearch] = useState("");
+  const taxOptions = ["10%", "15%", "20%"];
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false); 
   const [formData, setFormData] = useState({
     employeeCode: "EMP00123",
     employeeName: "Alice",
@@ -85,6 +90,16 @@ export default function PayrollCreate() {
     navigate("/payroll");
   };
 
+  const filteredTaxOptions = taxOptions.filter((opt) =>
+    opt.toLowerCase().includes(taxSearch.toLowerCase())
+  );
+
+  const handleSelectTax = (value: string) => {
+    handleInputChange("tax", value);
+    setIsTaxOpen(false);
+    setTaxSearch("");
+  };
+
   const validateForm = () => {
     const requiredFields = ['employeeCode', 'employeeName', 'payrollDate', 'basicSalary'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
@@ -105,20 +120,25 @@ export default function PayrollCreate() {
     // Handle create logic here
     console.log("Creating payroll:", formData);
     // You can add API call here
-    alert("Payroll created successfully!");
+    
+    // Show success dialog instead of alert
+    setShowSuccessDialog(true);
+  };
+
+  const handleSuccessConfirm = () => {
+    setShowSuccessDialog(false);
     navigate("/payroll");
   };
 
   return (
-    <div className="p-6 w-full flex-1">
-      <div className="mb-6">
+    <div className="p-6 md:p-8 w-full flex-1 bg-gray-50">
+      <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Add New Payroll</h1>
       </div>
 
-      <div className="bg-white rounded-lg border p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           {/* Left Column */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Employee Code */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -128,7 +148,8 @@ export default function PayrollCreate() {
                 <Input
                   value={formData.employeeCode}
                   onChange={(e) => handleInputChange("employeeCode", e.target.value)}
-                  className="pr-8"
+                  className="pr-8 bg-gray-100 border-gray-200 h-10"
+                  placeholder="Select code"
                 />
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
@@ -145,7 +166,8 @@ export default function PayrollCreate() {
                     <Input
                       value={formData.payrollDate}
                       onChange={(e) => handleInputChange("payrollDate", e.target.value)}
-                      className="pr-8 cursor-pointer"
+                      className="pr-8 cursor-pointer bg-gray-100 border-gray-200 h-10"
+                      placeholder="Pick a date"
                       readOnly
                     />
                     <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer" />
@@ -171,6 +193,7 @@ export default function PayrollCreate() {
                 value={formData.totalWorkingHour}
                 onChange={(e) => handleInputChange("totalWorkingHour", e.target.value)}
                 placeholder="e.g. 8.0"
+                className="bg-gray-100 border-gray-200 h-10"
               />
             </div>
 
@@ -182,6 +205,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.actualWorkingHour}
                 onChange={(e) => handleInputChange("actualWorkingHour", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -193,7 +218,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.allowance}
                 onChange={(e) => handleInputChange("allowance", e.target.value)}
-                placeholder="e.g. 50,000"
+                placeholder="Enter amount"
+                className="bg-gray-100 border-gray-200 h-10"
               />
             </div>
 
@@ -205,6 +231,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.grossPay}
                 onChange={(e) => handleInputChange("grossPay", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -213,22 +241,48 @@ export default function PayrollCreate() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tax
               </label>
-              <Select value={formData.tax} onValueChange={(value) => handleInputChange("tax", value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="5%">5%</SelectItem>
-                  <SelectItem value="10%">10%</SelectItem>
-                  <SelectItem value="15%">15%</SelectItem>
-                  <SelectItem value="20%">20%</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover open={isTaxOpen} onOpenChange={setIsTaxOpen}>
+                <PopoverTrigger asChild>
+                  <div className="relative">
+                    <Input
+                      value={formData.tax}
+                      readOnly
+                      className="pr-8 cursor-pointer bg-gray-100 border-gray-200 h-10"
+                      placeholder="Enter Tax"
+                    />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2 bg-white" align="start">
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="Search tax"
+                      value={taxSearch}
+                      onChange={(e) => setTaxSearch(e.target.value)}
+                      className="h-8"
+                    />
+                    <div className="max-h-48 overflow-y-auto">
+                      {filteredTaxOptions.map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => handleSelectTax(opt)}
+                          className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 text-sm"
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                      {filteredTaxOptions.length === 0 && (
+                        <div className="px-3 py-2 text-sm text-gray-500">No results</div>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
           {/* Right Column */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Employee Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -237,6 +291,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.employeeName}
                 onChange={(e) => handleInputChange("employeeName", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -246,8 +302,8 @@ export default function PayrollCreate() {
                 Status
               </label>
               <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="bg-gray-100 border-gray-200 h-10">
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   <SelectItem value="Pending">Pending</SelectItem>
@@ -265,6 +321,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.leaveHour}
                 onChange={(e) => handleInputChange("leaveHour", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -276,6 +334,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.basicSalary}
                 onChange={(e) => handleInputChange("basicSalary", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -287,7 +347,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.bonus}
                 onChange={(e) => handleInputChange("bonus", e.target.value)}
-                placeholder="e.g. 50,000"
+                placeholder="Enter amount"
+                className="bg-gray-100 border-gray-200 h-10"
               />
             </div>
 
@@ -299,6 +360,8 @@ export default function PayrollCreate() {
               <Input
                 value={formData.deduction}
                 onChange={(e) => handleInputChange("deduction", e.target.value)}
+                className="bg-gray-100 border-gray-200 h-10"
+                readOnly
               />
             </div>
 
@@ -310,7 +373,7 @@ export default function PayrollCreate() {
               <Input
                 value={formData.netPay}
                 onChange={(e) => handleInputChange("netPay", e.target.value)}
-                className="bg-gray-100"
+                className="bg-gray-100 border-gray-200 h-10"
                 readOnly
               />
             </div>
@@ -318,23 +381,31 @@ export default function PayrollCreate() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-4 mt-8 pt-6 border-t">
+        <div className="flex justify-end gap-4 mt-12">
           <Button
             variant="outline"
             onClick={handleBack}
-            className="px-6 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200"
+            className="px-8 py-2 text-gray-700 bg-white border-gray-300 hover:bg-gray-50 h-10"
           >
-            BACK
+            CANCEL
           </Button>
           <Button
-          variant="outline"
+            variant="default"
             onClick={handleCreate}
-            className="px-6 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200"
+            className="px-8 py-2 bg-emerald-500 hover:bg-emerald-600 text-white h-10"
           >
             CREATE
           </Button>
         </div>
-      </div>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        onConfirm={handleSuccessConfirm}
+        title="Success!"
+        description="New Payroll has been added successfully."
+      />
     </div>
   );
 }

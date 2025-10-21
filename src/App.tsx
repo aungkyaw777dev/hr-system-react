@@ -52,21 +52,13 @@ function App() {
             <Route path="/role/create" element={<CreateRole />}></Route>
             <Route path="/role/update" element={<UpdateRole />}></Route>
             <Route path="/role/view" element={<ViewRole />}></Route>
-
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
             <Route path="/location/edit/:id" element={<LocationEdit />} />
             <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
-            <Route
-              path="/attendance/create"
-              element={<CreateAttendance />}
-            ></Route>
-            <Route
-              path="/attendance/:code/update"
-              element={<UpdateAttendance />}
-            ></Route>
-
+            <Route path="/attendance/create" element={<CreateAttendance />}></Route>
+            <Route path="/attendance/:code/update" element={<UpdateAttendance />}></Route>
             <Route path="/location" element={<Location />}></Route>
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeForm />}></Route>
@@ -75,10 +67,7 @@ function App() {
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>
             <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
-            <Route
-              path="/payroll/:id/detail"
-              element={<PayrollDetail />}
-            ></Route>
+            <Route path="/payroll/:id" element={<PayrollDetail />}></Route>
             <Route path="/menuitem" element={<MenuItem />}></Route>
             <Route path="/menuitem/create" element={<MenuItemCreate />} />
             <Route path="/menuitem/edit" element={<MenuItemEdit />} />
