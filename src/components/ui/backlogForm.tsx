@@ -30,8 +30,8 @@ const formSchema = z.object({
   assignee: z.string().nonempty("Assignee cannot be empty!"),
   projectName: z.string().nonempty("Project Name cannot be empty!"),
   status: z.string().nonempty("Task Status cannot be empty!"),
-  startDate: z.date({ required_error: "Start Date cannot be empty!" }),
-  dueDate: z.date({ required_error: "Due Date cannot be empty!" }),
+  startDate: z.date({ error: "Start Date cannot be empty!" }),
+  dueDate: z.date({ error: "Due Date cannot be empty!" }),
   workingHours: z.string().nonempty("Working Hours cannot be empty!"),
 });
 

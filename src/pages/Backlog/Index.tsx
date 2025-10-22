@@ -2,23 +2,12 @@ import { useState } from "react"
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "../../components/ui/table"
 import { Button } from "../../components/ui/button"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "../../components/ui/alert-dialog"
 import { capitalizeCamelCase } from "../../lib/utils"
 import {
     Edit,
@@ -33,6 +22,7 @@ import {
 } from "lucide-react"
 import { Input } from "../../components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
+import { DeleteDialog } from "@/components/ui/DeleteDialog"
 
 export default function BacklogList() {
     const navigate = useNavigate()
@@ -115,11 +105,6 @@ export default function BacklogList() {
        
     }
 
-    const cancelDelete = () => {
-        setDeleteDialogOpen(false)
-        setTaskToDelete(null)
-    }
-
     return (
         <div className="p-6 w-full flex-1">
             <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
@@ -183,47 +168,47 @@ export default function BacklogList() {
                 </div>
 
                 <div className="flex space-x-1">
-                     <button
-                        onClick={goToFirst}
-                        disabled={currentPage === 1}
-                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-                    >
-                        <ChevronsLeft />
-                    </button>
-                    <button
-                        onClick={goPrev}
-                        disabled={currentPage === 1}
-                        className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-                    >
-                        <ChevronLeft />
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => setCurrentPage(page)}
-                            className={`px-3 py-1 rounded ${page === currentPage
-                                ? "bg-primary-500 text-natural-50"
-                                : "bg-natural-50 text-black hover:bg-gray-200"
-                                }`}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    <button
-                        onClick={goNext}
-                        disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-                    >
-                        <ChevronRight />
-                    </button>
-                    <button
-                        onClick={goToLast}
-                        disabled={currentPage === totalPages}
-                        className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-                    >
-                        <ChevronsRight />
-                    </button>
-                </div>
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronsLeft />
+            </button>
+            <button
+              onClick={goPrev}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronLeft />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${page === currentPage
+                  ? "bg-primary-500 text-natural-50"
+                  : "bg-natural-50 text-black hover:bg-gray-200"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={goNext}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronRight />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronsRight />
+            </button>
+          </div>
 
                 <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">Rows per page:</span>
@@ -245,7 +230,7 @@ export default function BacklogList() {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            {/* <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent  className="bg-secondary-50">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-md">
@@ -265,7 +250,12 @@ export default function BacklogList() {
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog> */}
+            <DeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen} 
+        onConfirm={confirmDelete}
+      />
         </div>
     )
 }
