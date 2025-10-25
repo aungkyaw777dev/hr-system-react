@@ -19,7 +19,7 @@ import Payroll from "./pages/Payroll/Payroll";
 import PayrollCreate from "./pages/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Payroll/PayrollEdit";
 import PayrollDetail from "./pages/Payroll/PayrollDetail";
-import Dashboard from "./pages/Dashboard/Index";
+import AdminDashboard from "./pages/Dashboard/Admin";
 import LoginPage from "./pages/Login";
 import MenuItem from "./pages/Menu/MenuItem";
 import MenuItemCreate from "./pages/Menu/MenuItemCreate";
@@ -39,7 +39,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />}></Route>
           <Route element={<MainLayout />}>
-            <Route path="/dashboard" element={<Dashboard />}></Route>
+            <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>
