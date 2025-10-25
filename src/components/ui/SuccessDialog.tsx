@@ -1,6 +1,9 @@
+import { AlertDialogAction, AlertDialogDescription, AlertDialogTitle } from "@radix-ui/react-alert-dialog";
 import {
   AlertDialog,
   AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
 } from "../../components/ui/alert-dialog";
 import { Check } from "lucide-react";
 
@@ -13,7 +16,7 @@ interface SuccessDialogProps {
 }
 
 export function SuccessDialog({
-  open,
+  open = true,
   onOpenChange,
   onConfirm,
   title = "Success!",
@@ -21,35 +24,30 @@ export function SuccessDialog({
 }: SuccessDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-sm bg-white border-0 shadow-lg">
-        <div className="flex flex-col items-center p-8 space-y-6">
-          {/* Success Icon */}
-          <div className="relative">
-            <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                <Check className="h-8 w-8 text-emerald-500" strokeWidth={3} />
-              </div>
+      <AlertDialogContent className="max-w-md max-h-xs flex flex-col gap-6 border-none bg-primary-50">
+        <div className="relative flex flex-col items-center text-center">
+          <div className="mb-4 absolute -top-20 rounded-full p-5 bg-primary-100">
+            <div className="mx-auto w-18 h-18 bg-primary-500 rounded-full flex items-center justify-center">
+              <Check className="h-10 w-10 text-white" strokeWidth={3} />
             </div>
           </div>
-          
-          {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 text-center">
+        </div>
+        <AlertDialogHeader className="items-center mt-2">
+          <AlertDialogTitle className="text-xl text-center">
             {title}
-          </h2>
-          
-          {/* Description */}
-          <p className="text-base text-gray-700 text-center leading-relaxed">
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-center">
             {description}
-          </p>
-          
-          {/* OK Button */}
-          <button
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="sm:justify-center rouned-md">
+          <AlertDialogAction
             onClick={onConfirm}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="bg-primary-500 hover:bg-emerald-600 text-white px-10 py-1 rounded-md"
           >
             OK
-          </button>
-        </div>
+          </AlertDialogAction>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
