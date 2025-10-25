@@ -130,7 +130,7 @@ export default function AttendanceForm() {
 
   const handleSuccessConfirm = () => {
     setSuccessDialogOpen(false);
-    navigate("/location");
+    navigate("/attendance");
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {

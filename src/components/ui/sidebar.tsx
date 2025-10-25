@@ -24,7 +24,7 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
   const toggleBackLogMenu = () => setIsBackLogMenuOpen(!isBackLogMenuOpen);
   return (
     <div className="flex flex-col items-center gap-2">
-      <Link to="/dashboard" onClick={onClose} className="sidebar-btn">
+      <Link to="/admin-dashboard" onClick={onClose} className="sidebar-btn">
         <LayoutDashboard />
         Dashboard
       </Link>
@@ -41,9 +41,8 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
           Menu
         </span>
         <ChevronUp
-          className={`mt-2 text-sm transition-transform duration-300 ${
-            isSubMenuItemOpen ? "rotate-180" : "rotate-0"
-          }`}
+          className={`mt-2 text-sm transition-transform duration-300 ${isSubMenuItemOpen ? "rotate-180" : "rotate-0"
+            }`}
           size={14}
         />
       </div>
@@ -71,9 +70,8 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
           Backlog Module
         </span>
         <ChevronUp
-          className={`mt-2 text-sm transition-transform duration-300 ${
-            isBackLogMenuOpen ? "rotate-180" : "rotate-0"
-          }`}
+          className={`mt-2 text-sm transition-transform duration-300 ${isBackLogMenuOpen ? "rotate-180" : "rotate-0"
+            }`}
           size={14}
         />
       </div>
@@ -98,9 +96,8 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
           Attendance Module
         </span>
         <ChevronUp
-          className={`mt-2 text-sm transition-transform duration-300 ${
-            isSubMenuOpen ? "rotate-180" : "rotate-0"
-          }`}
+          className={`mt-2 text-sm transition-transform duration-300 ${isSubMenuOpen ? "rotate-180" : "rotate-0"
+            }`}
           size={14}
         />
       </div>
