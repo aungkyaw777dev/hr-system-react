@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BacklogForm from "../../components/ui/backlogForm";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-} from "@/components/ui/alert-dialog";
-import { Check } from "lucide-react";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
 const mockData = [
     {
@@ -376,7 +370,7 @@ const mockData = [
 export function BacklogEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [task, setTask] = useState<any>(null);
+  const [task, setTask] = useState<unknown>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
@@ -386,7 +380,7 @@ export function BacklogEdit() {
     }
   }, [id]);
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: unknown) => {
     console.log("Updating backlog:", values);
     // Add your API call here
     setShowSuccessModal(true);
@@ -409,24 +403,13 @@ export function BacklogEdit() {
         onCancel={() => navigate("/backlog")}
       />
 
-      <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <AlertDialogContent className="max-w-md bg-primary-50">
-          <div className="absolute left-1/2 -translate-x-1/2 top-[-15%] bg-primary-100 rounded-full p-3">
-            <div className="w-15 m-auto bg-primary-400 rounded-full text-center">
-              <Check className="h-15 w-15 text-white m-auto" />
-            </div>
-          </div>
-          <AlertDialogDescription className="text-center text-lg font-semibold mt-10 mb-3">
-            Updated Successful!
-          </AlertDialogDescription>
-          <AlertDialogCancel
-            onClick={() => navigate("/backlog")}
-            className="m-auto w-40 bg-primary-400 text-white hover:bg-primary-500 hover:text-white"
-          >
-            OK
-          </AlertDialogCancel>
-        </AlertDialogContent>
-      </AlertDialog>
+         <SuccessDialog
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        onConfirm={() => navigate("/backlog")}
+        title="Update Successful!"
+        description="Backlog item has been updated successfully."
+      />
     </>
   );
 }

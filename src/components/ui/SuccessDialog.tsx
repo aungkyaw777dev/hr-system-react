@@ -1,11 +1,6 @@
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
 } from "../../components/ui/alert-dialog";
 import { Check } from "lucide-react";
 
@@ -26,30 +21,35 @@ export function SuccessDialog({
 }: SuccessDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md max-h-xs flex flex-col gap-6 border-none">
-        <div className="relative flex flex-col items-center text-center">
-          <div className="mb-4 absolute -top-20 bg-white rounded-full p-4">
-            <div className="mx-auto w-18 h-18 bg-primary-500 rounded-full flex items-center justify-center">
-              <Check className="h-10 w-10 text-white" strokeWidth={3} />
+      <AlertDialogContent className="max-w-sm bg-white border-0 shadow-lg">
+        <div className="flex flex-col items-center p-8 space-y-6">
+          {/* Success Icon */}
+          <div className="relative">
+            <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                <Check className="h-8 w-8 text-emerald-500" strokeWidth={3} />
+              </div>
             </div>
           </div>
-        </div>
-        <AlertDialogHeader className="items-center mt-2">
-          <AlertDialogTitle className="text-xl text-center">
+          
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-gray-900 text-center">
             {title}
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-center">
+          </h2>
+          
+          {/* Description */}
+          <p className="text-base text-gray-700 text-center leading-relaxed">
             {description}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="sm:justify-center">
-          <AlertDialogAction
+          </p>
+          
+          {/* OK Button */}
+          <button
             onClick={onConfirm}
-            className="bg-primary-500 hover:bg-emerald-600 text-white px-10"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             OK
-          </AlertDialogAction>
-        </AlertDialogFooter>
+          </button>
+        </div>
       </AlertDialogContent>
     </AlertDialog>
   );
