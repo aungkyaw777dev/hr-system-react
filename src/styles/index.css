@@ -109,7 +109,7 @@
   --error-400: oklch(0.726 0.202 36.5);
   --black: oklch(0 0 0);
   --white: oklch(1 0 0);
-  --text: oklch(0.012 0.013 262);
+  --text: oklch(0.072 0.010 164.2); /* #020906 */
   --destructive: oklch(0.56 0.26 27.46);
 }
 
@@ -156,6 +156,10 @@
 
   [data-slot="table-container"] {
     @apply rounded-lg shadow-md;
+  }
+
+  .checkin-circle {
+    @apply rounded-full bg-gradient-to-b from-[#55CB9D] via-[#83D9B7] to-[#3B9E77] w-33 h-33
   }
 }
 
