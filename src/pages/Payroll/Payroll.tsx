@@ -116,12 +116,14 @@ export default function PayrollList() {
         setPayrollToDelete(null)
     }
     const handleRowClick = (userId: number) => {
-        navigate(`/payroll/${userId}`)
+        const payroll = data.find(p => p.id === userId)
+        navigate(`/payroll/${userId}`, { state: payroll })
     }
 
     const handleEdit = (e: React.MouseEvent, userId: number) => {
         e.stopPropagation()
-        navigate(`/payroll/${userId}/edit`)
+        const payroll = data.find(p => p.id === userId)
+        navigate(`/payroll/${userId}/edit`, { state: payroll })
     }
 
     return (
