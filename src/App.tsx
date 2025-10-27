@@ -32,12 +32,23 @@ import Employee from "./pages/Employee/Index";
 import EmployeeForm from "./components/employee/EmployeeForm";
 import EmployeeView from "./pages/Employee/View";
 import Location from "./pages/Attendance/Location/Index";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import AuthLayout from "./layouts/AuthLayout";
+import OtpVerification from "./pages/Auth/OtpVerification";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import PasswordChanged from "./pages/Auth/PasswordChanged";
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LoginPage />}></Route>
+          <Route element={<AuthLayout />}>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp" element={<OtpVerification />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/password-changed" element={<PasswordChanged />} />
+          </Route>
           <Route element={<MainLayout />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
@@ -57,8 +68,14 @@ function App() {
             <Route path="/location/edit/:id" element={<LocationEdit />} />
             <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
-            <Route path="/attendance/create" element={<CreateAttendance />}></Route>
-            <Route path="/attendance/:code/update" element={<UpdateAttendance />}></Route>
+            <Route
+              path="/attendance/create"
+              element={<CreateAttendance />}
+            ></Route>
+            <Route
+              path="/attendance/:code/update"
+              element={<UpdateAttendance />}
+            ></Route>
             <Route path="/location" element={<Location />}></Route>
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeForm />}></Route>
