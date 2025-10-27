@@ -24,6 +24,7 @@ import { Input } from "../../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
+import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function BacklogList() {
   const navigate = useNavigate();
