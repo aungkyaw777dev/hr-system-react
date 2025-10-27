@@ -76,16 +76,16 @@
   --font-sans: "Inter", ui-sans-serif, system-ui;
   --radius: 10px;
   --background: oklch(1 0 0);  /*oklch -white */
-  --primary-50:  oklch(0.954 0.035 156.7); /* #E7F8F1 */
-  --primary-100: oklch(0.89 0.083 152.9); /* #C4F2DD */
-  --primary-200: oklch(0.82 0.119 162.4); /*  #9EECC9 */
-  --primary-300: oklch(0.76 0.144 162.8); /* #7EE6B8 */
-  --primary-400: oklch(0.73 0.161 162.8); /* #6DE3AE */
-  --primary-500: oklch(0.69 0.169 162.3);  /* #59DEA2 */
-  --primary-600: oklch(0.64 0.158 162.4);  /* #4EC392 */
-  --primary-700: oklch(0.53 0.137 162.6); /* #3B9B75 */
-  --primary-800: oklch(0.44 0.115 162.5); /* #2E775C;*/
-  --primary-900: oklch(0.36 0.092 162.5); /* #255D49 */
+  --primary-50:  oklch(0.951 0.023 159.3); /* #E6F7F0 */
+  --primary-100: oklch(88.7% 0.066 154.7); /* #B1E7D1 */
+  --primary-200: oklch(0.831 0.091 166.9); /*  #8BDBBB */
+  --primary-300: oklch(0.762 0.127 164.6); /* #55CB9D */
+  --primary-400: oklch(0.724 0.144 161.7); /*#35C189 */
+  --primary-500: oklch(0.669 0.159 157.0);  /* #02B16C */
+  --primary-600: oklch(0.624 0.148 157.1);  /* #02A162 */
+  --primary-700: oklch(0.522 0.122 157.7); /* #017E4D */
+  --primary-800: oklch(0.434 0.101 158.2); /* #01613B*/
+  --primary-900: oklch(0.361 0.082 159.0); /* #014A2D */
   --secondary-50:  oklch(0.951 0.024 92.3);   /* #F7F2E6 */
   --secondary-100: oklch(0.926 0.049 93.0);   /* #E7D6B1 */
   --secondary-200: oklch(0.896 0.081 92.7);   /* #DBC28B */
@@ -109,7 +109,7 @@
   --error-400: oklch(0.726 0.202 36.5);
   --black: oklch(0 0 0);
   --white: oklch(1 0 0);
-  --text: oklch(0.012 0.013 262);
+  --text: oklch(0.072 0.010 164.2); /* #020906 */
   --destructive: oklch(0.56 0.26 27.46);
 }
 
@@ -156,6 +156,10 @@
 
   [data-slot="table-container"] {
     @apply rounded-lg shadow-md;
+  }
+
+  .checkin-circle {
+    @apply rounded-full bg-gradient-to-b from-[#55CB9D] via-[#83D9B7] to-[#3B9E77] w-33 h-33
   }
 }
 

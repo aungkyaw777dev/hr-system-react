@@ -20,7 +20,6 @@ import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
-  FolderUp,
   Plus,
   ChevronRight,
   ChevronsRight,
@@ -28,13 +27,12 @@ import {
   ChevronsLeft,
   Search,
   Calendar1Icon,
-  Download,
   FileUp,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 export function AttendanceList() {
   const navigate = useNavigate();
   const data = [
@@ -342,6 +340,7 @@ export function AttendanceList() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [date, setDate] = useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -366,6 +365,10 @@ export function AttendanceList() {
   };
 
   const deleteAttendance = (code: string) => { };
+  const handleSuccessConfirm = () => {
+    setSuccessDialogOpen(false);
+    navigate("/attendance");
+  };
   return (
     <div className="p-6 w-full flex-1">
       <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
@@ -548,7 +551,9 @@ export function AttendanceList() {
         </div>
       </div>
 
-      <AlertDialog />
+      <SuccessDialog open={successDialogOpen}
+        onOpenChange={setSuccessDialogOpen}
+        onConfirm={handleSuccessConfirm} />
     </div>
   );
 }
