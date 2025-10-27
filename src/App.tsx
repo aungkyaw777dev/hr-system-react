@@ -33,6 +33,7 @@ import Location from "./pages/Attendance/Location/Index";
 import EmployeeCreate from "./pages/Employee/EmployeeCreate";
 import EmployeeEdit from "./pages/Employee/EmployeeEdit";
 import EmployeeDetail from "./pages/Employee/EmployeeDetail";
+import Profile from "./pages/Profile/Profile";
 function App() {
   return (
     <>
@@ -75,6 +76,7 @@ function App() {
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>
