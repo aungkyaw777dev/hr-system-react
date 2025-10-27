@@ -28,65 +28,73 @@ import {
 } from "../../components/ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useParams, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import { useEffect } from "react";
 
-export const employeeSchema = z.object({
-  EmployeeCode: z
-    .string()
-    .min(1, "EmployeeCode is required")
-    .regex(/^\d+$/, "EmployeeCode must be numeric"),
-  Username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be at most 30 characters"),
-  Password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .max(15, "Password must be at most 15 characters"),
-  Salary: z
-    .number()
-    .positive("Salary must be a positive number")
-    .max(10000000, "Salary too high"),
-  Name: z.string().min(2, "Name is required").max(60, "Name too long"),
-  Role: z.enum([
-    "Manager",
-    "Developer",
-    "Designer",
-    "HR",
-    "Accountant",
-    "Sales Executive",
-  ]),
-  Email: z.string().email("Invalid email address"),
-  PhoneNo: z
-    .string()
-    .regex(/^09\d{9}$/, "Phone number must start with 09 and have 11 digits"),
-  StartDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "StartDate must be a valid date"),
-  ResignDate: z
-    .string()
-    .refine(
-      (val) => !isNaN(Date.parse(val)),
-      "ResignDate must be a valid date"
-    ),
-});
-
-type EmployeeFormValues = z.infer<typeof employeeSchema>;
-
-interface EmployeeFormProps {
-  mode: "create" | "edit";
-  defaultValues?: Partial<EmployeeFormValues>;
-  onSubmit: (values: EmployeeFormValues) => void;
-  onCancel: () => void;
-}
-
 export default function EmployeeForm({
-  mode,
-  defaultValues,
-  onSubmit,
-  onCancel,
-}: EmployeeFormProps) {
-  const form = useForm<EmployeeFormValues>({
+  onSubmit: propsOnSubmit,
+  onCancel: propsOnCancel,
+}: {
+  onSubmit?: (values: unknown) => void;
+  onCancel?: () => void;
+}) {
+  const { code } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
+    if (propsOnCancel) return propsOnCancel();
+    navigate("/employee");
+  };
+
+  const employeeSchema = z.object({
+    EmployeeCode: z
+      .string()
+      .min(1, "EmployeeCode is required")
+      .regex(/^\d+$/, "EmployeeCode must be numeric"),
+
+    Username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username must be at most 30 characters"),
+
+    Password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .max(15, "Password must be at most 15 characters"),
+
+    Salary: z
+      .number()
+      .positive("Salary must be a positive number")
+      .max(10000000, "Salary too high"),
+
+    Name: z.string().min(2, "Name is required").max(60, "Name too long"),
+
+    Role: z.string(),
+    Email: z.string().email("Invalid email address"),
+
+    PhoneNo: z
+      .string()
+      .regex(/^09\d{9}$/, "Phone number must start with 09 and have 11 digits"),
+
+    StartDate: z
+      .string()
+      .refine(
+        (val) => !isNaN(Date.parse(val)),
+        "StartDate must be a valid date"
+      ),
+
+    ResignDate: z
+      .string()
+      .refine(
+        (val) => !isNaN(Date.parse(val)),
+        "ResignDate must be a valid date"
+      ),
+  });
+
+  const form = useForm<z.infer<typeof employeeSchema>>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
       EmployeeCode: "",
@@ -94,36 +102,63 @@ export default function EmployeeForm({
       Password: "",
       Salary: 0,
       Name: "",
-      Role: "Developer",
+      Role: "",
       Email: "",
       PhoneNo: "",
       StartDate: "",
       ResignDate: "",
-      ...defaultValues,
     },
   });
 
-  useEffect(() => {
-    if (defaultValues) {
-      form.reset(defaultValues);
-    }
-  }, [defaultValues, form]);
+  const employeeFromState = location.state?.employee;
 
-  function handleReset() {
+  useEffect(() => {
+    if (employeeFromState) {
+      form.reset({
+        EmployeeCode: employeeFromState.EmployeeCode ?? "",
+        Username: employeeFromState.Username ?? "",
+        Password: "",
+        Name: employeeFromState.Name ?? "",
+        Salary: employeeFromState.Salary ?? 0,
+        Role: employeeFromState.Role ?? "Developer",
+        Email: employeeFromState.Email ?? "",
+        PhoneNo: employeeFromState.PhoneNo ?? "",
+        StartDate: employeeFromState.StartDate ?? "",
+        ResignDate: employeeFromState.ResignDate ?? "",
+      });
+    }
+  }, [employeeFromState, form]);
+
+  function handleFormSubmit(values: z.infer<typeof employeeSchema>) {
+    if (code) {
+      console.log("Updating employee:", code, values);
+      // prefer caller-provided submit handler
+      if (propsOnSubmit) return propsOnSubmit(values);
+      // API call to update employee by code
+      navigate("/employee");
+    } else {
+      console.log("Creating new employee:", values);
+      if (propsOnSubmit) return propsOnSubmit(values);
+      // API call to create a new employee
+      navigate("/employee");
+    }
+  }
+
+  function onReset() {
     form.reset();
     form.clearErrors();
   }
 
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-6 bg-natural-100">
       <h2 className="text-2xl font-bold mb-6 text-center sm:text-left text-primary-500">
-        {mode === "edit" ? "Edit Employee" : "Create Employee"}
+        {code ? "Employee Edit" : "Employee Create"}
       </h2>
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          onReset={handleReset}
+          onSubmit={form.handleSubmit(handleFormSubmit)}
+          onReset={onReset}
           className="space-y-6"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
@@ -135,7 +170,7 @@ export default function EmployeeForm({
                 <FormItem>
                   <FormLabel>Employee Code</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={mode === "edit"} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -196,7 +231,6 @@ export default function EmployeeForm({
                 </FormItem>
               )}
             />
-
             {/* Name */}
             <FormField
               control={form.control}
@@ -205,7 +239,7 @@ export default function EmployeeForm({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter name" {...field} />
+                    <Input placeholder="Enter Name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -249,14 +283,14 @@ export default function EmployeeForm({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter email" {...field} />
+                    <Input placeholder="Enter email address" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* PhoneNo */}
+            {/* Phone Number */}
             <FormField
               control={form.control}
               name="PhoneNo"
@@ -291,7 +325,7 @@ export default function EmployeeForm({
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 bg-natural-50">
                         <Calendar
                           mode="single"
                           selected={
@@ -330,7 +364,7 @@ export default function EmployeeForm({
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 bg-natural-50">
                         <Calendar
                           mode="single"
                           selected={
@@ -353,10 +387,10 @@ export default function EmployeeForm({
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
             <Button
-              type="button"
+              type="reset"
               variant="outline"
               className="w-full sm:w-auto text-primary-500"
-              onClick={onCancel}
+              onClick={handleCancel}
             >
               Cancel
             </Button>
@@ -365,7 +399,7 @@ export default function EmployeeForm({
               variant="outline"
               className="w-full sm:w-auto bg-primary-500 border-0 text-white"
             >
-              {mode === "edit" ? "Update" : "Create"}
+              {code ? "Update" : "Create"}
             </Button>
           </div>
         </form>

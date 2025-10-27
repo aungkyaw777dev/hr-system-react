@@ -29,10 +29,10 @@ import { ProjectDetails } from "./pages/Backlog/Project/ProjectDetails";
 import { ProjectCreate } from "./pages/Backlog/Project/ProjectCreate";
 import { ProjectEdit } from "./pages/Backlog/Project/ProjectEdit";
 import Employee from "./pages/Employee/Index";
-import EmployeeView from "./pages/Employee/View";
 import Location from "./pages/Attendance/Location/Index";
 import EmployeeCreate from "./pages/Employee/EmployeeCreate";
 import EmployeeEdit from "./pages/Employee/EmployeeEdit";
+import EmployeeDetail from "./pages/Employee/EmployeeDetail";
 function App() {
   return (
     <>
@@ -72,7 +72,7 @@ function App() {
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
-            <Route path="/employee/view/:code" element={<EmployeeView />} />
+            <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>
             <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
@@ -86,7 +86,6 @@ function App() {
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
-            <Route path="/employee/view/:code" element={<EmployeeView />} />
           </Route>
         </Routes>
       </BrowserRouter>

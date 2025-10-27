@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,11 +13,41 @@ import { format } from "date-fns";
 
 import { Button } from "../../components/ui/button";
 import { capitalizeCamelCase } from "../../lib/utils";
-import { Edit, Trash2, Plus, ChevronsRight, ChevronsLeft } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../components/ui/alert-dialog";
+import {
+  Edit,
+  Trash2,
+  Plus,
+  ChevronsRight,
+  ChevronsLeft,
+  Search,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export default function EmployeeList() {
-  const data = [
+export default function EmployeeList({ onSort, sortConfig }) {
+  const EmployeeData = [
     {
       Id: 1,
       EmployeeCode: "1111",
@@ -30,7 +59,7 @@ export default function EmployeeList() {
       Email: "ajohnson@example.com",
       PhoneNo: "09270569999",
       StartDate: "2024-10-30",
-      ResignDate: "2025-08-09",
+      ResignDate: "",
     },
     {
       Id: 2,
@@ -573,35 +602,110 @@ export default function EmployeeList() {
     },
   ];
   const navigate = useNavigate();
+  const [data, setData] = useState(EmployeeData);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(EmployeeData.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = data.slice(startIndex, startIndex + rowsPerPage);
-  const totalRows = data.length;
+  const currentData = EmployeeData.slice(startIndex, startIndex + rowsPerPage);
+  const totalRows = EmployeeData.length;
   const startRow = (currentPage - 1) * rowsPerPage + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToFirst = () => setCurrentPage(1);
+  // const handleRowClick = (EmployeeCode: string) => {
+  //   navigate(`/employee/detail/${EmployeeCode}`);
+  // };
+
+  const handleSort = (column) => {
+    let direction = "asc";
+    if (sortConfig?.key === column && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    onSort({ key: column, direction });
+  };
+  const handleEdit = (e: React.MouseEvent, EmployeeId: number) => {
+    e.stopPropagation();
+    const employee = data.find((emp) => emp.Id === EmployeeId);
+    if (employee) {
+      navigate(`/employee/edit/${employee.Id}`, { state: { employee } });
+    }
+  };
+  const handleDelete = (e: React.MouseEvent, EmployeeId: number) => {
+    e.stopPropagation();
+    setTaskToDelete(EmployeeId);
+    setDeleteDialogOpen(true);
+  };
+  const confirmDelete = () => {
+    // Remove the item from the array
+    setData((prevData) => prevData.filter((item) => item.Id !== taskToDelete));
+
+    const newTotalPages = Math.ceil((data.length - 1) / rowsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
+
+    setDeleteDialogOpen(false);
+    setTaskToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setTaskToDelete(null);
+  };
+
   return (
     <div className="p-6 w-full flex-1">
-      <div className="flex justify-between flex-col md:flex-row gap-2 mb-5">
-        <p className="font-bold">Employee</p>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-5">
+        {/* Left side */}
+        <p className="font-bold text-primary-400">Employee</p>
 
-        <Link to="/employee/new">
-          <Button
-            variant="outline"
-            className="bg-primary-400 border-none text-white "
-          >
-            <Plus className="h-4 w-4 text-white" />
-            Create
-          </Button>
-        </Link>
+        {/* Right side (search, select, button) */}
+        <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+          <div className="relative w-full md:w-[200px] text-primary-800">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search..."
+              className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
+            />
+          </div>
+
+          <Select>
+            <SelectTrigger className="text-primary-400 ">
+              <SelectValue placeholder="Role" className="font-semibold" />
+            </SelectTrigger>
+            <SelectContent className="bg-natural-100">
+              <SelectGroup>
+                <SelectItem value="Manager">Manager</SelectItem>
+                <SelectItem value="Developer">Developer</SelectItem>
+                <SelectItem value="Designer">Designer</SelectItem>
+                <SelectItem value="HR">HR</SelectItem>
+                <SelectItem value="Accountant">Accountant</SelectItem>
+                <SelectItem value="Sales Executive">Sales Executive</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <Link to="/employee/new">
+            <Button
+              variant="outline"
+              className="bg-primary-400 border-none text-white flex items-center gap-1"
+            >
+              <Plus className="h-4 w-4 text-white" />
+              Create
+            </Button>
+          </Link>
+        </div>
       </div>
       <Table className="w-full overflow-auto shadow-sm rounded-md">
         {/* <TableCaption>Employee List.</TableCaption> */}
-        <TableHeader className="bg-primary-300">
+        {/* <TableHeader className="bg-primary-400">
           <TableRow>
             {Object.keys(data[0]).map((columnName) => (
               <TableHead key={columnName}>
@@ -610,44 +714,102 @@ export default function EmployeeList() {
             ))}
             <TableHead>Action</TableHead>
           </TableRow>
+        </TableHeader> */}
+        <TableHeader className="bg-primary-400 text-center">
+          <TableHead className="px-4 py-2 font-semibold">No</TableHead>
+          <TableHead className="px-4 py-2 font-semibold">
+            Employee Code
+          </TableHead>
+          <TableHead className="px-4 py-2 font-semibold">Username</TableHead>
+
+          {/* Sortable Name column */}
+          <TableHead className="px-4 py-2 font-semibold">
+            <Button
+              variant="ghost"
+              className=" hover:text-white hover:bg-primary-500 p-0 flex items-center gap-1"
+              onClick={() => handleSort("name")}
+            >
+              Name
+              <ArrowUpDown
+                className={`h-4 w-4 transition-transform ${
+                  sortConfig?.key === "name"
+                    ? sortConfig.direction === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-50"
+                }`}
+              />
+            </Button>
+          </TableHead>
+
+          {/* Sortable Role column */}
+          <TableHead className="px-4 py-2 font-semibold">
+            <Button
+              variant="ghost"
+              className=" hover:text-white hover:bg-primary-500 p-0 flex items-center gap-1"
+              onClick={() => handleSort("role")}
+            >
+              Role
+              <ArrowUpDown
+                className={`h-4 w-4 transition-transform ${
+                  sortConfig?.key === "role"
+                    ? sortConfig.direction === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-50"
+                }`}
+              />
+            </Button>
+          </TableHead>
+
+          <TableHead className="px-4 py-2 font-semibold">Email</TableHead>
+          <TableHead className="px-4 py-2 font-semibold">Phone No.</TableHead>
+          <TableHead className="px-4 py-2 font-semibold">Action</TableHead>
         </TableHeader>
+
         <TableBody>
-          {currentData.map((user, index) => (
+          {currentData.map((user) => (
             <TableRow
-              key={index}
+              key={user.Id}
               className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-              // // onClick={() =>
-              // //   navigate(`/employee/view/${user.code}`, {
-              // //     state: { employee: user },
-              // //   })
-              // }
+              onClick={() =>
+                navigate(`/employee/detail/${user.Id}`, {
+                  state: { employee: user },
+                })
+              }
             >
               {/* <TableCell>{index + 1}</TableCell> */}
+              {/* <TableCell>{startIndex + index + 1}</TableCell> */}
               <TableCell>{user.Id}</TableCell>
               <TableCell>{user.EmployeeCode}</TableCell>
               <TableCell>{user.Username}</TableCell>
-              <TableCell>{user.Password}</TableCell>
-              <TableCell>{user.Salary}</TableCell>
+              {/* <TableCell>{user.Password}</TableCell>
+              <TableCell>{user.Salary}</TableCell> */}
               <TableCell>{user.Name}</TableCell>
               <TableCell>{user.Role}</TableCell>
               <TableCell>{user.Email}</TableCell>
               <TableCell>{user.PhoneNo}</TableCell>
-              <TableCell>{format(user.StartDate, "yyyy-MM-dd")}</TableCell>
-              <TableCell>{format(user.ResignDate, "yyyy-MM-dd")}</TableCell>
+              {/* <TableCell>
+                {user.StartDate
+                  ? format(new Date(user.StartDate), "yyyy-MM-dd")
+                  : "-"}
+              </TableCell> */}
+              {/* <TableCell>
+                {user.ResignDate
+                  ? format(new Date(user.ResignDate), "yyyy-MM-dd")
+                  : "Still employed"}
+              </TableCell> */}
 
-              <TableCell className="flex">
-                <Link
-                  to={`/employee/edit/${user.Id}`}
-                  state={{ employee: user }}
-                >
-                  <Button variant="ghost" size="icon">
-                    <Edit className="text-primary-500 cursor-pointer" />
-                  </Button>
-                </Link>
+              <TableCell className="flex gap-4 justify-center">
+                <Edit
+                  className="h-4 w-4 text-black cursor-pointer hover:text-primary-500 my-auto"
+                  onClick={(e) => handleEdit(e, user.Id)}
+                />
 
-                <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+                <Trash2
+                  className="h-4 w-4 text-black cursor-pointer hover:text-red-500 my-auto"
+                  onClick={(e) => handleDelete(e, user.Id)}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -656,20 +818,24 @@ export default function EmployeeList() {
 
       {/* Paginations */}
       <div className="flex items-center justify-between p-4 border-t">
-        {/* Left: Showing rows */}
         <div className="text-sm text-muted-foreground">
           {startRow}–{endRow} of {totalRows}
         </div>
 
-        {/* Middle: Page buttons */}
-
         <div className="flex space-x-1">
+          <button
+            onClick={goToFirst}
+            disabled={currentPage === 1}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
+            <ChevronsLeft />
+          </button>
           <button
             onClick={goPrev}
             disabled={currentPage === 1}
             className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
           >
-            <ChevronsLeft />
+            <ChevronLeft />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
@@ -687,22 +853,28 @@ export default function EmployeeList() {
           <button
             onClick={goNext}
             disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
+            <ChevronRight />
+          </button>
+          <button
+            onClick={goToLast}
+            disabled={currentPage === totalPages}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
           >
             <ChevronsRight />
           </button>
         </div>
 
-        {/* Right: Rows per page */}
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">Rows per page:</span>
           <select
             value={rowsPerPage}
             onChange={(e) => {
               setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1); // reset page
+              setCurrentPage(1);
             }}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm p-3"
           >
             {[10, 20, 30, 50].map((n) => (
               <option key={n} value={n}>
@@ -712,6 +884,31 @@ export default function EmployeeList() {
           </select>
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-secondary-50">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-md">
+              <div className="flex gap-3">
+                <Trash2 className="h-6 w-6 text-gray-600" /> Are you sure you
+                want to delete this record?
+              </div>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
