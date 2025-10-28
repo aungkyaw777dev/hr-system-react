@@ -31,7 +31,13 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
 export function AttendanceList() {
   const navigate = useNavigate();
@@ -336,6 +342,16 @@ export function AttendanceList() {
       workingHours: "7h 50m",
       status: "Present",
     },
+    {
+      id: 31,
+      code: "030",
+      name: "Daisy Ridley",
+      checkinTime: "09:05 AM",
+      checkoutTime: "04:55 PM",
+      date: "2025-10-01",
+      workingHours: "7h 50m",
+      status: "Present",
+    },
   ];
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -364,7 +380,7 @@ export function AttendanceList() {
     navigate(`/attendance/${code}/update`);
   };
 
-  const deleteAttendance = (code: string) => { };
+  const deleteAttendance = (code: string) => {};
   const handleSuccessConfirm = () => {
     setSuccessDialogOpen(false);
     navigate("/attendance");
@@ -398,10 +414,7 @@ export function AttendanceList() {
                 <Calendar1Icon className="mr-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 bg-natural-50"
-              align="start"
-            >
+            <PopoverContent className="w-auto p-0 bg-natural-50" align="start">
               <Calendar
                 mode="range"
                 selected={date}
@@ -507,10 +520,11 @@ export function AttendanceList() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${page === currentPage
-                  ? "bg-primary-500 text-natural-50"
-                  : "bg-natural-50 text-black hover:bg-gray-200"
-                  }`}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-primary-500 text-natural-50"
+                    : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
               >
                 {page}
               </button>
@@ -551,9 +565,11 @@ export function AttendanceList() {
         </div>
       </div>
 
-      <SuccessDialog open={successDialogOpen}
+      <SuccessDialog
+        open={successDialogOpen}
         onOpenChange={setSuccessDialogOpen}
-        onConfirm={handleSuccessConfirm} />
+        onConfirm={handleSuccessConfirm}
+      />
     </div>
   );
 }
