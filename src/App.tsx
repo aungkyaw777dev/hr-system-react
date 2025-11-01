@@ -60,6 +60,7 @@ import PasswordChanged from "./pages/Auth/PasswordChanged";
 import LoginPage from "./pages/Login";
 
 import Profile from "./pages/Profile/Profile";
+import { RoleGuard } from "./components/RoleGuard";
 
 
 function App() {
@@ -74,8 +75,16 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/password-changed" element={<PasswordChanged />} />
           </Route>
+
+          {/* admin */}
           <Route element={<MainLayout />}>
-            <Route path="/management/dashboard" element={<ManagementDashboard />}></Route>
+            <Route path="/management/dashboard"
+              element={
+                <RoleGuard allowedRoles={["admin", "hr"]}>
+                  <ManagementDashboard />
+                </RoleGuard>
+              }>
+            </Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>

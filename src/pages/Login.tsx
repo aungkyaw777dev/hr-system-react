@@ -13,6 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -20,6 +22,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -27,9 +30,16 @@ export default function LoginForm() {
       password: "",
     },
   });
+  const authStore = useAuthStore();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const authorized = await authStore.login(values.email, values.password);
+    if (authorized) {
+      console.log(authStore.user?.role)
+      navigate("")
+    }
+    else
+      navigate("/")
   };
 
   return (
