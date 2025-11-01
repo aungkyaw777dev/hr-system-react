@@ -1,9 +1,17 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { Edit, Search, Trash2, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Edit, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import {
   Table,
@@ -279,17 +287,31 @@ export default function MenuItemList() {
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
-  const [ShowDeleteModal, setShowDeleteModal] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
-  const handleDelete = () => {
-    if (itemToDelete) {
-      setData((prev) => prev.filter((d) => d.id !== itemToDelete.id));
-      setItemToDelete(null);
-      setShowDeleteModal(false);
+  const handleDelete = (e: React.MouseEvent, taskId: number) => {
+    e.stopPropagation();
+    setTaskToDelete(taskId);
+    setDeleteDialogOpen(true);
+  };
+  const confirmDelete = () => {
+    // Remove the item from the array
+    setData((prevData) => prevData.filter((item) => item.id !== taskToDelete));
+
+    const newTotalPages = Math.ceil((data.length - 1) / rowsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
     }
+
+    setDeleteDialogOpen(false);
+    setTaskToDelete(null);
   };
 
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setTaskToDelete(null);
+  };
   return (
     <>
       <div className="p-6 w-full flex flex-col">
@@ -309,82 +331,57 @@ export default function MenuItemList() {
               />
             </div>
 
-            <Button
-              asChild
-              className="bg-[#bbcdbf] text-sm text-gray-800 hover:bg-gray-200 py-5 px-5 lg:px-8"
-            >
+            <Button asChild className="outline-btn">
               <Link to="/menuitem/create">+ Create</Link>
             </Button>
           </div>
         </div>
 
         <div>
-          <Card className="shadow-sm  mb-4 border-0 bg-[#d2ded5]">
-            <CardContent className="p-0">
-              <Table className="w-full border-collapse ">
-                <TableHeader>
-                  <TableRow className="  bg-[#d2ded5] py-18 border-0">
-                    <TableHead className="w-[100px] text-center py-4">
-                      No
-                    </TableHead>
-                    <TableHead className="text-center py-4">
-                      Menu Group Name
-                    </TableHead>
-                    <TableHead className="text-center py-4">
-                      Menu Name
-                    </TableHead>
-                    <TableHead className="text-center py-4">Url</TableHead>
-                    <TableHead className="text-center py-4">Icon</TableHead>
-                    <TableHead className="text-center py-4">
-                      Sort Order
-                    </TableHead>
+          <Table className="w-full border-collapse ">
+            <TableHeader>
+              <TableRow className="  bg-primary-300 py-18 border-0">
+                <TableHead className="w-[100px] text-center py-4">No</TableHead>
+                <TableHead className="text-center py-4">
+                  Menu Group Name
+                </TableHead>
+                <TableHead className="text-center py-4">Menu Name</TableHead>
+                <TableHead className="text-center py-4">Url</TableHead>
+                <TableHead className="text-center py-4">Icon</TableHead>
+                <TableHead className="text-center py-4">Sort Order</TableHead>
 
-                    <TableHead className="text-center py-4">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedData.map((item, data) => (
-                    <TableRow
-                      key={item.id}
-                      className={`py-6 ${
-                        data % 2 === 0 ? "bg-[#d2ded5]" : "bg-[#e5ece7] "
-                      } hover:bg-white transition-all border-0`}
+                <TableHead className="text-center py-4">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedData.map((item, items) => (
+                <TableRow
+                  key={items}
+                  className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
+                >
+                  <TableCell className="text-center">{item.id}</TableCell>
+                  <TableCell className="text-center">{item.group}</TableCell>
+                  <TableCell className="text-center">{item.name}</TableCell>
+                  <TableCell className="text-center">{item.url}</TableCell>
+                  <TableCell className="text-center">{item.icon}</TableCell>
+                  <TableCell className="text-center">{item.order}</TableCell>
+                  <TableCell className="flex justify-center gap-2">
+                    <Button asChild className="text-primary-500 cursor-pointer">
+                      <Link to={`/menuitem/edit`} state={{ item }}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      className="text-error-400 cursor-pointer"
+                      onClick={(e) => handleDelete(e, item.id)}
                     >
-                      <TableCell className="text-center">{item.id}</TableCell>
-                      <TableCell className="text-center">
-                        {item.group}
-                      </TableCell>
-                      <TableCell className="text-center">{item.name}</TableCell>
-                      <TableCell className="text-center">{item.url}</TableCell>
-                      <TableCell className="text-center">{item.icon}</TableCell>
-                      <TableCell className="text-center">
-                        {item.order}
-                      </TableCell>
-                      <TableCell className="flex justify-center gap-2">
-                        <Button
-                          asChild
-                          className=" p-1 rounded bg-transparent hover:bg-gray-200 text-gray-700"
-                        >
-                          <Link to={`/menuitem/edit`} state={{ item }}>
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button
-                          className="p-1 rounded bg-transparent hover:bg-gray-200 text-gray-700"
-                          onClick={() => {
-                            setItemToDelete(item);
-                            setShowDeleteModal(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4"></Trash2>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination */}
@@ -396,21 +393,21 @@ export default function MenuItemList() {
             <button
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               «
             </button>
             <button
               onClick={goPrev}
               disabled={currentPage === 1}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               ‹
             </button>
             <Button
               onClick={goPrev}
               disabled={currentPage === 1}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             ></Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
@@ -418,8 +415,8 @@ export default function MenuItemList() {
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-1 rounded ${
                   page === currentPage
-                    ? "bg-[#bbcdbf] text-gray-800 font-semibold"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-primary-500 text-natural-50"
+                    : "bg-natural-50 text-black hover:bg-gray-200"
                 }`}
               >
                 {page}
@@ -428,20 +425,20 @@ export default function MenuItemList() {
             <button
               onClick={goNext}
               disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             ></button>
 
             <button
               onClick={goNext}
               disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               ›
             </button>
             <button
               onClick={() => setCurrentPage(totalPages)}
               disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               »
             </button>
@@ -466,37 +463,30 @@ export default function MenuItemList() {
           </div>
         </div>
       </div>
-
-      <Dialog.Root open={ShowDeleteModal} onOpenChange={setShowDeleteModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 w-[380px] h-[280px] -translate-x-1/2 -translate-y-1/2 bg-[#f3f6f4] rounded-xl shadow-md p-10 flex flex-col items-center justify-center space-y-6">
-            <button
-              onClick={() => setShowDeleteModal(false)}
-              className="absolute right-4 top-4 opacity-70 hover:opacity-100"
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-secondary-50">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-md">
+              <div className="flex gap-3">
+                <Trash2 className="h-6 w-6 text-gray-600" /> Are you sure you
+                want to delete this record?
+              </div>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
-              <X className="h-4 w-4 text-gray-600" />
-            </button>
-            <Trash2 className="h-24 w-24 text-gray-400" />
-
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteModal(false)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDelete}
-                className="bg-[#bbcdbf] text-black"
-              >
-                Delete
-              </Button>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

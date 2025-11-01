@@ -112,16 +112,12 @@ function MenuItemCreate() {
         </div>
 
         <div className="flex justify-end gap-4 pt-6 ">
-          <Button
-            asChild
-            type="button"
-            className="bg-gray-300 text-gray-700 hover:bg-gray-400 rounded-md px-6 py-2"
-          >
+          <Button asChild type="button" className="outline-btn">
             <Link to={"/menuitem"}>Cancel</Link>
           </Button>
           <Button
             type="submit"
-            className="bg-[#bbcdbf] text-gray-800 hover:bg-[#a6bfb1] rounded-md px-6 py-2"
+            className="outline-btn"
             onClick={() => {
               setMenuGroup("");
               setMenuName("");
