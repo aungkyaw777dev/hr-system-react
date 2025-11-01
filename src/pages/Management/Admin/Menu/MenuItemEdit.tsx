@@ -2,8 +2,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { RefreshCw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 function MenuItemEdit() {
   const location = useLocation();

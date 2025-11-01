@@ -6,9 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import { Button } from "../../components/ui/button";
-import { capitalizeCamelCase } from "../../lib/utils";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
@@ -20,7 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Input } from "../../components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
@@ -382,11 +382,10 @@ export default function BacklogList() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 rounded ${
-                      page === currentPage
+                    className={`px-3 py-1 rounded ${page === currentPage
                         ? "bg-primary-500 text-natural-50"
                         : "bg-natural-50 text-black hover:bg-gray-200"
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>
@@ -532,11 +531,10 @@ export default function BacklogList() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
+              className={`px-3 py-1 rounded ${page === currentPage
                   ? "bg-primary-500 text-natural-50"
                   : "bg-natural-50 text-black hover:bg-gray-200"
-              }`}
+                }`}
             >
               {page}
             </button>

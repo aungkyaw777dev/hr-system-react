@@ -8,13 +8,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../components/ui/form";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   name: z.string().nonempty("Name cannot be empty!"),
- latitude: z.coerce
+  latitude: z.coerce
     .number({ message: "Latitude must be a number" })
     .min(-90, "Latitude must be between -90 and 90")
     .max(90, "Latitude must be between -90 and 90"),
@@ -70,8 +70,8 @@ export function LocationForm({
     mode === "add"
       ? "Add New Location"
       : mode === "edit"
-      ? "Edit Location"
-      : "Location Detail";
+        ? "Edit Location"
+        : "Location Detail";
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6">

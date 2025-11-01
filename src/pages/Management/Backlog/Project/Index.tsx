@@ -7,17 +7,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../components/ui/table";
-import { Calendar } from "../../../components/ui/calendar";
+} from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../components/ui/popover";
+} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "../../../lib/utils";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Calendar1Icon,
   Search,
@@ -38,7 +38,7 @@ export type DemoProject = {
   name: string;
   status: "ASDF" | "OPEN" | "DONE";
   startDate: string;
-  endDate: string; 
+  endDate: string;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -148,9 +148,9 @@ export default function ProjectListing() {
           />
         </div>
 
-        
+
         <Button className="outline-btn">
-        
+
           Export
         </Button>
         <Link to="/projects/new">
@@ -161,7 +161,7 @@ export default function ProjectListing() {
         </Link>
       </div>
 
-      
+
       <Table className="w-full overflow-auto shadow-sm rounded-md">
         <TableHeader className="bg-primary-300">
           <TableRow className="border-none">
@@ -264,11 +264,10 @@ export default function ProjectListing() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
+              className={`px-3 py-1 rounded ${page === currentPage
                   ? "bg-primary-500 text-natural-50"
                   : "bg-natural-50 text-black hover:bg-gray-200"
-              }`}
+                }`}
             >
               {page}
             </button>

@@ -21,14 +21,14 @@ const rolesData: RoleType[] = [
   { no: 6, name: 'Software Engineer' },
   { no: 7, name: 'Sales Person' },
   { no: 8, name: 'Receptionist' },
-  
+
 ];
 
 // Define the component using React.FC (Functional Component)
 const Role: React.FC = () => {
 
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ roleToDelete, setRoleToDelete ] = useState<RoleType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<RoleType | null>(null);
 
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
@@ -51,16 +51,16 @@ const Role: React.FC = () => {
     <div className="p-6 md:p-8 w-full">
       {/* Main content wrapper */}
       <div className="p-6 md:p-8 rounded-lg shadow-md">
-        
+
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-Black-800">Role</h1>
-          <Link 
+          <Link
             to="/role/create"
             className="flex items-center gap-2 bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
-              <Plus size={20} />
-                Create
-            </Link>
+            <Plus size={20} />
+            Create
+          </Link>
         </div>
 
         {/* Table Section */}
@@ -80,17 +80,17 @@ const Role: React.FC = () => {
                   <td className="py-4 pr-4 text-gray-800 font-medium text-center">{role.name}</td>
                   <td className="py-4 pr-4">
                     <div className="flex justify-end items-center gap-4">
-                      <Link 
+                      <Link
                         to="/role/update"
                         className="text-gray-500 hover:text-blue-500">
                         <Pencil size={18} />
                       </Link>
-                      <button 
-                      onClick={() => handelOpenModal(role)}
-                      className="text-gray-500 hover:text-red-500">
+                      <button
+                        onClick={() => handelOpenModal(role)}
+                        className="text-gray-500 hover:text-red-500">
                         <Trash2 size={18} />
                       </button>
-                      <Link 
+                      <Link
                         to="/role/view"
                         className="text-gray-500 hover:text-green-500">
                         <Eye size={18} />
@@ -117,11 +117,11 @@ const Role: React.FC = () => {
         </div>
       </div>
       {isModalOpen && roleToDelete && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50"
           onClick={handelCloseModal} // Close modal if overlay is clicked
         >
-          <div 
+          <div
             className="bg-white rounded-2xl p-8 shadow-xl text-center max-w-sm w-full mx-4"
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
           >

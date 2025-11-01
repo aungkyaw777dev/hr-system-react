@@ -1,44 +1,67 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Role from "./pages/Role/Role";
-import CreateRole from "./pages/Role/CreatetRole";
-import UpdateRole from "./pages/Role/UpdateRole";
-import ViewRole from "./pages/Role/ViewRole";
-import { BacklogCreate } from "./pages/Backlog/Create";
-import { BacklogDetail } from "./pages/Backlog/Detail";
-import Backlog from "./pages/Backlog/Index";
-import { BacklogEdit } from "./pages/Backlog/Edit";
+// Role
+import Role from "./pages/Management/Admin/Role/Role";
+import CreateRole from "./pages/Management/Admin/Role/CreatetRole";
+import UpdateRole from "./pages/Management/Admin/Role/UpdateRole"
+import ViewRole from "./pages/Management/Admin/Role/ViewRole"
+
+// Backlog
+import { BacklogCreate } from "./pages/Management/Backlog/Create";
+import { BacklogDetail } from "./pages/Management/Backlog/Detail";
+import Backlog from "./pages/Management/Backlog/Index";
+import { BacklogEdit } from "./pages/Management/Backlog/Edit";
+
+// layout and dashboard
 import MainLayout from "./layouts/MainLayout";
-import LocationCreate from "./pages/Attendance/Location/LocationCreate";
-import LocationEdit from "./pages/Attendance/Location/LocationEdit";
-import LocationDetail from "./pages/Attendance/Location/LocationDetail";
-import { AttendanceList } from "./pages/Attendance/Index";
-import { CreateAttendance } from "./pages/Attendance/Create";
-import { UpdateAttendance } from "./pages/Attendance/[id]";
-import Payroll from "./pages/Payroll/Payroll";
-import PayrollCreate from "./pages/Payroll/PayrollCreate";
-import PayrollEdit from "./pages/Payroll/PayrollEdit";
-import PayrollDetail from "./pages/Payroll/PayrollDetail";
-import AdminDashboard from "./pages/Dashboard/Admin";
-import LoginPage from "./pages/Login";
-import MenuItem from "./pages/Menu/MenuItem";
-import MenuItemCreate from "./pages/Menu/MenuItemCreate";
-import MenuItemEdit from "./pages/Menu/MenuItemEdit";
-import ProjectList from "./pages/Backlog/Project/Index";
-import { ProjectDetails } from "./pages/Backlog/Project/ProjectDetails";
-import { ProjectCreate } from "./pages/Backlog/Project/ProjectCreate";
-import { ProjectEdit } from "./pages/Backlog/Project/ProjectEdit";
-import Employee from "./pages/Employee/Index";
-import Location from "./pages/Attendance/Location/Index";
+import ManagementDashboard from "./pages/Management/Dashboard/Index";
+
+
+// location
+import Location from "./pages/Management/Attendance/Location/Index";
+import LocationCreate from "./pages/Management/Attendance/Location/LocationCreate";
+import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit";
+import LocationDetail from "./pages/Management/Attendance/Location/LocationDetail";
+
+// attendance
+import { AttendanceList } from "./pages/Management/Attendance/Index";
+import { CreateAttendance } from "./pages/Management/Attendance/Create";
+import { UpdateAttendance } from "./pages/Management/Attendance/[id]";
+
+// Payroll
+import Payroll from "./pages/Management/Payroll/Payroll"
+import PayrollCreate from "./pages/Management/Payroll/PayrollCreate";
+import PayrollEdit from "./pages/Management/Payroll/PayrollEdit";
+import PayrollDetail from "./pages/Management/Payroll/PayrollDetail";
+
+// menu item
+import MenuItem from "./pages/Management/Admin/Menu/MenuItem"
+import MenuItemCreate from "./pages/Management/Admin/Menu/MenuItemCreate";
+import MenuItemEdit from "./pages/Management/Admin/Menu/MenuItemEdit";
+
+// project
+import ProjectList from "./pages/Management/Backlog/Project/Index";
+import { ProjectDetails } from "./pages/Management/Backlog/Project/ProjectDetails";
+import { ProjectCreate } from "./pages/Management/Backlog/Project/ProjectCreate";
+import { ProjectEdit } from "./pages/Management/Backlog/Project/ProjectEdit"
+
+// employee
+import EmployeeList from "./pages/Management/Employee/Index";
+import EmployeeCreate from "./pages/Management/Employee/EmployeeCreate";
+import EmployeeEdit from "./pages/Management/Employee/EmployeeEdit";
+import EmployeeDetail from "./pages/Management/Employee/EmployeeDetail";
+
+//auth
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import AuthLayout from "./layouts/AuthLayout";
 import OtpVerification from "./pages/Auth/OtpVerification";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import PasswordChanged from "./pages/Auth/PasswordChanged";
-import EmployeeCreate from "./pages/Employee/EmployeeCreate";
-import EmployeeEdit from "./pages/Employee/EmployeeEdit";
-import EmployeeDetail from "./pages/Employee/EmployeeDetail";
+import LoginPage from "./pages/Login";
+
 import Profile from "./pages/Profile/Profile";
+
+
 function App() {
   return (
     <>
@@ -52,7 +75,7 @@ function App() {
             <Route path="/password-changed" element={<PasswordChanged />} />
           </Route>
           <Route element={<MainLayout />}>
-            <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
+            <Route path="/management/dashboard" element={<ManagementDashboard />}></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>
@@ -78,11 +101,6 @@ function App() {
               path="/attendance/:code/update"
               element={<UpdateAttendance />}
             ></Route>
-            <Route path="/location" element={<Location />}></Route>
-            <Route path="/employee" element={<Employee />}></Route>
-            <Route path="/employee/new" element={<EmployeeCreate />}></Route>
-            <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
-            <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>
             <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
@@ -90,9 +108,10 @@ function App() {
             <Route path="/menuitem" element={<MenuItem />}></Route>
             <Route path="/menuitem/create" element={<MenuItemCreate />} />
             <Route path="/menuitem/edit" element={<MenuItemEdit />} />
-            <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/employee" element={<EmployeeList onSort={undefined} sortConfig={undefined} />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
+            <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>

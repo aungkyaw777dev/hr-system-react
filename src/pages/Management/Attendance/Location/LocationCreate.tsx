@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LocationForm } from "./LocationForm";
-import { SuccessDialog } from "../../../components/ui/SuccessDialog";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
 export default function LocationCreate() {
   const navigate = useNavigate();

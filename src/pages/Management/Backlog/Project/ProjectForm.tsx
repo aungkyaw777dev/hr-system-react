@@ -1,23 +1,23 @@
 import { useState } from "react";
-import { Input } from "../../../components/ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../components/ui/select";
+} from "@/components/ui/select";
 import { Calendar1Icon } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
 // ⬇️ NEW imports for shadcn Date Picker
 import { format, parse } from "date-fns";
-import { Calendar } from "../../../components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "../../../components/ui/popover";
+} from "@/components/ui/popover";
 
 export type ProjectFormValues = {
   code: string;

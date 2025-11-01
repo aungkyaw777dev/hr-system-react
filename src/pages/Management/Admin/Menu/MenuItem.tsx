@@ -11,8 +11,8 @@ import {
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from "@/components/ui/table";
 
 type MenuItem = {
   id: number;
@@ -413,11 +413,10 @@ export default function MenuItemList() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${
-                  page === currentPage
-                    ? "bg-primary-500 text-natural-50"
-                    : "bg-natural-50 text-black hover:bg-gray-200"
-                }`}
+                className={`px-3 py-1 rounded ${page === currentPage
+                  ? "bg-primary-500 text-natural-50"
+                  : "bg-natural-50 text-black hover:bg-gray-200"
+                  }`}
               >
                 {page}
               </button>

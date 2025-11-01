@@ -6,9 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../components/ui/table";
-import { Button } from "../../../components/ui/button";
-import { capitalizeCamelCase } from "../../../lib/utils";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
@@ -20,13 +20,13 @@ import {
   ChevronsLeft,
   Search,
 } from "lucide-react";
-import { Input } from "../../../components/ui/input";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { DeleteDialog } from "../../../components/ui/DeleteDialog";
+import { DeleteDialog } from "@/components/ui/DeleteDialog";
 
 export default function Location() {
   const navigate = useNavigate();
-  const  [data, setData] = useState([
+  const [data, setData] = useState([
     {
       id: 1,
       location: "Insein",
@@ -400,32 +400,32 @@ export default function Location() {
   const goToEditForm = (id: number) => navigate(`/location/edit/${id}`);
   const goToDetailView = (id: number) => navigate(`/location/detail/${id}`);
 
-    const openDeleteDialog = (id: number) => {
-      setSelectedLocationId(id);
-      setDeleteDialogOpen(true);
-    };
+  const openDeleteDialog = (id: number) => {
+    setSelectedLocationId(id);
+    setDeleteDialogOpen(true);
+  };
 
-   const handleDeleteConfirm = () => {
-     if (selectedLocationId) {
-       // Delete the location from data
-       setData((prevData) =>
-         prevData.filter((item) => item.id !== selectedLocationId)
-       );
-       console.log("Deleted location:", selectedLocationId);
+  const handleDeleteConfirm = () => {
+    if (selectedLocationId) {
+      // Delete the location from data
+      setData((prevData) =>
+        prevData.filter((item) => item.id !== selectedLocationId)
+      );
+      console.log("Deleted location:", selectedLocationId);
 
-       // Close dialog and reset
-       setDeleteDialogOpen(false);
-       setSelectedLocationId(null);
+      // Close dialog and reset
+      setDeleteDialogOpen(false);
+      setSelectedLocationId(null);
 
-       // Optional: Show success toast
-       // toast.success("Location deleted successfully");
-     }
-   };
+      // Optional: Show success toast
+      // toast.success("Location deleted successfully");
+    }
+  };
 
-   const handleDeleteCancel = () => {
-     setDeleteDialogOpen(false);
-     setSelectedLocationId(null);
-   };
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setSelectedLocationId(null);
+  };
 
   return (
     <div className="p-6 w-full flex-1">
@@ -531,11 +531,10 @@ export default function Location() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
-                  ? "bg-primary-500 text-natural-50"
-                  : "bg-natural-50 text-black hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1 rounded ${page === currentPage
+                ? "bg-primary-500 text-natural-50"
+                : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
             >
               {page}
             </button>

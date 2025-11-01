@@ -2,21 +2,21 @@
 
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "../../components/ui/select";
-import { Calendar } from "../../components/ui/calendar";
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "../../components/ui/popover";
+} from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -27,12 +27,12 @@ interface Employee {
   Salary: number;
   Name: string;
   Role:
-    | "Manager"
-    | "Developer"
-    | "Designer"
-    | "HR"
-    | "Accountant"
-    | "Sales Executive";
+  | "Manager"
+  | "Developer"
+  | "Designer"
+  | "HR"
+  | "Accountant"
+  | "Sales Executive";
   Email: string;
   PhoneNo: string;
   StartDate: string;

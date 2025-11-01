@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BacklogForm from "../../components/ui/backlogForm";
-import { SuccessDialog } from "../../components/ui/SuccessDialog";
+import BacklogForm from "@/components/ui/backlogForm";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
 export function BacklogCreate() {
   const navigate = useNavigate();

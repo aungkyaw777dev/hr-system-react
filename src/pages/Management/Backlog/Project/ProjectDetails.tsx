@@ -1,13 +1,13 @@
 import { Calendar1Icon } from "lucide-react";
-import { Input } from "../../../components/ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../components/ui/select";
-import { Button } from "../../../components/ui/button";
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import { demoProjects } from "./Index";
 
