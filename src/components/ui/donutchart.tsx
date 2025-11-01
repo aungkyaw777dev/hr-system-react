@@ -5,7 +5,7 @@ interface FullDonutChartProps {
     strokeWidth?: number;  // thickness
 }
 
-export function FullDonutChart({ values, colors, size = 140, strokeWidth = 16 }: FullDonutChartProps) {
+export function FullDonutChart({ values, colors, size = 200, strokeWidth = 16 }: FullDonutChartProps) {
     const radius = (size - strokeWidth) / 2;
     const center = size / 2;
 
@@ -29,7 +29,7 @@ export function FullDonutChart({ values, colors, size = 140, strokeWidth = 16 }:
 
     return (
         <div className="flex gap-3">
-            <div className="relative flex items-center justify-center w-[140px] h-[140px]">
+            <div className="relative flex items-center justify-center w-[300px] h-[200px]">
                 <svg width={size} height={size}>
                     {values.map((value, i) => (
                         <path

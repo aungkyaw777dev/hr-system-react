@@ -7,9 +7,9 @@ export default function () {
 
 
   return <>
-    <div className="flex flex-col gap-2 m-6 w-full h-auto">
+    <div className="flex flex-col gap-2 p-2 w-full h-auto">
       <div className="w-full flex flex-col md:flex-row gap-2">
-        <div className="w-[50%] bg-natural-50 py-3 px-2 me-4 rounded-xl shadow-sm flex flex-col justify-between">
+        <div className="w-full md:w-[50%] bg-natural-50 p-2 rounded-xl shadow-sm flex flex-col justify-center md:justify-between">
           <p className="text-text font-medium text-2xl">Check In/Out</p>
           <div className="flex items-center justify-end flex-col gap-2 flex-1">
             <div className="checkin-circle flex items-center justify-center">
@@ -23,7 +23,7 @@ export default function () {
             </div>
           </div>
         </div>
-        <div className="w-[50%]">
+        <div className="w-full md:w-[50%]">
           <PieChartWithPercentage />
         </div>
       </div>
@@ -34,8 +34,8 @@ export default function () {
             <p>Today</p>
           </div>
         </div>
-        <div className="flex gap-3 w-full text-primary-700">
-          <div className="bg-primary-100 p-2 rounded w-60 flex flex-col">
+        <div className="flex gap-3 w-full text-primary-700 flex-col md:flex-row">
+          <div className="bg-primary-100 p-2 rounded w-60 flex flex-col w-full md:w-[40%] mt-2">
             <div className="flex justify-between w-full ">
               <p className="font-bold ">Total Employee</p>
               <UsersRound />
@@ -44,7 +44,7 @@ export default function () {
               <p>250</p>
             </div>
           </div>
-          <div>
+          <div className="w-full">
             <FullDonutChart values={[40, 25, 15]} colors={['#02B16C', '#FFDF20', '#E7000B']} size={120} strokeWidth={10} />
           </div>
         </div>
