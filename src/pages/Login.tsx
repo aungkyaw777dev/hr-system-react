@@ -35,27 +35,31 @@ export default function LoginForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const authorized = await authStore.login(values.username, values.password);
     if (authorized) {
-      console.log(authStore.roleName)
-      navigate("")
+      if (authStore.roleName === "Admin" || "Hr")
+        navigate("/management/dashboard")
+      else
+        navigate("/employee/dashboard")
     }
     else
       navigate("/")
   };
 
   return (
-    <div className="flex items-center justify-center h-screen w-full">
+    <div className="w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full md:w-[40%] mx-auto space-y-4 p-6 bg-white rounded-xl shadow"
+          className="space-y-4 py-6 px-8 rounded-xl shadow bg-natural-500"
         >
+          <p className="font-semibold text-2xl text-center">Login</p>
+
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Username</FormLabel>
-                <FormControl>
+                <FormControl className="border-none placeholder:text-dark-50">
                   <Input placeholder="you@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
@@ -68,16 +72,22 @@ export default function LoginForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                <FormControl className="border-none">
+                  <Input type="password" placeholder="••••••••" {...field} className="placeholder:text-dark-50" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-primary">
+          <Button type="submit" className="w-full outline-btn">
             Login
           </Button>
+          <div className="flex justify-center gap-5 py-5 text-disabled">
+            <p className="text-sm text-center">Terms of Use</p>
+            <p className="text-sm text-center">|</p>
+            <p className="text-sm text-center">Privacy</p>
+
+          </div>
         </form>
       </Form>
     </div>
