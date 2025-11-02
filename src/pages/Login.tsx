@@ -17,7 +17,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  username: z.string().min(2, "username must be at least 2 characters long"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
@@ -26,16 +26,16 @@ export default function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
   const authStore = useAuthStore();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const authorized = await authStore.login(values.email, values.password);
+    const authorized = await authStore.login(values.username, values.password);
     if (authorized) {
-      console.log(authStore.user?.role)
+      console.log(authStore.roleName)
       navigate("")
     }
     else
@@ -51,10 +51,10 @@ export default function LoginForm() {
         >
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input placeholder="you@example.com" {...field} />
                 </FormControl>
