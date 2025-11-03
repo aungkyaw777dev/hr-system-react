@@ -10,10 +10,10 @@ interface RoleGuardProps {
 export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) => {
     const { user, isAuthenticated } = useAuthStore();
 
-    console.log(user?.roleName)
+    console.log(user?.roleName, isAuthenticated)
     // Not logged in → redirect to login
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     if (user && !allowedRoles.includes(user.roleName.toLocaleLowerCase())) {
