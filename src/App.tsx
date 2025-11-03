@@ -61,6 +61,8 @@ import LoginPage from "./pages/Login";
 
 import Profile from "./pages/Profile/Profile";
 import { RoleGuard } from "./components/RoleGuard";
+import Unauthorized from "./pages/Unauthorized";
+import NotFound from "./pages/NotFound";
 
 
 function App() {
@@ -102,6 +104,7 @@ function App() {
             <Route path="/location/edit/:id" element={<LocationEdit />} />
             <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
+
             <Route
               path="/attendance/create"
               element={<CreateAttendance />}
@@ -122,6 +125,8 @@ function App() {
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
             <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/notFound" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

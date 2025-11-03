@@ -2,15 +2,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+
+interface User {
+    createAat: string,
+    email: string,
+    employeeCode: string,
+    name: string,
+    phoneNo: string,
+    profileImage: string,
+    roleName: string,
+    userName: string
+}
 interface AuthState {
-    roleName: string | null;
+    user: User | null;
     token: string | null;
     isAuthenticated: boolean;
     loading: boolean;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<boolean>;
-    setRole: (roleName: string) => void;
+    setUser: (user: User) => void;
+    getUser: () => User | null;
     setToken: (token: string) => void;
     clearAuth: () => void;
 }
@@ -21,15 +33,15 @@ const API_BASE = import.meta.env.VITE_API_URL
 export const useAuthStore = create<AuthState>()(
     persist(
         (set, get) => ({
-            roleName: null,
+            user: null,
             token: null,
             isAuthenticated: false,
             loading: true,
 
-            setRole: (roleName) => set({ roleName }),
+            setUser: (user) => set({ user }),
             setToken: (token) => set({ token }),
-            clearAuth: () => set({ roleName: null, token: null, isAuthenticated: false }),
-
+            clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
+            getUser: () => get().user,
             login: async (username, password) => {
                 try {
                     const res = await fetch(`${API_BASE}/Auth/Login`, {
@@ -40,8 +52,8 @@ export const useAuthStore = create<AuthState>()(
 
                     if (!res.ok) throw new Error("Invalid credentials");
                     const data = await res.json();
-                    const { roleName, token, refreshToken } = data.data;
-                    set({ roleName, token, isAuthenticated: true })
+                    const { user, token, refreshToken } = data.data;
+                    set({ user, token, isAuthenticated: true })
                     localStorage.setItem("refreshToken", refreshToken);
 
                     return true;
