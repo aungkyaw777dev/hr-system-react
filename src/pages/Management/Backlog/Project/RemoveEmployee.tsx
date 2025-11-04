@@ -1,12 +1,7 @@
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Table,
   TableBody,
@@ -23,9 +18,21 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Search,
 } from "lucide-react";
 import { useState } from "react";
+interface Employee {
+  Id: number;
+  EmployeeCode: string;
+  Username: string;
+  Name: string;
+  Role: string;
+  Email: string;
+  PhoneNo: string;
+  StartDate: string;
+  ResignDate: string;
+  Salary?: number;
+  Password?: string;
+}
 const EmployeeData = [
   {
     Id: 1,
@@ -580,116 +587,140 @@ const EmployeeData = [
     ResignDate: "2025-10-05",
   },
 ];
+
 export function RemoveEmployee() {
-  const [selectedProject, setSelectedProject] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { project, employees } = location.state || {
+    project: "",
+    employees: EmployeeData,
+  };
+  const [employeeList, setEmployeeList] = useState<Employee[]>(
+    employees.length ? employees : EmployeeData
+  );
   const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const totalPages = Math.ceil(EmployeeData.length / rowsPerPage);
+  const totalPages = Math.ceil(employeeList.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = EmployeeData.slice(startIndex, startIndex + rowsPerPage);
-  const totalRows = EmployeeData.length;
+  const currentData = employeeList.slice(startIndex, startIndex + rowsPerPage);
+  const totalRows = employeeList.length;
   const startRow = (currentPage - 1) * rowsPerPage + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
   const goToLast = () => setCurrentPage(totalPages);
   const goToFirst = () => setCurrentPage(1);
-  const toggleSelect = (id: number) => {
-    setSelectedEmployees((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+
+  const toggleEmployee = (id: number, checked: boolean) => {
+    if (checked) {
+      setSelectedEmployees((prev) => [...prev, id]);
+    } else {
+      setSelectedEmployees((prev) => prev.filter((empId) => empId !== id));
+    }
   };
+
+  const isAllSelected = currentData.every((emp) =>
+    selectedEmployees.includes(emp.Id)
+  );
+  const isSomeSelected = currentData.some((emp) =>
+    selectedEmployees.includes(emp.Id)
+  );
+
+  const handleSelectAll = (checked: boolean | "indeterminate") => {
+    if (checked) {
+      const idsToAdd = currentData
+        .map((emp) => emp.Id)
+        .filter((id) => !selectedEmployees.includes(id));
+      setSelectedEmployees((prev) => [...prev, ...idsToAdd]);
+    } else {
+      const idsToRemove = currentData.map((emp) => emp.Id);
+      setSelectedEmployees((prev) =>
+        prev.filter((id) => !idsToRemove.includes(id))
+      );
+    }
+  };
+  const handleRemoveSelected = () => {
+    if (selectedEmployees.length === 0) return;
+    setEmployeeList((prev) =>
+      prev.filter((emp) => !selectedEmployees.includes(emp.Id))
+    );
+    setSelectedEmployees([]);
+  };
+
   return (
     <div className="p-6 w-full flex flex-col">
       <div className="flex justify-between gap-2 items-center mb-4">
-        <Select value={selectedProject} onValueChange={setSelectedProject}>
-          <SelectTrigger className="bg-white bordertext-black">
-            <SelectValue placeholder="Select Project" />
-          </SelectTrigger>
-          <SelectContent className="bg-white border text-black">
-            <SelectItem
-              className="bg-white text-black hover:bg-gray-100"
-              value="HR System"
-            >
-              HR System
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        <div className="flex gap-3 items-center">
-          <div className="relative w-[250px] md:w-[350px] lg:w-[450px] ">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5 " />
-            <Input
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 text-black focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 rounded-md shadow-sm border-0"
-            />
-          </div>
-        </div>
-
-        <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="bg-white border  text-black">
-            <SelectValue placeholder="Role" />
-          </SelectTrigger>
-          <SelectContent className="bg-white border text-black">
-            <SelectItem
-              className="bg-white text-black hover:bg-gray-100"
-              value="HR"
-            >
-              HR
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <h2 className="text-xl font-semibold mb-4 text-black">
+          <span className="text-primary-600">{project}</span>
+        </h2>
       </div>
-      {/* Table */}
-      <Table className="w-full border-collapse ">
-        <TableHeader>
-          <TableRow className="  bg-primary-300 py-18 border-0">
-            <TableHead>Checkbox</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Role</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {currentData.map((emp) => (
-            <TableRow
-              key={emp.Id}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200"
-            >
-              <TableCell>
-                <Checkbox.Root
-                  checked={selectedEmployees.includes(emp.Id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedEmployees((prev) => [...prev, emp.Id]);
-                    } else {
-                      setSelectedEmployees((prev) =>
-                        prev.filter((id) => id !== emp.Id)
-                      );
+      <div>
+        {employeeList.length === 0 ? (
+          <p className="text-muted-foreground">No employees selected.</p>
+        ) : (
+          <Table className="w-full border-collapse">
+            <TableHeader>
+              <TableRow className="bg-primary-300">
+                <TableHead>
+                  <Checkbox.Root
+                    checked={
+                      isAllSelected
+                        ? true
+                        : isSomeSelected
+                        ? "indeterminate"
+                        : false
                     }
-                  }}
-                  className="w-5 h-5 border border-gray-400 rounded flex items-center justify-center"
+                    onCheckedChange={handleSelectAll}
+                    className="w-5 h-5 border border-gray-400 rounded flex items-center justify-center"
+                  >
+                    <Checkbox.Indicator>
+                      {isSomeSelected ? (
+                        <div className="w-2.5 h-0.5 bg-black" />
+                      ) : (
+                        <Check className="w-4 h-4 text-black" />
+                      )}
+                    </Checkbox.Indicator>
+                  </Checkbox.Root>
+                </TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Role</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentData.map((emp) => (
+                <TableRow
+                  key={emp.Id}
+                  className="odd:bg-primary-100 even:bg-primary-50"
                 >
-                  <Checkbox.Indicator>
-                    <Check className="w-4 h-4 text-black" />
-                  </Checkbox.Indicator>
-                </Checkbox.Root>
-              </TableCell>
-              <TableCell className="text-black">{emp.Name}</TableCell>
-              <TableCell className="text-black">{emp.Email}</TableCell>
-              <TableCell className="text-black">{emp.PhoneNo}</TableCell>
-              <TableCell className="text-black">{emp.Role}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  <TableCell>
+                    <Checkbox.Root
+                      checked={selectedEmployees.includes(emp.Id)}
+                      onCheckedChange={(checked) =>
+                        toggleEmployee(emp.Id, Boolean(checked))
+                      }
+                      className="w-5 h-5 border border-gray-400 rounded flex items-center justify-center"
+                    >
+                      <Checkbox.Indicator>
+                        <Check className="w-4 h-4 text-black" />
+                      </Checkbox.Indicator>
+                    </Checkbox.Root>
+                  </TableCell>
+                  <TableCell className="text-black">{emp.Name}</TableCell>
+                  <TableCell className="text-black">{emp.Email}</TableCell>
+                  <TableCell className="text-black">{emp.PhoneNo}</TableCell>
+                  <TableCell className="text-black">{emp.Role}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
       {/* Paginations */}
       <div className="flex items-center justify-between p-4 border-t">
         {/* Left: Showing rows */}
@@ -768,11 +799,16 @@ export function RemoveEmployee() {
         <Button
           variant="secondary"
           className="bg-gray-100 text-black border border-gray-300"
+          onClick={() => navigate(-1)}
         >
           Cancel
         </Button>
-        <Button className="bg-primary-500 text-white hover:bg-primary-600">
-          Add
+        <Button
+          className="bg-primary-500 text-white hover:bg-primary-600"
+          disabled={selectedEmployees.length === 0}
+          onClick={handleRemoveSelected}
+        >
+          Remove
         </Button>
       </div>
     </div>

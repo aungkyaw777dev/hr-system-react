@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -8,9 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,28 +19,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Edit,
-  Trash2,
-  Plus,
-  ChevronsRight,
-  ChevronsLeft,
-  Search,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Edit,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeList({ onSort, sortConfig }) {
   const EmployeeData = [
@@ -729,12 +727,13 @@ export default function EmployeeList({ onSort, sortConfig }) {
             >
               Name
               <ArrowUpDown
-                className={`h-4 w-4 transition-transform ${sortConfig?.key === "name"
-                  ? sortConfig.direction === "asc"
-                    ? "rotate-180"
-                    : ""
-                  : "opacity-50"
-                  }`}
+                className={`h-4 w-4 transition-transform ${
+                  sortConfig?.key === "name"
+                    ? sortConfig.direction === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-50"
+                }`}
               />
             </Button>
           </TableHead>
@@ -748,12 +747,13 @@ export default function EmployeeList({ onSort, sortConfig }) {
             >
               Role
               <ArrowUpDown
-                className={`h-4 w-4 transition-transform ${sortConfig?.key === "role"
-                  ? sortConfig.direction === "asc"
-                    ? "rotate-180"
-                    : ""
-                  : "opacity-50"
-                  }`}
+                className={`h-4 w-4 transition-transform ${
+                  sortConfig?.key === "role"
+                    ? sortConfig.direction === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-50"
+                }`}
               />
             </Button>
           </TableHead>
@@ -837,10 +837,11 @@ export default function EmployeeList({ onSort, sortConfig }) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${page === currentPage
-                ? "bg-primary-500 text-natural-50"
-                : "bg-natural-50 text-black hover:bg-gray-200"
-                }`}
+              className={`px-3 py-1 rounded ${
+                page === currentPage
+                  ? "bg-primary-500 text-natural-50"
+                  : "bg-natural-50 text-black hover:bg-gray-200"
+              }`}
             >
               {page}
             </button>

@@ -1,3 +1,11 @@
+import {
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,10 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AlertDialog } from "@radix-ui/react-alert-dialog";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { Check } from "lucide-react";
-
 import {
+  Check,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -26,7 +34,7 @@ import {
   Search,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const EmployeeData = [
   {
     Id: 1,
@@ -582,23 +590,87 @@ const EmployeeData = [
   },
 ];
 export function AddEmployee() {
+  const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
   const roles = Array.from(new Set(EmployeeData.map((emp) => emp.Role)));
+  const filteredData = EmployeeData.filter((emp) => {
+    const matchesSearch =
+      emp.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesRole = roleFilter ? emp.Role === roleFilter : true;
+
+    return matchesSearch && matchesRole;
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const totalPages = Math.ceil(EmployeeData.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = EmployeeData.slice(startIndex, startIndex + rowsPerPage);
-  const totalRows = EmployeeData.length;
+  const currentData = filteredData.slice(startIndex, startIndex + rowsPerPage);
+  const totalRows = filteredData.length;
   const startRow = (currentPage - 1) * rowsPerPage + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleRoleFilterChange = (value: string) => {
+    setRoleFilter(value);
+    setCurrentPage(1);
+  };
+
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
   const goToLast = () => setCurrentPage(totalPages);
   const goToFirst = () => setCurrentPage(1);
+
+  const allCurrentPageIds = currentData.map((emp) => emp.Id);
+  const isAllSelected =
+    allCurrentPageIds.length > 0 &&
+    allCurrentPageIds.every((id) => selectedEmployees.includes(id));
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedEmployees((prev) => [
+        ...new Set([...prev, ...allCurrentPageIds]),
+      ]);
+    } else {
+      setSelectedEmployees((prev) =>
+        prev.filter((id) => !allCurrentPageIds.includes(id))
+      );
+    }
+  };
+
+  const handleAddEmployees = () => {
+    if (selectedEmployees.length === 0) {
+      setAlertMessage("Please select at least one employee");
+      setAlertDialogOpen(true);
+      return;
+    }
+    if (!selectedProject) {
+      setAlertMessage("Please select a project before adding employees");
+      setAlertDialogOpen(true);
+      return;
+    }
+    const selectedData = EmployeeData.filter((emp) =>
+      selectedEmployees.includes(emp.Id)
+    );
+    navigate("/projects/remove-employee", {
+      state: {
+        project: selectedProject,
+        employees: selectedData,
+      },
+    });
+  };
 
   return (
     <div className="p-6 w-full flex flex-col">
@@ -623,13 +695,13 @@ export function AddEmployee() {
             <Input
               placeholder="Search"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-9 text-black focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 rounded-md shadow-sm border-0"
             />
           </div>
         </div>
 
-        <Select value={roleFilter} onValueChange={setRoleFilter}>
+        <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
           <SelectTrigger className="bg-white border text-black w-[150px]">
             <SelectValue placeholder="Role" />
           </SelectTrigger>
@@ -650,7 +722,17 @@ export function AddEmployee() {
       <Table className="w-full border-collapse ">
         <TableHeader>
           <TableRow className="  bg-primary-300 py-18 border-0">
-            <TableHead>Checkbox</TableHead>
+            <TableHead className="flex items-center gap-2">
+              <span>Checkbox</span>
+              <Checkbox.Root
+                checked={isAllSelected}
+                onCheckedChange={handleSelectAll}
+                className="hidden"
+              >
+                <Checkbox.Indicator />
+              </Checkbox.Root>
+            </TableHead>
+
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
@@ -658,36 +740,47 @@ export function AddEmployee() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {currentData.map((emp) => (
-            <TableRow
-              key={emp.Id}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200"
-            >
-              <TableCell>
-                <Checkbox.Root
-                  checked={selectedEmployees.includes(emp.Id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedEmployees((prev) => [...prev, emp.Id]);
-                    } else {
-                      setSelectedEmployees((prev) =>
-                        prev.filter((id) => id !== emp.Id)
-                      );
-                    }
-                  }}
-                  className="w-5 h-5 border border-gray-400 rounded flex items-center justify-center"
-                >
-                  <Checkbox.Indicator>
-                    <Check className="w-4 h-4 text-black" />
-                  </Checkbox.Indicator>
-                </Checkbox.Root>
+          {currentData.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={5}
+                className="text-center py-8 text-muted-foreground"
+              >
+                No employees found
               </TableCell>
-              <TableCell className="text-black">{emp.Name}</TableCell>
-              <TableCell className="text-black">{emp.Email}</TableCell>
-              <TableCell className="text-black">{emp.PhoneNo}</TableCell>
-              <TableCell className="text-black">{emp.Role}</TableCell>
             </TableRow>
-          ))}
+          ) : (
+            currentData.map((emp) => (
+              <TableRow
+                key={emp.Id}
+                className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200"
+              >
+                <TableCell>
+                  <Checkbox.Root
+                    checked={selectedEmployees.includes(emp.Id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedEmployees((prev) => [...prev, emp.Id]);
+                      } else {
+                        setSelectedEmployees((prev) =>
+                          prev.filter((id) => id !== emp.Id)
+                        );
+                      }
+                    }}
+                    className="w-5 h-5 border border-gray-400 rounded flex items-center justify-center"
+                  >
+                    <Checkbox.Indicator>
+                      <Check className="w-4 h-4 text-black" />
+                    </Checkbox.Indicator>
+                  </Checkbox.Root>
+                </TableCell>
+                <TableCell className="text-black">{emp.Name}</TableCell>
+                <TableCell className="text-black">{emp.Email}</TableCell>
+                <TableCell className="text-black">{emp.PhoneNo}</TableCell>
+                <TableCell className="text-black">{emp.Role}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
       {/* Paginations */}
@@ -769,8 +862,33 @@ export function AddEmployee() {
           <Link to="/project">Cancel</Link>
         </Button>
 
-        <Button className="outline-btn">Add</Button>
+        <Button onClick={handleAddEmployees} className="outline-btn">
+          Add {selectedEmployees.length > 0 && `(${selectedEmployees.length})`}
+        </Button>
       </div>
+      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent className="bg-secondary-50 text-black">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-md">
+              <div className="flex gap-3 items-center">
+                <Check className="h-6 w-6 text-gray-600" />
+                Alert
+              </div>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="whitespace-pre-line">
+              {alertMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setAlertDialogOpen(false)}
+              className="bg-primary-600 hover:bg-primary-700 text-white"
+            >
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
