@@ -167,7 +167,7 @@ export function AttendanceList() {
       </div>
       <>
         {
-          loading ? !data ? (<div className="flex items-center justify-center"><SpinnerCustom /> Loading ... </div>)
+          !loading ? !data ? (<div>No data to show</div>)
             : (<>
               <Table className="w-full overflow-auto">
                 <TableHeader className="bg-primary-300">
@@ -278,9 +278,7 @@ export function AttendanceList() {
                   </div>
                 </div>
               </div></>)
-
-            : (<div>No data to show</div>)
-
+            : (<div className="flex items-center justify-center"><SpinnerCustom /> Loading ... </div>)
         }
       </>
 
