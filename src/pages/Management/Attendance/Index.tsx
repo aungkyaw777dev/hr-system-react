@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -28,6 +28,7 @@ import {
   Search,
   Calendar1Icon,
   FileUp,
+  Divide,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -39,320 +40,13 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
+import { useDataStore } from "@/stores/useDataStore";
+import { SpinnerCustom } from "@/components/ui/spinner";
+
 export function AttendanceList() {
   const navigate = useNavigate();
-  const data = [
-    {
-      id: 1,
-      code: "001",
-      name: "Alice Johnson",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 2,
-      code: "002",
-      name: "Bob Smith",
-      checkinTime: "09:15 AM",
-      checkoutTime: "05:10 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 3,
-      code: "003",
-      name: "Charlie Brown",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 4,
-      code: "004",
-      name: "Diana Prince",
-      checkinTime: "09:05 AM",
-      checkoutTime: "04:55 PM",
-      date: "2025-10-01",
-      workingHours: "7h 50m",
-      status: "Present",
-    },
-    {
-      id: 5,
-      code: "005",
-      name: "Ethan White",
-      checkinTime: "09:45 AM",
-      checkoutTime: "04:30 PM",
-      date: "2025-10-01",
-      workingHours: "6h 45m",
-      status: "Late",
-    },
-    {
-      id: 6,
-      code: "006",
-      name: "Fiona Green",
-      checkinTime: "08:50 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h 10m",
-      status: "Present",
-    },
-    {
-      id: 7,
-      code: "007",
-      name: "George Miller",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 8,
-      code: "008",
-      name: "Hannah Lee",
-      checkinTime: "09:10 AM",
-      checkoutTime: "05:05 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 9,
-      code: "009",
-      name: "Ian Black",
-      checkinTime: "09:30 AM",
-      checkoutTime: "04:40 PM",
-      date: "2025-10-01",
-      workingHours: "7h 10m",
-      status: "Late",
-    },
-    {
-      id: 10,
-      code: "010",
-      name: "Jane Doe",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 11,
-      code: "011",
-      name: "Kevin Hart",
-      checkinTime: "09:05 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 12,
-      code: "012",
-      name: "Laura King",
-      checkinTime: "09:20 AM",
-      checkoutTime: "04:50 PM",
-      date: "2025-10-01",
-      workingHours: "7h 30m",
-      status: "Late",
-    },
-    {
-      id: 13,
-      code: "013",
-      name: "Michael Scott",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 14,
-      code: "014",
-      name: "Nina Patel",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 15,
-      code: "015",
-      name: "Oscar Wilde",
-      checkinTime: "09:10 AM",
-      checkoutTime: "05:05 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 16,
-      code: "016",
-      name: "Paula Abdul",
-      checkinTime: "09:35 AM",
-      checkoutTime: "04:45 PM",
-      date: "2025-10-01",
-      workingHours: "7h 10m",
-      status: "Late",
-    },
-    {
-      id: 17,
-      code: "017",
-      name: "Quincy Adams",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 18,
-      code: "018",
-      name: "Rachel Green",
-      checkinTime: "08:55 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h 5m",
-      status: "Present",
-    },
-    {
-      id: 19,
-      code: "019",
-      name: "Steve Rogers",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 20,
-      code: "020",
-      name: "Tina Fey",
-      checkinTime: "09:15 AM",
-      checkoutTime: "04:55 PM",
-      date: "2025-10-01",
-      workingHours: "7h 40m",
-      status: "Late",
-    },
-    {
-      id: 21,
-      code: "021",
-      name: "Uma Thurman",
-      checkinTime: "09:05 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 22,
-      code: "022",
-      name: "Victor Hugo",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 23,
-      code: "023",
-      name: "Wendy Darling",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 24,
-      code: "024",
-      name: "Xander Cage",
-      checkinTime: "09:20 AM",
-      checkoutTime: "04:50 PM",
-      date: "2025-10-01",
-      workingHours: "7h 30m",
-      status: "Late",
-    },
-    {
-      id: 25,
-      code: "025",
-      name: "Yara Shahidi",
-      checkinTime: "09:00 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h",
-      status: "Present",
-    },
-    {
-      id: 26,
-      code: "026",
-      name: "Zachary Levi",
-      checkinTime: "09:10 AM",
-      checkoutTime: "05:05 PM",
-      date: "2025-10-01",
-      workingHours: "7h 55m",
-      status: "Present",
-    },
-    {
-      id: 27,
-      code: "027",
-      name: "Aaron Paul",
-      checkinTime: "09:30 AM",
-      checkoutTime: "04:40 PM",
-      date: "2025-10-01",
-      workingHours: "7h 10m",
-      status: "Late",
-    },
-    {
-      id: 28,
-      code: "028",
-      name: "Betty White",
-      checkinTime: "-",
-      checkoutTime: "-",
-      date: "2025-10-01",
-      workingHours: "0h",
-      status: "Absent",
-    },
-    {
-      id: 29,
-      code: "029",
-      name: "Carl Jung",
-      checkinTime: "08:50 AM",
-      checkoutTime: "05:00 PM",
-      date: "2025-10-01",
-      workingHours: "8h 10m",
-      status: "Present",
-    },
-    {
-      id: 30,
-      code: "030",
-      name: "Daisy Ridley",
-      checkinTime: "09:05 AM",
-      checkoutTime: "04:55 PM",
-      date: "2025-10-01",
-      workingHours: "7h 50m",
-      status: "Present",
-    },
-    {
-      id: 31,
-      code: "031",
-      name: "Daisy Ridley Jr",
-      checkinTime: "09:05 AM",
-      checkoutTime: "04:55 PM",
-      date: "2025-10-01",
-      workingHours: "8h 50m",
-      status: "Present",
-    },
-  ];
+  const API_BASE = import.meta.env.VITE_API_URL
+  const { data, loading, error, fetchData } = useDataStore()
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -361,12 +55,30 @@ export function AttendanceList() {
     from: Date | undefined;
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = data.slice(startIndex, startIndex + rowsPerPage);
-  const totalRows = data.length;
-  const startRow = (currentPage - 1) * rowsPerPage + 1;
-  const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+
+  const totalPages = data ? Math.ceil(data.length / rowsPerPage) : 0;
+  const startIndex = data ? (currentPage - 1) * rowsPerPage : 0;
+  const currentData = data ? data.slice(startIndex, startIndex + rowsPerPage) : [];
+  const totalRows = data ? data.length : 0;
+  const startRow = data ? (currentPage - 1) * rowsPerPage + 1 : 0;
+  const endRow = data ? Math.min(currentPage * rowsPerPage, totalRows) : 0;
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await fetchData({
+          url: `${API_BASE}/Attendance/AttendanceList`
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    loadData()
+  }, [fetchData])
+
+
+  if (loading) return
+
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
   const goToLast = () => setCurrentPage(totalPages);
@@ -380,7 +92,7 @@ export function AttendanceList() {
     navigate(`/attendance/${code}/update`);
   };
 
-  const deleteAttendance = (code: string) => {};
+  const deleteAttendance = (code: string) => { };
   const handleSuccessConfirm = () => {
     setSuccessDialogOpen(false);
     navigate("/attendance");
@@ -453,117 +165,125 @@ export function AttendanceList() {
           Add new
         </Button>
       </div>
-      <Table className="w-full overflow-auto">
-        <TableHeader className="bg-primary-300">
-          <TableRow className="border-none">
-            {Object.keys(data[0]).map((columnName) => (
-              <TableHead key={columnName}>
-                {columnName === "id" ? "No" : capitalizeCamelCase(columnName)}
-              </TableHead>
-            ))}
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {currentData.map((user, index) => (
-            <TableRow
-              key={index}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-            >
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{user.code}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.checkinTime}</TableCell>
-              <TableCell>{user.checkoutTime}</TableCell>
-              <TableCell>{user.date}</TableCell>
-              <TableCell>{user.workingHours}</TableCell>
-              <TableCell>{user.status}</TableCell>
-              <TableCell className="flex ">
-                <Edit
-                  className="text-primary-500 cursor-pointer"
-                  onClick={() => updateAttendance(user.code)}
-                />
-                <Trash2
-                  className="text-error-400 cursor-pointer"
-                  onClick={() => deleteAttendance(user.code)}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <>
+        {
+          loading ? !data ? (<div className="flex items-center justify-center"><SpinnerCustom /> Loading ... </div>)
+            : (<>
+              <Table className="w-full overflow-auto">
+                <TableHeader className="bg-primary-300">
+                  <TableRow className="border-none">
+                    {data ?? Object.keys(data[0]).map((columnName) => (
+                      <TableHead key={columnName}>
+                        {columnName === "id" ? "No" : capitalizeCamelCase(columnName)}
+                      </TableHead>
+                    ))}
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentData ?? currentData.map((user, index) => (
+                    <TableRow
+                      key={index}
+                      className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
+                    >
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{user.code}</TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.checkinTime}</TableCell>
+                      <TableCell>{user.checkoutTime}</TableCell>
+                      <TableCell>{user.date}</TableCell>
+                      <TableCell>{user.workingHours}</TableCell>
+                      <TableCell>{user.status}</TableCell>
+                      <TableCell className="flex ">
+                        <Edit
+                          className="text-primary-500 cursor-pointer"
+                          onClick={() => updateAttendance(user.code)}
+                        />
+                        <Trash2
+                          className="text-error-400 cursor-pointer"
+                          onClick={() => deleteAttendance(user.code)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex flex-col md:flex-row items-center gap-2">
+                {/* Paginations */}
+                <div className="w-full flex items-center justify-center md:justify-around p-4 border-t flex-col md:flex-row gap-3 ">
+                  {/* Left: Showing rows */}
+                  <div className="text-sm text-muted-foreground">
+                    {startRow}–{endRow} of {totalRows}
+                  </div>
+                  {/* Middle: Page buttons */}
+                  <div className="flex space-x-1">
+                    <button
+                      onClick={goToFirst}
+                      disabled={currentPage === 1}
+                      className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                      <ChevronsLeft />
+                    </button>
+                    <button
+                      onClick={goPrev}
+                      disabled={currentPage === 1}
+                      className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                      <ChevronLeft />
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1 rounded ${page === currentPage
+                          ? "bg-primary-500 text-natural-50"
+                          : "bg-natural-50 text-black hover:bg-gray-200"
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    <button
+                      onClick={goNext}
+                      disabled={currentPage === totalPages}
+                      className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                      <ChevronRight />
+                    </button>
+                    <button
+                      onClick={goToLast}
+                      disabled={currentPage === totalPages}
+                      className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+                    >
+                      <ChevronsRight />
+                    </button>
+                  </div>
+                  {/* Right: Rows per page */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-muted-foreground">Rows/page:</span>
+                    <select
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                        setCurrentPage(1); // reset page
+                      }}
+                      className="border rounded px-2 py-1 text-sm p-3"
+                    >
+                      {[10, 20, 30, 50].map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div></>)
 
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        {/* Paginations */}
-        <div className="w-full flex items-center justify-center md:justify-around p-4 border-t flex-col md:flex-row gap-3 ">
-          {/* Left: Showing rows */}
-          <div className="text-sm text-muted-foreground">
-            {startRow}–{endRow} of {totalRows}
-          </div>
-          {/* Middle: Page buttons */}
-          <div className="flex space-x-1">
-            <button
-              onClick={goToFirst}
-              disabled={currentPage === 1}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            >
-              <ChevronsLeft />
-            </button>
-            <button
-              onClick={goPrev}
-              disabled={currentPage === 1}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            >
-              <ChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${
-                  page === currentPage
-                    ? "bg-primary-500 text-natural-50"
-                    : "bg-natural-50 text-black hover:bg-gray-200"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={goNext}
-              disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            >
-              <ChevronRight />
-            </button>
-            <button
-              onClick={goToLast}
-              disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            >
-              <ChevronsRight />
-            </button>
-          </div>
-          {/* Right: Rows per page */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Rows/page:</span>
-            <select
-              value={rowsPerPage}
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setCurrentPage(1); // reset page
-              }}
-              className="border rounded px-2 py-1 text-sm p-3"
-            >
-              {[10, 20, 30, 50].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
+            : (<div>No data to show</div>)
+
+        }
+      </>
+
 
       <SuccessDialog
         open={successDialogOpen}

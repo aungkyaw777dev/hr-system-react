@@ -6,8 +6,14 @@ interface FetchConfig {
   body?: any;
   headers?: Record<string, string>;
 }
+interface DataStore {
+  data: any[];
+  loading: boolean;
+  error: string | null;
+  fetchData: (config: FetchConfig) => Promise<any>;
+}
 
-export const useDataStore = create((set) => ({
+export const useDataStore = create<DataStore>((set) => ({
   data: [],
   loading: false,
   error: null,
@@ -38,7 +44,7 @@ export const useDataStore = create((set) => ({
         const errorText = await response.text();
         throw new Error(`API Error ${response.status}: ${errorText}`);
       }
-      set({ data: response.json(), loading: false });
+      set({ data: response.json().data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });
     }
