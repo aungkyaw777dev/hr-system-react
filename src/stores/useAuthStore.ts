@@ -2,22 +2,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: "admin" | "hr" | "employee";
-}
 
+interface User {
+    createAat: string,
+    email: string,
+    employeeCode: string,
+    name: string,
+    phoneNo: string,
+    profileImage: string,
+    roleName: string,
+    userName: string
+}
 interface AuthState {
     user: User | null;
     token: string | null;
     isAuthenticated: boolean;
     loading: boolean;
-    login: (email: string, password: string) => Promise<boolean>;
+    login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<boolean>;
     setUser: (user: User) => void;
+    getUser: () => User | null;
     setToken: (token: string) => void;
     clearAuth: () => void;
 }
@@ -33,22 +38,22 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             loading: true,
 
-            setUser: (user) => set({ user, isAuthenticated: true }),
+            setUser: (user) => set({ user }),
             setToken: (token) => set({ token }),
             clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
-
-            login: async (email, password) => {
+            getUser: () => get().user,
+            login: async (username, password) => {
                 try {
                     const res = await fetch(`${API_BASE}/Auth/Login`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email, password }),
+                        body: JSON.stringify({ username, password }),
                     });
 
                     if (!res.ok) throw new Error("Invalid credentials");
-                    const { token, user, refreshToken } = await res.json();
-
-                    set({ token, user, isAuthenticated: true });
+                    const data = await res.json();
+                    const { user, token, refreshToken } = data.data;
+                    set({ user, token, isAuthenticated: true })
                     localStorage.setItem("refreshToken", refreshToken);
 
                     return true;
@@ -59,7 +64,7 @@ export const useAuthStore = create<AuthState>()(
             },
 
             logout: async () => {
-                set({ user: null, token: null, isAuthenticated: false });
+                set({ token: null, isAuthenticated: false });
                 localStorage.removeItem("refreshToken");
                 window.location.href = "/";
             },
@@ -79,14 +84,14 @@ export const useAuthStore = create<AuthState>()(
 
                     if (!res.ok) throw new Error("Failed to refresh");
 
-                    const { token, user, refreshToken: newRefresh } = await res.json();
+                    const { token, refreshToken: newRefresh } = await res.json();
 
-                    set({ token, user, isAuthenticated: true });
+                    set({ token, isAuthenticated: true });
                     localStorage.setItem("refreshToken", newRefresh);
 
                     return true;
                 } catch (error) {
-                    set({ user: null, token: null, isAuthenticated: false });
+                    set({ token: null, isAuthenticated: false });
                     return false;
                 } finally {
                     set({ loading: false });

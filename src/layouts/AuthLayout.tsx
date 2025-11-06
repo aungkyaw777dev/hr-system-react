@@ -1,22 +1,20 @@
 import { Outlet } from "react-router-dom";
-import illustrationUrl from "@/assets/forgot-illustration.png";
+import illustrationUrl from "@/assets/bg-green.png";
 
 export default function AuthLayout() {
   return (
-    <div className="grid min-h-screen md:grid-cols-2 bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
-      <div className="flex items-center justify-center p-6 md:p-10">
-        <Outlet />
+    <div className="relative flex h-screen">
+      <div className="hidden md:block md:w-[30%] bg-secondary-100 flex items-center justify-center">
       </div>
-
-      <div className="relative hidden md:block">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-emerald-600 via-teal-500 to-violet-600" />
-        <img
-          src={illustrationUrl}
-          alt="People collaborating illustration"
-          className="h-full w-full object-cover object-center mix-blend-multiply"
-        />
-        <div className="absolute inset-0 bg-white/10" />
+      <div className="w-full md:w-[70%]">
+        <img src={illustrationUrl} alt="Background" className="w-full h-full object-cover" />
+      </div>
+      <div className="absolute top-1/2 left-1/2 md:left-1/3 -translate-x-1/2  -translate-y-1/2 md:-translate-y-1/3 w-[80%] md:w-[30%]">
+        <div className="w-full">
+          <Outlet />
+        </div>
       </div>
     </div>
+
   );
 }

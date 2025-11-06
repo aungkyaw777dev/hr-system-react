@@ -144,7 +144,7 @@ export default function AttendanceForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col w-full p-2 ms-4"
+          className="flex flex-col w-full p-2 mx-none md:mx-4"
         >
           <div className="w-full flex flex-col gap-6 mb-6">
             <p className="font-bold text-xl">{!code ? 'Add New Attendance' : 'Update Attendance'}</p>
