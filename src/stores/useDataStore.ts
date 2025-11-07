@@ -39,12 +39,12 @@ export const useDataStore = create<DataStore>((set) => ({
       };
 
       const response = await fetch(url, options);
-
+      const data = await response.json();
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API Error ${response.status}: ${errorText}`);
       }
-      set({ data: response.json().data, loading: false });
+      set({ data: data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });
     }
