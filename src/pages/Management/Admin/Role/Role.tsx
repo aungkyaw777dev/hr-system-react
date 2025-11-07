@@ -1,8 +1,11 @@
 // src/pages/Role.tsx
 
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Eye,
   Pencil,
   Plus,
@@ -17,23 +20,78 @@ type RoleType = {
   name: string;
 };
 
-// Use the RoleType to define the shape of our data array
-const rolesData: RoleType[] = [
-  { no: 1, name: "Manager" },
-  { no: 2, name: "Executive" },
-  { no: 3, name: "HR" },
-  { no: 4, name: "Designer" },
-  { no: 5, name: "Developer" },
-  { no: 6, name: "Software Engineer" },
-  { no: 7, name: "Sales Person" },
-  { no: 8, name: "Receptionist" },
-];
+// --- START MOCK DATA ---
+// Create a mock dataset of 300 roles to make pagination functional
+const generateMockRoles = (): RoleType[] => {
+  const roles = [
+    "Manager", "Executive", "HR", "Designer", "Developer",
+    "Software Engineer", "Digital Marketer", "Sales Director",
+    "Receptionist", "Security Guard", "Accountant", "QA Tester",
+    "Project Manager", "Data Analyst", "Systems Admin",
+  ];
+  const data: RoleType[] = [];
+  for (let i = 1; i <= 300; i++) {
+    data.push({
+      no: i,
+      name: `${roles[Math.floor(Math.random() * roles.length)]} ${i > 15 ? i : ''}`.trim(),
+    });
+  }
+  return data;
+};
+// --- END MOCK DATA ---
 
 // Define the component using React.FC (Functional Component)
 const Role: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<RoleType | null>(null);
 
+  // --- PAGINATION STATE ---
+  const [allRolesData] = useState<RoleType[]>(generateMockRoles());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10); // As requested, 10 items per page
+
+  // --- PAGINATION CALCULATIONS ---
+  const totalItems = allRolesData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // Calculate data for the current page
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentRoles = allRolesData.slice(startIndex, endIndex);
+
+  // Calculate items for the "1-10 of 300" text
+  const startItem = startIndex + 1;
+  const endItem = Math.min(endIndex, totalItems);
+
+  // --- PAGINATION HANDLERS ---
+  const handleFirstPage = () => setCurrentPage(1);
+  const handleLastPage = () => setCurrentPage(totalPages);
+  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handlePageClick = (page: number) => setCurrentPage(page);
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to page 1 when items per page changes
+  };
+
+  // --- DYNAMIC PAGE NUMBER GENERATION ---
+  const getPageNumbers = () => {
+    const maxPagesToShow = 5; // We will show 5 page numbers at a time
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    // eslint-disable-next-line prefer-const
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    // Adjust startPage if endPage is at the limit
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+    
+    return Array.from({ length: (endPage - startPage + 1) }, (_, i) => startPage + i);
+  };
+  const pageNumbers = getPageNumbers();
+
+  // --- MODAL HANDLERS (Unchanged) ---
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
     setIsModalOpen(true);
@@ -49,6 +107,7 @@ const Role: React.FC = () => {
       console.log(
         `Deleting role: ${roleToDelete.name} (ID: ${roleToDelete.no})`
       );
+      // Here you would filter `allRolesData` and update state
     }
     handelCloseModal();
   };
@@ -56,7 +115,7 @@ const Role: React.FC = () => {
   return (
     <div className="p-6 md:p-8 w-full">
       {/* Main content wrapper */}
-      <div className="p-6 md:p-8 rounded-lg shadow-md">
+      <div className="p-6 md:p-8 bg-white rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-Black-800">
@@ -64,7 +123,7 @@ const Role: React.FC = () => {
           </h1>
           <Link
             to="/role/create"
-            className="flex items-center gap-2 bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 text-white bg-[rgba(2,177,108,1)] py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
           >
             <Plus size={20} />
             Create
@@ -75,17 +134,18 @@ const Role: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full justify-between">
             <thead>
-              <tr className="font-bold text-m">
+              <tr className="bg-[#55CB9D] font-bold text-m text-black-800">
                 <th className="py-3 pr-4 text-center">No</th>
                 <th className="py-3 pr-4 text-center">Role Name</th>
                 <th className="py-3 pr-4 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
-              {rolesData.map((role: RoleType) => (
+              {/* Render only the roles for the current page */}
+              {currentRoles.map((role: RoleType) => (
                 <tr
                   key={role.no}
-                  className="border-b odd:bg-accent even:bg-white hover:bg-accent transition-colors"
+                  className="border-b odd:bg-[#E6F7F0] even:bg-[#B1E7D1] hover:bg-accent transition-colors"
                 >
                   <td className="py-4 pr-4 text-center">{role.no}</td>
                   <td className="py-4 pr-4 text-gray-800 font-medium text-center">
@@ -95,19 +155,19 @@ const Role: React.FC = () => {
                     <div className="flex justify-end items-center gap-4">
                       <Link
                         to="/role/update"
-                        className="text-gray-500 hover:text-blue-500"
+                        className="text-black-500 hover:text-blue-700"
                       >
                         <Pencil size={18} />
                       </Link>
                       <button
                         onClick={() => handelOpenModal(role)}
-                        className="text-gray-500 hover:text-red-500"
+                        className="text-black-500 hover:text-red-500"
                       >
                         <Trash2 size={18} />
                       </button>
                       <Link
                         to="/role/view"
-                        className="text-gray-500 hover:text-green-500"
+                        className="text-black-500 hover:text-green-700"
                       >
                         <Eye size={18} />
                       </Link>
@@ -119,29 +179,90 @@ const Role: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination Section */}
-        <div className="flex justify-center items-center mt-6">
-          <nav className="flex items-center gap-2">
-            <button className="p-2 rounded-md hover:bg-gray-200 disabled:text-gray-300">
+        {/* --- DYNAMIC PAGINATION SECTION --- */}
+        <div className="flex justify-between items-center mt-6">
+          {/* Left: Row count */}
+          <div className="text-sm text-gray-600">
+            {startItem}-{endItem} of {totalItems}
+          </div>
+
+          {/* Center: Page numbers */}
+          <nav className="flex items-center gap-1">
+            <button
+              onClick={handleFirstPage}
+              disabled={currentPage === 1}
+              className="p-2 rounded-md bg-[rgba(2,177,108,1)] text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              <ChevronsLeft size={20} />
+            </button>
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="p-2 rounded-md bg-[rgba(2,177,108,1)] text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
               <ChevronLeft size={20} />
             </button>
-            <button className="w-8 h-8 rounded-md bg-gray-800 text-white text-sm">
-              1
-            </button>
-            <button className="p-2 rounded-md hover:bg-gray-200">
+
+            {/* Render dynamic page numbers */}
+            {pageNumbers.map(page => (
+              <button
+                key={page}
+                onClick={() => handlePageClick(page)}
+                className={`w-8 h-8 rounded-md text-sm font-medium ${
+                  currentPage === page
+                    ? 'bg-[rgba(2,177,108,1)] text-white'
+                    : 'bg-white text-gray-800 hover:bg-gray-100 border'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-md bg-[rgba(2,177,108,1)] text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
               <ChevronRight size={20} />
             </button>
+            <button
+              onClick={handleLastPage}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-md bg-[rgba(2,177,108,1)] text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              <ChevronsRight size={20} />
+            </button>
           </nav>
+
+          {/* Right: Row/Page dropdown */}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>Row/Page</span>
+            <div className="relative">
+              <select
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+                className="p-2 pr-8 border rounded-md appearance-none w-24 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={30}>30</option>
+                <option value={50}>50</option>
+              </select>
+              <ChevronDown size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* --- MODAL (Unchanged) --- */}
       {isModalOpen && roleToDelete && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50"
-          onClick={handelCloseModal} // Close modal if overlay is clicked
+          onClick={handelCloseModal}
         >
           <div
             className="bg-white rounded-2xl p-8 shadow-xl text-center max-w-sm w-full mx-4"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center mb-4">
               <div className="bg-gray-100 p-4 rounded-full">
