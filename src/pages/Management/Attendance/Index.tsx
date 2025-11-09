@@ -55,13 +55,14 @@ export function AttendanceList() {
     from: Date | undefined;
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
-
-  const totalPages = data ? Math.ceil(data.length / rowsPerPage) : 0;
-  const startIndex = data ? (currentPage - 1) * rowsPerPage : 0;
-  const currentData = data ? data.slice(startIndex, startIndex + rowsPerPage) : [];
-  const totalRows = data ? data.length : 0;
-  const startRow = data ? (currentPage - 1) * rowsPerPage + 1 : 0;
-  const endRow = data ? Math.min(currentPage * rowsPerPage, totalRows) : 0;
+ 
+  const attendanceList = data?.data?.attendanceList
+  const totalPages = attendanceList ? Math.ceil(attendanceList.length / rowsPerPage) : 0;
+  const startIndex = attendanceList ? (currentPage - 1) * rowsPerPage : 0;
+  const currentData = attendanceList ? attendanceList.slice(startIndex, startIndex + rowsPerPage) : [];
+  const totalRows = attendanceList ? attendanceList.length : 0;
+  const startRow = attendanceList ? (currentPage - 1) * rowsPerPage + 1 : 0;
+  const endRow = attendanceList ? Math.min(currentPage * rowsPerPage, totalRows) : 0;
 
   useEffect(() => {
     const loadData = async () => {
@@ -167,46 +168,59 @@ export function AttendanceList() {
       </div>
       <>
         {
-          !loading ? !data ? (<div>No data to show</div>)
+          !loading ? !attendanceList ? (<div>No data to show</div>)
             : (<>
               <Table className="w-full overflow-auto">
                 <TableHeader className="bg-primary-300">
                   <TableRow className="border-none">
-                    {data ?? Object.keys(data[0]).map((columnName) => (
+                    {/* {attendanceList ? Object.keys(attendanceList[0]).map((columnName) => (
                       <TableHead key={columnName}>
-                        {columnName === "id" ? "No" : capitalizeCamelCase(columnName)}
+                        {capitalizeCamelCase(columnName)}
                       </TableHead>
-                    ))}
-                    <TableHead>Action</TableHead>
+                    )): ''} */}
+                    <TableHead className="w-[60px]">No.</TableHead>
+                    <TableHead className="text-center">Name</TableHead>
+                    <TableHead className="text-center">Date</TableHead>
+                    <TableHead className="text-center">Check In Time</TableHead>
+                    <TableHead className="text-center">Check Out Time</TableHead>
+                    <TableHead className="text-center">Working Hour</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {currentData ?? currentData.map((user, index) => (
-                    <TableRow
-                      key={index}
-                      className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-                    >
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{user.code}</TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.checkinTime}</TableCell>
-                      <TableCell>{user.checkoutTime}</TableCell>
-                      <TableCell>{user.date}</TableCell>
-                      <TableCell>{user.workingHours}</TableCell>
-                      <TableCell>{user.status}</TableCell>
-                      <TableCell className="flex ">
-                        <Edit
-                          className="text-primary-500 cursor-pointer"
-                          onClick={() => updateAttendance(user.code)}
-                        />
-                        <Trash2
-                          className="text-error-400 cursor-pointer"
-                          onClick={() => deleteAttendance(user.code)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+    {currentData?.map((user, index) => {
+      // Format date/time display
+      const formatDateTime = (datetime: string) =>
+        datetime ? format(new Date(datetime), "yyyy-MM-dd HH:mm") : "-";
+
+      return (
+        <TableRow
+          key={index}
+          className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
+        >
+          <TableCell>{startIndex + index + 1}</TableCell>
+          <TableCell>{user.name}</TableCell>
+          <TableCell>{formatDateTime(user.attendanceDate)}</TableCell>
+          <TableCell>{formatDateTime(user.checkInTime)}</TableCell>
+          <TableCell>{formatDateTime(user.checkOutTime)}</TableCell>
+          <TableCell>{user.workingHour?.toFixed(2)}</TableCell>
+          <TableCell>{user.status}</TableCell>
+
+          <TableCell className="flex justify-center gap-2">
+            <Edit
+              className="text-primary-500 cursor-pointer"
+              onClick={() => updateAttendance(user.code)}
+            />
+            <Trash2
+              className="text-error-400 cursor-pointer"
+              onClick={() => deleteAttendance(user.code)}
+            />
+          </TableCell>
+        </TableRow>
+      );
+    })}
+  </TableBody>
               </Table>
               <div className="flex flex-col md:flex-row items-center gap-2">
                 {/* Paginations */}
