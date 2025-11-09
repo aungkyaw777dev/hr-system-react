@@ -23,12 +23,6 @@ import { ChevronDownIcon, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SuccessDialog } from "./SuccessDialog";
-import { useDataStore } from "@/stores/useDataStore";
-import { SpinnerCustom } from "@/components/ui/spinner";
-
-
-const API_BASE = import.meta.env.VITE_API_URL;
-const { data, loading, error, fetchData } = useDataStore();
 
 const formSchema = z.object({
   employeeCode: z.string().nonempty("Employee Code cannot be empty!"),
@@ -143,43 +137,12 @@ export default function AttendanceForm() {
     navigate("/attendance");
   };
 
- const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  try {
-    const payload = {
-      employeeCode: values.employeeCode,
-      employeeName: values.employeeName,
-      checkinLocation: values.checkinLocation,
-      checkoutLocation: values.checkoutLocation,
-      checkinTime: values.checkinTime,
-      checkoutTime: values.checkoutTime,
-      workingHour: values.workingHour,
-      status: values.status,
-      date: values.date,
-      remark: values.remark,
-    };
-
-    // Call API using your store helper
-    useEffect(() => {
-    const loadData = async () => {
-      try {
-        await fetchData({
-          url: `${API_BASE}/Attendance/AttendanceCreate`,
-          method: "POST"
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    loadData()
-  }, [fetchData])
-
-    // Show success dialog after successful creation
-    setSuccessDialogOpen(true);
-  } catch (err) {
-    console.error("Failed to create attendance:", err);
-    alert("Error creating attendance. Please try again.");
-  }
-};
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    setTimeout(() => {
+      setSuccessDialogOpen(true);
+    }, 500);
+  };
   return (
     <div className="p-6 md:p-8 w-full flex-1 bg-gray-50">
   <div className="mb-8">
@@ -465,3 +428,4 @@ export default function AttendanceForm() {
 
   );
 }
+
