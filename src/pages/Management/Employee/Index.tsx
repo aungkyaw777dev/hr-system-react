@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -9,6 +7,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -40,6 +42,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDataStore } from "@/stores/useDataStore";
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Edit,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeList({ onSort, sortConfig }) {
   const navigate = useNavigate();
