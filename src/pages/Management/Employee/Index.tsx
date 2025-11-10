@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -20,18 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Edit,
-  Trash2,
-  Plus,
-  ChevronsRight,
-  ChevronsLeft,
-  Search,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -69,7 +57,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await fetchData({ url: `${API_BASE}/Employee/list` });
+        await fetchData({ endPoint: `/Employee/list` });
       } catch (error) {
         console.error(error);
       }
@@ -85,8 +73,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const employees = data?.items || [];
   const totalRows = data?.totalCount || 0;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
-  console.log(">>>>", data);
-  console.log("Employee Data:", employees);
+
   // ✅ Client-side pagination
   const startIndex = (currentPage - 1) * rowsPerPage;
   const currentData = employees.slice(startIndex, startIndex + rowsPerPage);
@@ -121,7 +108,6 @@ export default function EmployeeList({ onSort, sortConfig }) {
       url: `${API_BASE}/Employee/delete/${employeeToDelete}`,
       method: "DELETE",
     });
-    console.log("Deleted:", employeeToDelete);
     setDeleteDialogOpen(false);
     setEmployeeToDelete(null);
   };
@@ -199,13 +185,12 @@ export default function EmployeeList({ onSort, sortConfig }) {
               >
                 Name
                 <ArrowUpDown
-                  className={`h-4 w-4 transition-transform ${
-                    sortConfig?.key === "name"
-                      ? sortConfig.direction === "asc"
-                        ? "rotate-180"
-                        : ""
-                      : "opacity-50"
-                  }`}
+                  className={`h-4 w-4 transition-transform ${sortConfig?.key === "name"
+                    ? sortConfig.direction === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-50"
+                    }`}
                 />
               </Button>
             </TableHead>
@@ -266,11 +251,10 @@ export default function EmployeeList({ onSort, sortConfig }) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
-                  ? "bg-primary-500 text-white"
-                  : "bg-white hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1 rounded ${page === currentPage
+                ? "bg-primary-500 text-white"
+                : "bg-white hover:bg-gray-200"
+                }`}
             >
               {page}
             </button>

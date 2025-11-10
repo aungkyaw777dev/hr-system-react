@@ -66,7 +66,7 @@ import { RoleGuard } from "./components/ui/RoleGuard";
 import Profile from "./pages/Profile/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
-import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/role-menu-permission/Create";
+import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/Role-Menu-Permission/Create";
 
 function App() {
   return (

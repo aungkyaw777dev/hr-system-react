@@ -39,7 +39,6 @@ export const useDataStore = create<DataStore>((set) => ({
       };
 
       const response = await fetch(`/api${endPoint}`, options);
-      const data = await response.json();
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API Error ${response.status}: ${errorText}`);
