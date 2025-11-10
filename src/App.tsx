@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 // Role
 import Role from "./pages/Management/Admin/Role/Role";
 import CreateRole from "./pages/Management/Admin/Role/CreatetRole";
-import UpdateRole from "./pages/Management/Admin/Role/UpdateRole"
-import ViewRole from "./pages/Management/Admin/Role/ViewRole"
+import UpdateRole from "./pages/Management/Admin/Role/UpdateRole";
+import ViewRole from "./pages/Management/Admin/Role/ViewRole";
 
 // Backlog
 import { BacklogCreate } from "./pages/Management/Backlog/Create";
@@ -15,7 +15,6 @@ import { BacklogEdit } from "./pages/Management/Backlog/Edit";
 // layout and dashboard
 import MainLayout from "./layouts/MainLayout";
 import ManagementDashboard from "./pages/Management/Dashboard/Index";
-
 
 // location
 import Location from "./pages/Management/Attendance/Location/Index";
@@ -29,13 +28,13 @@ import { CreateAttendance } from "./pages/Management/Attendance/Create";
 import { UpdateAttendance } from "./pages/Management/Attendance/[id]";
 
 // Payroll
-import Payroll from "./pages/Management/Payroll/Payroll"
+import Payroll from "./pages/Management/Payroll/Payroll";
 import PayrollCreate from "./pages/Management/Payroll/PayrollCreate";
 import PayrollEdit from "./pages/Management/Payroll/PayrollEdit";
 import PayrollDetail from "./pages/Management/Payroll/PayrollDetail";
 
 // menu item
-import MenuItem from "./pages/Management/Admin/Menu/MenuItem"
+import MenuItem from "./pages/Management/Admin/Menu/MenuItem";
 import MenuItemCreate from "./pages/Management/Admin/Menu/MenuItemCreate";
 import MenuItemEdit from "./pages/Management/Admin/Menu/MenuItemEdit";
 
@@ -43,7 +42,7 @@ import MenuItemEdit from "./pages/Management/Admin/Menu/MenuItemEdit";
 import ProjectList from "./pages/Management/Backlog/Project/Index";
 import { ProjectDetails } from "./pages/Management/Backlog/Project/ProjectDetails";
 import { ProjectCreate } from "./pages/Management/Backlog/Project/ProjectCreate";
-import { ProjectEdit } from "./pages/Management/Backlog/Project/ProjectEdit"
+import { ProjectEdit } from "./pages/Management/Backlog/Project/ProjectEdit";
 
 // employee
 import EmployeeList from "./pages/Management/Employee/Index";
@@ -64,7 +63,6 @@ import { RoleGuard } from "./components/RoleGuard";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 
-
 function App() {
   return (
     <>
@@ -80,13 +78,14 @@ function App() {
 
           {/* admin */}
           <Route element={<MainLayout />}>
-            <Route path="/management/dashboard"
+            <Route
+              path="/management/dashboard"
               element={
                 <RoleGuard allowedRoles={["admin", "hr"]}>
                   <ManagementDashboard />
                 </RoleGuard>
-              }>
-            </Route>
+              }
+            ></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>
@@ -120,7 +119,7 @@ function App() {
             <Route path="/menuitem" element={<MenuItem />}></Route>
             <Route path="/menuitem/create" element={<MenuItemCreate />} />
             <Route path="/menuitem/edit" element={<MenuItemEdit />} />
-            <Route path="/employee" element={<EmployeeList onSort={undefined} sortConfig={undefined} />}></Route>
+            <Route path="/employee" element={<EmployeeList />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
             <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
