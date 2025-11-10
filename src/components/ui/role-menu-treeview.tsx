@@ -12,52 +12,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { roleMenuPermissionService } from "@/services/roleMenuPermissionService";
 
 export default function RoleMenuPermissionPanel() {
-  // Mock data (would come from an API in a real app)
-  const [roles, setRoles] = useState([
-    { id: "r1", name: "Admin" },
-    { id: "r2", name: "Manager" },
-    { id: "r3", name: "Employee" },
-  ]);
+  const [roles, setRoles] = useState();
 
-  const [menus, setMenus] = useState([
-    { id: "m1", name: "Dashboard" },
-    { id: "m6", name: "Role" },
-    { id: "m2", name: "Employees" },
-    { id: "m3", name: "Attendance" },
-    { id: "m4", name: "Reports" },
-    { id: "m5", name: "Settings" },
-  ]);
+  const [menus, setMenus] = useState();
 
-  // permissions: { [roleId]: Set(menuId) }
-  const [permissions, setPermissions] = useState(() => ({
-    r1: new Set(["m1", "m2", "m3", "m4", "m5"]),
-    r2: new Set(["m1", "m2", "m3"]),
-    r3: new Set(["m1"]),
-  }));
+  const [permissions, setPermissions] = useState();
 
-  const [selectedRole, setSelectedRole] = useState(roles[0].id);
+  const [selectedRole, setSelectedRole] = useState();
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    // ensure selectedRole exists after (fake) data changes
-    if (!roles.find((r) => r.id === selectedRole)) {
-      setSelectedRole(roles[0]?.id ?? null);
-    }
-  }, [roles, selectedRole]);
+  // useEffect(() => {
+  //   // ensure selectedRole exists after (fake) data changes
+  //   if (!roles.find((r) => r.id === selectedRole)) {
+  //     setSelectedRole(roles[0]?.id ?? null);
+  //   }
+  // }, [roles, selectedRole]);
 
-  function togglePermission(roleId: string, menuId: string) {
-    setPermissions((prev) => {
-      const clone = { ...prev };
-      const setForRole = new Set(clone[roleId] ?? []);
-      if (setForRole.has(menuId)) setForRole.delete(menuId);
-      else setForRole.add(menuId);
-      clone[roleId] = setForRole;
-      return clone;
-    });
-  }
+  // function togglePermission(roleId: string, menuId: string) {
+  //   setPermissions((prev) => {
+  //     const clone = { ...prev };
+  //     const setForRole = new Set(clone[roleId] ?? []);
+  //     if (setForRole.has(menuId)) setForRole.delete(menuId);
+  //     else setForRole.add(menuId);
+  //     clone[roleId] = setForRole;
+  //     return clone;
+  //   });
+  // }
 
   function isAllowed(roleId: string, menuId: string) {
     return !!permissions[roleId] && permissions[roleId].has(menuId);
@@ -75,20 +59,6 @@ export default function RoleMenuPermissionPanel() {
   async function handleSave() {
     setSaving(true);
     try {
-      // Build a payload that's serializable (convert Sets to arrays)
-      const payload = Object.fromEntries(
-        Object.entries(permissions).map(([roleId, set]) => [
-          roleId,
-          Array.from(set),
-        ])
-      );
-
-      // Mock API call
-      await new Promise((res) => setTimeout(res, 700));
-      // In a real app: await fetch('/api/permissions', { method: 'POST', body: JSON.stringify(payload) })
-
-      alert("Permissions saved (mock). Payload logged to console.");
-      console.log("Saved payload", payload);
     } catch (err) {
       console.error(err);
       alert("Failed to save permissions");
@@ -97,30 +67,49 @@ export default function RoleMenuPermissionPanel() {
     }
   }
 
-  const filteredMenus = menus.filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMenus = menus
+    ? menus.filter((m) =>
+        m.menuName.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
+
+  useEffect(() => {
+    (async () => {
+      const fetchedRoles = await roleMenuPermissionService.fetchRoles();
+      const fetchedMenus = await roleMenuPermissionService.fetchMenus();
+      setRoles(fetchedRoles.items);
+      setMenus(fetchedMenus);
+    })();
+  }, []);
 
   return (
-    <div className="p-6 max-w-6xl mx-auto w-full flex">
+    <div className="pt-6 max-w-6xl mx-auto w-full flex">
       <div className="flex flex-col gap-3 mb-4 w-full">
         <Label className="mb-1">Role</Label>
         <Select onValueChange={(v) => setSelectedRole(v)}>
           <SelectTrigger className="bg-white">
             <SelectValue placeholder="Select role">
-              {roles.find((r) => r.id === selectedRole)?.name}
+              {roles
+                ? roles.filter((r) => r.roleId === selectedRole)?.roleName
+                : null}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
-            {roles.map((r) => (
-              <SelectItem key={r.id} value={r.id}>
-                {r.name}
-              </SelectItem>
-            ))}
+          <SelectContent className="w-full">
+            {roles
+              ? roles.map((r) => (
+                  <SelectItem
+                    key={r.roleId}
+                    value={r.roleId}
+                    className="w-full"
+                  >
+                    {r.roleName}
+                  </SelectItem>
+                ))
+              : null}
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col w-full">
         <Card className="border-none shadow-none">
           <CardContent>
             {filteredMenus.map((menu) => (
@@ -130,14 +119,14 @@ export default function RoleMenuPermissionPanel() {
               >
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    className="border-primary-500 border border-2"
-                    id={`chk-${selectedRole}-${menu.id}`}
-                    checked={isAllowed(selectedRole, menu.id)}
-                    onCheckedChange={() =>
-                      togglePermission(selectedRole, menu.id)
-                    }
+                    className="data-[state=checked]:border-primary-500 border border-2  data-[state=checked]:text-primary-500"
+                    id={`chk-${selectedRole}-${menu.menuId}`}
+                    // checked={isAllowed(selectedRole, menu.id)}
+                    // onCheckedChange={() =>
+                    //   togglePermission(selectedRole, menu.id)
+                    // }
                   />
-                  <div className="font-medium">{menu.name}</div>
+                  <div className="font-medium">{menu.menuName}</div>
                 </div>
               </div>
             ))}
@@ -148,10 +137,10 @@ export default function RoleMenuPermissionPanel() {
               </div>
             )}
             <div className="flex gap-4">
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex">
                 <Button className="outline-btn">Cancel</Button>
               </div>
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex">
                 <Button
                   onClick={handleSave}
                   disabled={saving}
