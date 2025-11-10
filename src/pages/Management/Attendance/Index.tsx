@@ -45,8 +45,8 @@ import { SpinnerCustom } from "@/components/ui/spinner";
 
 export function AttendanceList() {
   const navigate = useNavigate();
-  const API_BASE = import.meta.env.VITE_API_URL
-  const { data, loading, error, fetchData } = useDataStore()
+  const API_BASE = import.meta.env.VITE_API_URL;
+  const { data, loading, error, fetchData } = useDataStore();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -55,30 +55,35 @@ export function AttendanceList() {
     from: Date | undefined;
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
- 
-  const attendanceList = data?.data?.attendanceList
-  const totalPages = attendanceList ? Math.ceil(attendanceList.length / rowsPerPage) : 0;
+
+  const attendanceList = data?.data?.attendanceList;
+  const totalPages = attendanceList
+    ? Math.ceil(attendanceList.length / rowsPerPage)
+    : 0;
   const startIndex = attendanceList ? (currentPage - 1) * rowsPerPage : 0;
-  const currentData = attendanceList ? attendanceList.slice(startIndex, startIndex + rowsPerPage) : [];
+  const currentData = attendanceList
+    ? attendanceList.slice(startIndex, startIndex + rowsPerPage)
+    : [];
   const totalRows = attendanceList ? attendanceList.length : 0;
   const startRow = attendanceList ? (currentPage - 1) * rowsPerPage + 1 : 0;
-  const endRow = attendanceList ? Math.min(currentPage * rowsPerPage, totalRows) : 0;
+  const endRow = attendanceList
+    ? Math.min(currentPage * rowsPerPage, totalRows)
+    : 0;
 
   useEffect(() => {
     const loadData = async () => {
       try {
         await fetchData({
-          url: `${API_BASE}/Attendance/AttendanceList`
-        })
+          endPoint: `/Attendance/AttendanceList`,
+        });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-    loadData()
-  }, [fetchData])
+    };
+    loadData();
+  }, [fetchData]);
 
-
-  if (loading) return
+  if (loading) return;
 
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -93,7 +98,7 @@ export function AttendanceList() {
     navigate(`/attendance/${code}/update`);
   };
 
-  const deleteAttendance = (code: string) => { };
+  const deleteAttendance = (code: string) => {};
   const handleSuccessConfirm = () => {
     setSuccessDialogOpen(false);
     navigate("/attendance");
@@ -167,9 +172,11 @@ export function AttendanceList() {
         </Button>
       </div>
       <>
-        {
-          !loading ? !attendanceList ? (<div>No data to show</div>)
-            : (<>
+        {!loading ? (
+          !attendanceList ? (
+            <div>No data to show</div>
+          ) : (
+            <>
               <Table className="w-full overflow-auto">
                 <TableHeader className="bg-primary-300">
                   <TableRow className="border-none">
@@ -182,45 +189,55 @@ export function AttendanceList() {
                     <TableHead className="text-center">Name</TableHead>
                     <TableHead className="text-center">Date</TableHead>
                     <TableHead className="text-center">Check In Time</TableHead>
-                    <TableHead className="text-center">Check Out Time</TableHead>
+                    <TableHead className="text-center">
+                      Check Out Time
+                    </TableHead>
                     <TableHead className="text-center">Working Hour</TableHead>
                     <TableHead className="text-center">Status</TableHead>
                     <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-    {currentData?.map((user, index) => {
-      // Format date/time display
-      const formatDateTime = (datetime: string) =>
-        datetime ? format(new Date(datetime), "yyyy-MM-dd HH:mm") : "-";
+                  {currentData?.map((user, index) => {
+                    // Format date/time display
+                    const formatDateTime = (datetime: string) =>
+                      datetime
+                        ? format(new Date(datetime), "yyyy-MM-dd HH:mm")
+                        : "-";
 
-      return (
-        <TableRow
-          key={index}
-          className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
-        >
-          <TableCell>{startIndex + index + 1}</TableCell>
-          <TableCell>{user.name}</TableCell>
-          <TableCell>{formatDateTime(user.attendanceDate)}</TableCell>
-          <TableCell>{formatDateTime(user.checkInTime)}</TableCell>
-          <TableCell>{formatDateTime(user.checkOutTime)}</TableCell>
-          <TableCell>{user.workingHour?.toFixed(2)}</TableCell>
-          <TableCell>{user.status}</TableCell>
+                    return (
+                      <TableRow
+                        key={index}
+                        className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
+                      >
+                        <TableCell>{startIndex + index + 1}</TableCell>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>
+                          {formatDateTime(user.attendanceDate)}
+                        </TableCell>
+                        <TableCell>
+                          {formatDateTime(user.checkInTime)}
+                        </TableCell>
+                        <TableCell>
+                          {formatDateTime(user.checkOutTime)}
+                        </TableCell>
+                        <TableCell>{user.workingHour?.toFixed(2)}</TableCell>
+                        <TableCell>{user.status}</TableCell>
 
-          <TableCell className="flex justify-center gap-2">
-            <Edit
-              className="text-primary-500 cursor-pointer"
-              onClick={() => updateAttendance(user.code)}
-            />
-            <Trash2
-              className="text-error-400 cursor-pointer"
-              onClick={() => deleteAttendance(user.code)}
-            />
-          </TableCell>
-        </TableRow>
-      );
-    })}
-  </TableBody>
+                        <TableCell className="flex justify-center gap-2">
+                          <Edit
+                            className="text-primary-500 cursor-pointer"
+                            onClick={() => updateAttendance(user.code)}
+                          />
+                          <Trash2
+                            className="text-error-400 cursor-pointer"
+                            onClick={() => deleteAttendance(user.code)}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
               </Table>
               <div className="flex flex-col md:flex-row items-center gap-2">
                 {/* Paginations */}
@@ -245,18 +262,21 @@ export function AttendanceList() {
                     >
                       <ChevronLeft />
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1 rounded ${page === currentPage
-                          ? "bg-primary-500 text-natural-50"
-                          : "bg-natural-50 text-black hover:bg-gray-200"
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-1 rounded ${
+                            page === currentPage
+                              ? "bg-primary-500 text-natural-50"
+                              : "bg-natural-50 text-black hover:bg-gray-200"
                           }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
                     <button
                       onClick={goNext}
                       disabled={currentPage === totalPages}
@@ -274,7 +294,9 @@ export function AttendanceList() {
                   </div>
                   {/* Right: Rows per page */}
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">Rows/page:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Rows/page:
+                    </span>
                     <select
                       value={rowsPerPage}
                       onChange={(e) => {
@@ -291,11 +313,15 @@ export function AttendanceList() {
                     </select>
                   </div>
                 </div>
-              </div></>)
-            : (<div className="flex items-center justify-center"><SpinnerCustom /> Loading ... </div>)
-        }
+              </div>
+            </>
+          )
+        ) : (
+          <div className="flex items-center justify-center">
+            <SpinnerCustom /> Loading ...{" "}
+          </div>
+        )}
       </>
-
 
       <SuccessDialog
         open={successDialogOpen}
