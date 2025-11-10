@@ -135,12 +135,7 @@ function App() {
             <Route path="/menuitem" element={<MenuItem />}></Route>
             <Route path="/menuitem/create" element={<MenuItemCreate />} />
             <Route path="/menuitem/edit" element={<MenuItemEdit />} />
-            <Route
-              path="/employee"
-              element={
-                <EmployeeList onSort={undefined} sortConfig={undefined} />
-              }
-            ></Route>
+            <Route path="/employee" element={<EmployeeList />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />
             <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
