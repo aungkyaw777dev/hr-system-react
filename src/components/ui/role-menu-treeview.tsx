@@ -114,7 +114,7 @@ export default function RoleMenuPermissionPanel() {
           <CardContent>
             {filteredMenus.map((menu) => (
               <div
-                key={menu.id}
+                key={menu.menuId}
                 className="flex items-center justify-between p-3"
               >
                 <div className="flex items-center gap-2">
