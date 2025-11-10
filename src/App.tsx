@@ -62,11 +62,11 @@ import PasswordChanged from "./pages/Auth/PasswordChanged";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import LoginPage from "./pages/Login";
 
-import { RoleGuard } from "./components/RoleGuard";
+import { RoleGuard } from "./components/ui/RoleGuard";
 import Profile from "./pages/Profile/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
-
+import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/role-menu-permission/Create";
 
 function App() {
   return (
@@ -90,6 +90,10 @@ function App() {
                   <ManagementDashboard />
                 </RoleGuard>
               }
+            ></Route>
+            <Route
+              path="/management/admin/role-menu-permission"
+              element={<RoleMenuTreeViewCreate />}
             ></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
