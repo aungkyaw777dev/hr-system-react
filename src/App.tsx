@@ -66,9 +66,7 @@ import { RoleGuard } from "./components/ui/RoleGuard";
 import Profile from "./pages/Profile/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
-import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/Role-Menu-Permission/Create";
-
-
+import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/role-menu-permission/Create";
 
 function App() {
   return (
@@ -93,9 +91,10 @@ function App() {
                 </RoleGuard>
               }
             ></Route>
-            <Route path="/admin/role-menu-permission/create" element={<RoleMenuTreeViewCreate />}>
-
-            </Route>
+            <Route
+              path="/management/admin/role-menu-permission"
+              element={<RoleMenuTreeViewCreate />}
+            ></Route>
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>
