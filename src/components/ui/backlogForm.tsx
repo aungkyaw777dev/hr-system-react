@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,14 +36,6 @@ const formSchema = z.object({
   workingHour: z.string().nonempty("Working Hours cannot be empty!"),
 });
 
-const mockProjects = [
-  "HR System",
-  "Employee Management",
-  "POS System",
-  "Online Booking System",
-  "E-Commerce Platform",
-];
-
 const mockAssignees = [
   "Chan Lay",
   "Jane Smith",
@@ -50,6 +43,12 @@ const mockAssignees = [
   "Sarah Williams",
   "David Brown",
 ];
+
+const API_BASE = import.meta.env.VITE_API_URL;
+
+interface ProjectItem {
+  projectName?: string;
+}
 
 interface BacklogFormProps {
   mode: "create" | "edit" | "view";
@@ -74,6 +73,10 @@ export default function BacklogForm({
   onSubmit,
   onCancel,
 }: BacklogFormProps) {
+  const [projects, setProjects] = useState<string[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [projectsError, setProjectsError] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,6 +97,66 @@ export default function BacklogForm({
   });
 
   const isDisabled = mode === "view";
+
+  // Fetch project dropdown options whenever the form can edit the project field.
+  useEffect(() => {
+    if (mode === "view") {
+      return;
+    }
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchProjects = async () => {
+      if (!API_BASE) {
+        setProjectsError("Missing API configuration.");
+        return;
+      }
+
+      setProjectsLoading(true);
+      setProjectsError(null);
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/Project/list?PageNo=1&PageSize=100`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const result = await response.json();
+        const items: ProjectItem[] = result?.data?.items ?? [];
+        if (isMounted) {
+          setProjects(
+            items
+              .map((item) => item.projectName)
+              .filter((name): name is string => Boolean(name))
+          );
+        }
+      } catch (error) {
+        if (isMounted && !(error instanceof DOMException && error.name === "AbortError")) {
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Unable to load project list.";
+          setProjectsError(message);
+        }
+      } finally {
+        if (isMounted) {
+          setProjectsLoading(false);
+        }
+      }
+    };
+
+    fetchProjects();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [mode]);
 
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -245,6 +308,7 @@ export default function BacklogForm({
                             <FormControl>
                               <button
                                 type="button"
+                                disabled={projectsLoading}
                                 className="w-full p-3 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
                               >
                                 <span
@@ -261,16 +325,25 @@ export default function BacklogForm({
                             align="start"
                           >
                             <div className="max-h-60 overflow-auto">
-                              {mockProjects.map((project) => (
-                                <button
-                                  key={project}
-                                  type="button"
-                                  onClick={() => field.onChange(project)}
-                                  className="w-full p-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
-                                >
-                                  {project}
-                                </button>
-                              ))}
+                              {projectsLoading && (
+                                <div className="px-4 py-3 text-sm">Loading projects…</div>
+                              )}
+                              {!projectsLoading && projects.length > 0 &&
+                                projects.map((project) => (
+                                  <button
+                                    key={project}
+                                    type="button"
+                                    onClick={() => field.onChange(project)}
+                                    className="w-full p-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                                  >
+                                    {project}
+                                  </button>
+                                ))}
+                              {!projectsLoading && projects.length === 0 && (
+                                <div className="px-4 py-3 text-sm">
+                                  {projectsError || "No projects found."}
+                                </div>
+                              )}
                             </div>
                           </PopoverContent>
                         </Popover>
@@ -452,6 +525,7 @@ export default function BacklogForm({
                           <FormControl>
                             <button
                               type="button"
+                              disabled={projectsLoading}
                               className="w-full p-3 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary text-left flex items-center justify-between"
                             >
                               <span
@@ -468,16 +542,25 @@ export default function BacklogForm({
                           align="start"
                         >
                           <div className="max-h-60 overflow-auto">
-                            {mockProjects.map((project) => (
-                              <button
-                                key={project}
-                                type="button"
-                                onClick={() => field.onChange(project)}
-                                className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
-                              >
-                                {project}
-                              </button>
-                            ))}
+                            {projectsLoading && (
+                              <div className="px-4 py-3 text-sm">Loading projects…</div>
+                            )}
+                            {!projectsLoading && projects.length > 0 &&
+                              projects.map((project) => (
+                                <button
+                                  key={project}
+                                  type="button"
+                                  onClick={() => field.onChange(project)}
+                                  className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                                >
+                                  {project}
+                                </button>
+                              ))}
+                            {!projectsLoading && projects.length === 0 && (
+                              <div className="px-4 py-3 text-sm">
+                                {projectsError || "No projects found."}
+                              </div>
+                            )}
                           </div>
                         </PopoverContent>
                       </Popover>
