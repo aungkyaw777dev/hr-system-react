@@ -202,12 +202,13 @@ export function ProjectForm({
         <Button
           variant="secondary"
           type="button"
+          className="outline-btn"
           onClick={onCancel}
           disabled={submitting}
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={submitting}>
+        <Button type="submit" className="outline-btn" variant="default" disabled={submitting}>
           {submitting ? "Saving..." : submitLabel}
         </Button>
       </div>

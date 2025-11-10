@@ -290,7 +290,7 @@ export default function ProjectListing() {
         </div>
 
         {/* search */}
-        <div className="relative w-full md:w-[20%] text-primary-800">
+        <div className="relative w-full md:w-[20%] text-primary-800 flex items-center justify-center">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
           <Input
             type="text"
@@ -328,7 +328,7 @@ export default function ProjectListing() {
 
         <Link to="/projects/new">
           <Button
-            className="outline-btn"
+            className="outline-btn cursor-pointer"
             disabled={roleName?.toLowerCase() === "employee"}
           >
             <Plus className="mr-2 h-4 w-4" />
