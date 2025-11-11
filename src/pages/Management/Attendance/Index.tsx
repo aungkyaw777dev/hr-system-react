@@ -16,7 +16,6 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
@@ -40,14 +39,13 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
-import { useDataStore } from "@/stores/useDataStore";
 import { SpinnerCustom } from "@/components/ui/spinner";
+import { attendanceService } from "@/services/attendanceService";
 
 export function AttendanceList() {
-  const navigate = useNavigate();
-  const API_BASE = import.meta.env.VITE_API_URL;
-  const { data, loading, error, fetchData } = useDataStore();
-
+  const navigate = useNavigate()
+  const [attendanceList, setAttendanceList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -56,7 +54,6 @@ export function AttendanceList() {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
 
-  const attendanceList = data?.data?.attendanceList;
   const totalPages = attendanceList
     ? Math.ceil(attendanceList.length / rowsPerPage)
     : 0;
@@ -73,15 +70,17 @@ export function AttendanceList() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await fetchData({
-          endPoint: `/Attendance/AttendanceList`,
-        });
+        setLoading(true);
+        const data = await attendanceService.fetchAttendanceRecords();
+        setAttendanceList(data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     loadData();
-  }, [fetchData]);
+  }, []);
 
   if (loading) return;
 
@@ -189,9 +188,7 @@ export function AttendanceList() {
                     <TableHead className="text-center">Name</TableHead>
                     <TableHead className="text-center">Date</TableHead>
                     <TableHead className="text-center">Check In Time</TableHead>
-                    <TableHead className="text-center">
-                      Check Out Time
-                    </TableHead>
+                    <TableHead className="text-center">Check Out Time</TableHead>
                     <TableHead className="text-center">Working Hour</TableHead>
                     <TableHead className="text-center">Status</TableHead>
                     <TableHead className="text-center">Action</TableHead>
@@ -227,11 +224,11 @@ export function AttendanceList() {
                         <TableCell className="flex justify-center gap-2">
                           <Edit
                             className="text-primary-500 cursor-pointer"
-                            onClick={() => updateAttendance(user.code)}
+                            onClick={() => updateAttendance(user.attendanceCode)}
                           />
                           <Trash2
                             className="text-error-400 cursor-pointer"
-                            onClick={() => deleteAttendance(user.code)}
+                            onClick={() => deleteAttendance(user.attendanceCode)}
                           />
                         </TableCell>
                       </TableRow>

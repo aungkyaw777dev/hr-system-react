@@ -25,7 +25,7 @@ import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit";
 // attendance
 import { CreateAttendance } from "./pages/Management/Attendance/Create";
 import { AttendanceList } from "./pages/Management/Attendance/Index";
-import { UpdateAttendance } from "./pages/Management/Attendance/[id]";
+import { UpdateAttendance } from "./pages/Management/Attendance/Edit";
 
 // Payroll
 import Payroll from "./pages/Management/Payroll/Payroll";

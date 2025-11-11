@@ -13,6 +13,7 @@ import {
 } from "./form";
 import { Input } from "./input";
 import { Button } from "./button";
+import { Clock } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -37,7 +38,15 @@ const formSchema = z.object({
   date: z.date(),
   remark: z.string(),
 });
-export default function AttendanceForm() {
+type AttendanceFormValues = z.infer<typeof formSchema>;
+
+export default function AttendanceForm({
+  onSubmitExternal,
+  initialValues,
+}: {
+  onSubmitExternal?: (values: AttendanceFormValues) => Promise<any>;
+  initialValues?: Partial<AttendanceFormValues> | any;
+}) {
   const { code } = useParams();
   const [open, setOpen] = useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -61,6 +70,48 @@ export default function AttendanceForm() {
 
   const checkinTime = form.watch("checkinTime");
   const checkoutTime = form.watch("checkoutTime");
+
+  // Normalize initial values coming from backend (datetime strings etc.)
+  useEffect(() => {
+    if (!initialValues) return;
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    const parseDate = (d: any) => {
+      if (!d) return new Date();
+      const dt = typeof d === "string" ? new Date(d) : d;
+      return dt instanceof Date && !isNaN(dt.getTime()) ? dt : new Date();
+    };
+
+    const extractTime = (dtOrTime: any) => {
+      if (!dtOrTime) return "";
+      if (typeof dtOrTime === "string") {
+        // If string contains 'T' assume ISO datetime
+        if (dtOrTime.includes("T")) {
+          const t = new Date(dtOrTime);
+          return `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+        }
+        // If already in HH:mm format
+        if (/^\d{2}:\d{2}/.test(dtOrTime)) return dtOrTime.slice(0, 5);
+      }
+      if (dtOrTime instanceof Date) return `${pad(dtOrTime.getHours())}:${pad(dtOrTime.getMinutes())}`;
+      return "";
+    };
+
+    const vals: AttendanceFormValues = {
+      employeeCode: initialValues.employeeCode ?? initialValues.employeeCode ?? "",
+      employeeName: initialValues.employeeName ?? initialValues.name ?? "",
+      checkinLocation: initialValues.checkinLocation ?? initialValues.checkInLocation ?? "",
+      checkoutLocation: initialValues.checkoutLocation ?? initialValues.checkOutLocation ?? "",
+      checkinTime: extractTime(initialValues.checkinTime ?? initialValues.checkInTime ?? initialValues.checkInTime),
+      checkoutTime: extractTime(initialValues.checkoutTime ?? initialValues.checkOutTime ?? initialValues.checkOutTime),
+      workingHour: Number(initialValues.workingHour ?? 0),
+      status: initialValues.status ?? "",
+      date: parseDate(initialValues.date ?? initialValues.attendanceDate ?? initialValues.attendanceDate),
+      remark: initialValues.remark ?? "",
+    };
+
+    form.reset(vals);
+  }, [initialValues]);
 
   useEffect(() => {
     if (!checkinTime || !checkoutTime) return;
@@ -135,11 +186,22 @@ export default function AttendanceForm() {
     navigate("/attendance");
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: AttendanceFormValues) => {
     console.log(values);
-    setTimeout(() => {
-      setSuccessDialogOpen(true);
-    }, 500);
+    if (onSubmitExternal) {
+      try {
+        await onSubmitExternal(values);
+        setSuccessDialogOpen(true);
+      } catch (err) {
+        console.error("Create attendance failed", err);
+        // Optionally show an error to the user here
+      }
+    } else {
+      // Fallback behavior for standalone form usage
+      setTimeout(() => {
+        setSuccessDialogOpen(true);
+      }, 500);
+    }
   };
   return (
     <div className="p-6 md:p-8 w-full flex-1 bg-gray-50">
