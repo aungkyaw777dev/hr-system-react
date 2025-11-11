@@ -24,7 +24,11 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
   const toggleBackLogMenu = () => setIsBackLogMenuOpen(!isBackLogMenuOpen);
   return (
     <div className="flex flex-col items-center gap-2">
-      <Link to="/admin-dashboard" onClick={onClose} className="sidebar-btn">
+      <Link
+        to="/management/dashboard"
+        onClick={onClose}
+        className="sidebar-btn"
+      >
         <LayoutDashboard />
         Dashboard
       </Link>

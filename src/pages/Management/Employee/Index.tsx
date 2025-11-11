@@ -97,7 +97,6 @@ export default function EmployeeList({ onSort, sortConfig }) {
         setEmployees(fetchEmployees?.items || []);
         const fetchRoles = await EmployeeService.fetchRoles();
         setRoles(fetchRoles.data);
-
         setRowsPerPage(fetchEmployees.pageSize);
         setCurrentPage(fetchEmployees.pageNo);
         setLoading(false);
@@ -319,10 +318,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
-              onClick={() => {
-                setCurrentPage(page);
-                setEmployees([]);
-              }}
+              onClick={() => setCurrentPage(page)}
               className={`px-3 py-1 rounded ${
                 page === currentPage
                   ? "bg-primary-500 text-white"
@@ -353,7 +349,6 @@ export default function EmployeeList({ onSort, sortConfig }) {
               const newRows = Number(e.target.value);
               setRowsPerPage(newRows);
               setCurrentPage(1);
-              setEmployees([]);
               setDebouncedFilters((prev) => ({
                 ...prev,
                 pageNo: newRows,
