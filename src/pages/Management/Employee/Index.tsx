@@ -36,6 +36,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   CircleX,
+  Divide,
   Edit,
   Plus,
   Search,
@@ -63,6 +64,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const [debouncedFilters, setDebouncedFilters] = useState({
     name: "",
     role: "",
+    currentPage: 0,
+    rowsPerPage: 0,
   });
 
   // Debounce effect
@@ -71,12 +74,14 @@ export default function EmployeeList({ onSort, sortConfig }) {
       setDebouncedFilters({
         name: searchName,
         role: searchRole,
+        currentPage: currentPage,
+        rowsPerPage: rowsPerPage,
       });
     }, 700); // 500ms delay
 
     return () => clearTimeout(handler);
   }, [searchName]);
-
+  console.log(rowsPerPage);
   // ✅ Fetch employee list from API
   useEffect(() => {
     (async () => {
@@ -84,8 +89,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
         setLoading(true);
         const fetchEmployees = await EmployeeService.fetchEmployees(
           searchName,
-          1,
-          10
+          currentPage,
+          rowsPerPage
         );
         const fetchRoles = await EmployeeService.fetchRoles();
         setRoles(fetchRoles.data);
@@ -252,7 +257,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
                 </div>
               </TableCell>
             </TableRow>
-          ) : (
+          ) : currentData.length ? (
             currentData.map((user, index) => (
               <TableRow
                 key={user.employeeCode}
@@ -282,6 +287,14 @@ export default function EmployeeList({ onSort, sortConfig }) {
                 </TableCell>
               </TableRow>
             ))
+          ) : (
+            <TableRow key="title">
+              <TableCell colSpan={8} className="h-24 text-center">
+                <div className="flex items-center justify-center text-primary-500">
+                  No Data Matched.
+                </div>
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>
@@ -323,10 +336,14 @@ export default function EmployeeList({ onSort, sortConfig }) {
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">Rows per page:</span>
           <select
-            value={rowsPerPage}
+            value={debouncedFilters.rowsPerPage}
             onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1);
+              const newRows = Number(e.target.value);
+              setDebouncedFilters((prev) => ({
+                ...prev,
+                rowsPerPage: newRows,
+                currentPage: currentPage,
+              }));
             }}
             className="border rounded px-2 py-1 text-sm"
           >

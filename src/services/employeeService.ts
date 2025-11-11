@@ -2,14 +2,14 @@ import { useDataStore } from "@/stores/useDataStore";
 export const EmployeeService = {
     fetchEmployees: async (name: string, pageNo: number, pageSize: number) => {
         await useDataStore.getState().fetchData ({
-            endPoint: `/Employee/list?EmployeeName${name}&PageNo${pageNo}&PageSize${pageSize}`
+            endPoint: `/Employee/list?EmployeeName=${name}&PageNo=${pageNo}&PageSize=${pageSize}`
         });
         return useDataStore.getState().data ?? {}
     },
 
-    fetchRoles: async (roleName?: string) => {
+    fetchRoles: async () => {
         await useDataStore.getState().fetchData({
-            endPoint: `/Role/list?RoleName${roleName}`
+            endPoint: `/Role/list`
         })
         return useDataStore.getState().data ?? {}
     },
