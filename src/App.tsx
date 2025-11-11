@@ -81,6 +81,11 @@ function App() {
             <Route path="/password-changed" element={<PasswordChanged />} />
           </Route>
 
+          {/* error handling */}
+          <Route>
+            <Route path="*" element={<NotFound />} />
+          </Route>
+
           {/* admin */}
           <Route element={<MainLayout />}>
             <Route
@@ -141,7 +146,6 @@ function App() {
             <Route path="/employee/detail/:code" element={<EmployeeDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/notFound" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
