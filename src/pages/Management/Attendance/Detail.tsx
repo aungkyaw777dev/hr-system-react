@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { attendanceService } from "@/services/attendanceService";
 
-export function UpdateAttendance() {
+export function DetailsAttendance() {
   const { code } = useParams();
   const [initialValues, setInitialValues] = useState<any>(null);
 
@@ -63,6 +63,6 @@ export function UpdateAttendance() {
   if (!initialValues) return <div>Loading...</div>;
 
   return (
-    <AttendanceForm mode="edit" initialValues={initialValues} onSubmitExternal={handleUpdate} />
+    <AttendanceForm mode="view" initialValues={initialValues} onSubmitExternal={handleUpdate} />
   );
 }

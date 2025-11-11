@@ -41,9 +41,11 @@ const formSchema = z.object({
 type AttendanceFormValues = z.infer<typeof formSchema>;
 
 export default function AttendanceForm({
+  mode,
   onSubmitExternal,
   initialValues,
 }: {
+  mode?: "create" | "edit" | "view";
   onSubmitExternal?: (values: AttendanceFormValues) => Promise<any>;
   initialValues?: Partial<AttendanceFormValues> | any;
 }) {
@@ -120,6 +122,7 @@ export default function AttendanceForm({
     console.log(form.getValues("status"));
   }, [checkinTime, checkoutTime]);
 
+  const title = mode === "create" ? "Add New Attendance" : mode === "edit" ? "Edit Attendance" : "Attendance Detail";
   const calculateAttendanceStatus = (checkIn: string, checkOut: string) => {
     const toMinutes = (timeStr: string) => {
       const [hours, minutes] = timeStr.split(":").map(Number);
@@ -207,7 +210,7 @@ export default function AttendanceForm({
     <div className="p-6 md:p-8 w-full flex-1 bg-gray-50">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          {!code ? "Add New Attendance" : "Update Attendance"}
+          {title}
         </h1>
       </div>
 
@@ -234,6 +237,7 @@ export default function AttendanceForm({
                         {...field}
                         className="bg-natural-50 border-natural-500 h-10 text-natural-800"
                         placeholder="Enter employee code"
+                        disabled={mode === "view"}
                       />
                     </FormControl>
                     <FormMessage />
@@ -255,6 +259,8 @@ export default function AttendanceForm({
                         {...field}
                         className="bg-natural-50 border-natural-500 h-10 text-natural-800"
                         placeholder="Enter location"
+                        disabled={mode === "view"}
+
                       />
                     </FormControl>
                     <FormMessage />
@@ -276,6 +282,8 @@ export default function AttendanceForm({
                         {...field}
                         className="bg-natural-50 border-natural-500 h-10 text-natural-800"
                         placeholder="Enter location"
+                        disabled={mode === "view"}
+
                       />
                     </FormControl>
                     <FormMessage />
@@ -298,6 +306,8 @@ export default function AttendanceForm({
                         readOnly
                         className="bg-natural-400 border-natural-500 text-gray-700 h-10"
                         placeholder="Auto-calculated"
+                        disabled={mode === "view"}
+
                       />
                     </FormControl>
                     <FormMessage />
@@ -322,6 +332,8 @@ export default function AttendanceForm({
                         {...field}
                         className="bg-natural-400 border-natural-500 text-gray-700 h-10"
                         placeholder="Enter name"
+                        disabled={mode === "view"}
+
                       />
                     </FormControl>
                     <FormMessage />
@@ -386,6 +398,8 @@ export default function AttendanceForm({
                             readOnly
                             className="pr-8 cursor-pointer bg-natural-50 border-natural-500 h-10 text-natural-800"
                             placeholder="Select time"
+                        disabled={mode === "view"}
+
                           />
                           <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         </div>
@@ -424,6 +438,8 @@ export default function AttendanceForm({
                             readOnly
                             className="pr-8 cursor-pointer bg-natural-50 border-natural-500 h-10 text-natural-800"
                             placeholder="Select time"
+                        disabled={mode === "view"}
+
                           />
                           <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         </div>
@@ -437,6 +453,8 @@ export default function AttendanceForm({
                           value={field.value || ""}
                           onChange={(e) => field.onChange(e.target.value)}
                           className="border rounded-md p-2"
+                        disabled={mode === "view"}
+
                         />
                       </PopoverContent>
                     </Popover>
@@ -460,6 +478,8 @@ export default function AttendanceForm({
                         readOnly
                         className="bg-natural-50 border-natural-500 h-10 text-natural-800"
                         placeholder="Auto status"
+                        disabled={mode === "view"}
+
                       />
                     </FormControl>
                     <FormMessage />
@@ -470,21 +490,37 @@ export default function AttendanceForm({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-4 mt-8">
-            <Button
-              variant={"outline"}
-              type="button"
-              className="px-8 py-2 text-gray-700 bg-white border-gray-300 hover:bg-gray-50 h-10"
-            >
-              CANCEL
-            </Button>
-            <Button
-              type="submit"
-              className="px-8 py-2 bg-primary-500 hover:bg-primary-600 text-white h-10"
-            >
-              {code ? "UPDATE" : "CREATE"}
-            </Button>
-          </div>
+          {mode !== "view" && (
+            <div className="flex justify-end gap-4 mt-8">
+              <Button
+                variant={"outline"}
+                type="button"
+                className="px-8 py-2 text-gray-700 bg-white border-gray-300 hover:bg-gray-50 h-10"
+                onClick={() => navigate("/attendance")}
+              >
+                CANCEL
+              </Button>
+              <Button
+                type="submit"
+                className="px-8 py-2 bg-primary-500 hover:bg-primary-600 text-white h-10"
+              >
+                {code ? "UPDATE" : "CREATE"}
+              </Button>
+            </div>
+          )}
+          {/* View Mode Back Button */}
+          {mode === "view" && (
+            <div className="flex justify-end gap-4 mt-8">
+              <Button
+                variant={"outline"}
+                type="button"
+                className="px-8 py-2 bg-primary-500 hover:bg-primary-600 text-white h-10"
+                onClick={()=>navigate("/attendance")}
+              >
+                BACK
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
 

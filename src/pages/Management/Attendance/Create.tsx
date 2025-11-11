@@ -47,5 +47,5 @@ export function CreateAttendance() {
       }
   };
 
-  return <AttendanceForm onSubmitExternal={handleCreate} />;
+  return <AttendanceForm mode="create" onSubmitExternal={handleCreate} />;
 }
