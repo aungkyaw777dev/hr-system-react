@@ -105,7 +105,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const confirmDelete = async () => {
     // TODO: Add DELETE API call here
     await fetchData({
-      url: `${API_BASE}/Employee/delete/${employeeToDelete}`,
+      endPoint: `/Employee/delete/${employeeToDelete}`,
       method: "DELETE",
     });
     setDeleteDialogOpen(false);
