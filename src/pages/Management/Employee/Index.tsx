@@ -45,7 +45,6 @@ import { useNavigate } from "react-router-dom";
 import { EmployeeService } from "@/services/employeeService";
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
-import { set } from "zod";
 
 export default function EmployeeList({ onSort, sortConfig }) {
   const navigate = useNavigate();
@@ -64,8 +63,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const [debouncedFilters, setDebouncedFilters] = useState({
     name: "",
     role: "",
-    currentPage: 0,
-    rowsPerPage: 0,
+    pageNo: 0,
+    pageSize: 0,
   });
 
   // Debounce effect
@@ -74,19 +73,20 @@ export default function EmployeeList({ onSort, sortConfig }) {
       setDebouncedFilters({
         name: searchName,
         role: searchRole,
-        currentPage: currentPage,
-        rowsPerPage: rowsPerPage,
+        pageNo: currentPage,
+        pageSize: rowsPerPage,
       });
-    }, 700); // 700ms delay
+    }, 400); // 700ms delay
 
     return () => clearTimeout(handler);
-  }, [searchName]);
+  }, [searchName, searchRole, currentPage, rowsPerPage]);
 
   // ✅ Fetch employee list from API
   useEffect(() => {
-    (async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
+        setData({});
         const fetchEmployees = await EmployeeService.fetchEmployees(
           searchName,
           currentPage,
@@ -95,11 +95,14 @@ export default function EmployeeList({ onSort, sortConfig }) {
         const fetchRoles = await EmployeeService.fetchRoles();
         setRoles(fetchRoles.data);
         setData(fetchEmployees);
+        setRowsPerPage(fetchEmployees.pageSize);
+        setCurrentPage(fetchEmployees.pageNo);
         setLoading(false);
       } catch (error) {
         console.error(error);
       }
-    })();
+    };
+    loadData();
   }, [debouncedFilters]);
 
   // ✅ Flatten API data
@@ -107,10 +110,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const totalRows = data?.totalCount || 0;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const fetchRoles = roles?.items || [];
-
   // ✅ Client-side pagination
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = employees.slice(startIndex, startIndex + rowsPerPage);
   const startRow = startIndex + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
 
@@ -257,8 +258,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
                 </div>
               </TableCell>
             </TableRow>
-          ) : currentData.length ? (
-            currentData.map((user, index) => (
+          ) : employees.length ? (
+            employees.map((user, index) => (
               <TableRow
                 key={user.employeeCode}
                 className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
@@ -339,10 +340,12 @@ export default function EmployeeList({ onSort, sortConfig }) {
             value={debouncedFilters.rowsPerPage}
             onChange={(e) => {
               const newRows = Number(e.target.value);
+              setRowsPerPage(newRows);
+              setCurrentPage(1);
               setDebouncedFilters((prev) => ({
                 ...prev,
-                rowsPerPage: newRows,
-                currentPage: currentPage,
+                pageNo: newRows,
+                pageSize: currentPage,
               }));
             }}
             className="border rounded px-2 py-1 text-sm"
