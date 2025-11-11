@@ -1,7 +1,7 @@
 // stores/useDataStore.ts
 import { create } from "zustand";
 
-const BASE_URL = import.meta.env.VITE_API_URL; // <- "http://18.142.90.5/api"
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 interface FetchConfig {
   endPoint: string;
