@@ -18,17 +18,16 @@ interface AuthState {
     token: string | null;
     isAuthenticated: boolean;
     loading: boolean;
+    error: Object | null;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<boolean>;
     setUser: (user: User) => void;
+    setError: (error: Object) => void;
     getUser: () => User | null;
     setToken: (token: string) => void;
     clearAuth: () => void;
 }
-
-// Adjust your backend base URL
-const API_BASE = import.meta.env.VITE_API_URL
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -37,8 +36,9 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             isAuthenticated: false,
             loading: true,
-
+            error : null,
             setUser: (user) => set({ user }),
+            setError: (error) => set({error}),
             setToken: (token) => set({ token }),
             clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
             getUser: () => get().user,
@@ -57,9 +57,10 @@ export const useAuthStore = create<AuthState>()(
                     localStorage.setItem("refreshToken", refreshToken);
 
                     return true;
-                } catch (error) {
-                    console.error("Login error:", error);
-                    return false;
+                } catch (error:any) {
+                    if(error)
+                        set({ error: { message: error || "Login failed" } });
+                    throw error
                 }
             },
 
@@ -77,7 +78,7 @@ export const useAuthStore = create<AuthState>()(
                 }
 
                 try {
-                    const res = await fetch(`${API_BASE}/auth/refresh-token`, {
+                    const res = await fetch(`/api/auth/refresh-token`, {
                         method: "POST",
                         headers: { Authorization: `Bearer ${refreshToken}` },
                     });
