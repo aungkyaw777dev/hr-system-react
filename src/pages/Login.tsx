@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 const formSchema = z.object({
   username: z.string().min(2, "username must be at least 2 characters long"),
@@ -22,7 +23,8 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,15 +35,22 @@ export default function LoginForm() {
   const authStore = useAuthStore();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const authorized = await authStore.login(values.username, values.password);
-    if (authorized) {
-      if (authStore.roleName === "Admin" || "Hr")
-        navigate("/management/dashboard")
-      else
-        navigate("/employee/dashboard")
+    try {
+      const authorized = await authStore.login(
+        values.username,
+        values.password
+      );
+      if (authorized && authStore.user) {
+        if (
+          authStore.user.username.toLocaleLowerCase() === "admin" ||
+          authStore.user.username.toLocaleLowerCase() === "hr"
+        ) {
+          navigate("/management/dashboard");
+        } else navigate("/employee/dashboard");
+      }
+    } catch (error) {
+      if (error) setErrorMessage(error.message);
     }
-    else
-      navigate("/")
   };
 
   return (
@@ -60,7 +69,12 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl className="border-none placeholder:text-dark-50">
-                  <Input placeholder="you@example.com" {...field} />
+                  <Input
+                    placeholder="you@example.com"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -73,12 +87,21 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl className="border-none">
-                  <Input type="password" placeholder="••••••••" {...field} className="placeholder:text-dark-50" />
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          {errorMessage && (
+            <p className="text-red-500 mb-4 text-center">{errorMessage}</p>
+          )}
           <Button type="submit" className="w-full outline-btn">
             Login
           </Button>
@@ -86,7 +109,6 @@ export default function LoginForm() {
             <p className="text-sm text-center">Terms of Use</p>
             <p className="text-sm text-center">|</p>
             <p className="text-sm text-center">Privacy</p>
-
           </div>
         </form>
       </Form>

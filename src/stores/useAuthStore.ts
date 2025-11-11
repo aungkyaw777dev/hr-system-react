@@ -2,37 +2,49 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+
+interface User {
+    createAat: string,
+    email: string,
+    employeeCode: string,
+    name: string,
+    phoneNo: string,
+    profileImage: string,
+    roleName: string,
+    username: string
+}
 interface AuthState {
-    roleName: string | null;
+    user: User | null;
     token: string | null;
     isAuthenticated: boolean;
     loading: boolean;
+    error: Object | null;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<boolean>;
-    setRole: (roleName: string) => void;
+    setUser: (user: User) => void;
+    setError: (error: Object) => void;
+    getUser: () => User | null;
     setToken: (token: string) => void;
     clearAuth: () => void;
 }
 
-// Adjust your backend base URL
-const API_BASE = import.meta.env.VITE_API_URL
-
 export const useAuthStore = create<AuthState>()(
     persist(
         (set, get) => ({
-            roleName: null,
+            user: null,
             token: null,
             isAuthenticated: false,
             loading: true,
-
-            setRole: (roleName) => set({ roleName }),
+            error : null,
+            setUser: (user) => set({ user }),
+            setError: (error) => set({error}),
             setToken: (token) => set({ token }),
-            clearAuth: () => set({ roleName: null, token: null, isAuthenticated: false }),
-
+            clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
+            getUser: () => get().user,
             login: async (username, password) => {
                 try {
-                    const res = await fetch(`${API_BASE}/Auth/Login`, {
+                    const res = await fetch(`/api/Auth/Login`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ username, password }),
@@ -40,14 +52,15 @@ export const useAuthStore = create<AuthState>()(
 
                     if (!res.ok) throw new Error("Invalid credentials");
                     const data = await res.json();
-                    const { roleName, token, refreshToken } = data.data;
-                    set({ roleName, token, isAuthenticated: true })
+                    const { user, token, refreshToken } = data.data;
+                    set({ user, token, isAuthenticated: true })
                     localStorage.setItem("refreshToken", refreshToken);
 
                     return true;
-                } catch (error) {
-                    console.error("Login error:", error);
-                    return false;
+                } catch (error:any) {
+                    if(error)
+                        set({ error: { message: error || "Login failed" } });
+                    throw error
                 }
             },
 
@@ -65,7 +78,7 @@ export const useAuthStore = create<AuthState>()(
                 }
 
                 try {
-                    const res = await fetch(`${API_BASE}/auth/refresh-token`, {
+                    const res = await fetch(`/api/auth/refresh-token`, {
                         method: "POST",
                         headers: { Authorization: `Bearer ${refreshToken}` },
                     });
@@ -90,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
             name: "auth-storage", // localStorage key
             partialize: (state) => ({
                 token: state.token,
-                roleName: state.roleName,
+                user: state.user,
                 isAuthenticated: state.isAuthenticated,
             }),
         }

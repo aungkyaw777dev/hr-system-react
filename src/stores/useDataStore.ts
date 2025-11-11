@@ -1,27 +1,25 @@
 import { create } from "zustand";
 
 interface FetchConfig {
-  url: string;
+  endPoint: string;
   method?: string;
   body?: any;
   headers?: Record<string, string>;
 }
-
 interface DataStore {
-  data: any;
+  data: any[];
   loading: boolean;
   error: string | null;
   fetchData: (config: FetchConfig) => Promise<any>;
-  clearError: () => void;
 }
 
 export const useDataStore = create<DataStore>((set) => ({
-  data: null,
+  data: [],
   loading: false,
   error: null,
 
   fetchData: async ({
-    url,
+    endPoint,
     method = "GET",
     body,
     headers = {},
@@ -39,25 +37,17 @@ export const useDataStore = create<DataStore>((set) => ({
         headers: defaultHeaders,
         ...(body && { body: JSON.stringify(body) }),
       };
-
-      const response = await fetch(url, options);
-      const data = await response.json();
-
-      // Success ဖြစ်ရင်
-      if (response.ok) {
-        set({ data: data, loading: false, error: null });
-        return data; // Return data for caller
+      const response = await fetch(`/api${endPoint}`, options);
+      const data = response.status === 204 ? null : await response.json();
+      if (!response.ok) {
+        const msg =
+          (data && (data.message || data.error)) ||
+          `API Error ${response.status}`;
+        throw new Error(msg);
       }
-      // Error ဖြစ်ရင်
-      else {
-        // API က error message ပြန်လာရင်
-        const errorMessage = data?.message || `API Error ${response.status}`;
-        set({ error: errorMessage, loading: false, data: null });
-        return null;
-      }
-    } catch (err: any) {
-      const errorMessage = err?.message || "Network error occurred";
-      set({ error: errorMessage, loading: false, data: null });
+      set({ data: data, loading: false });
+    } catch (err) {
+      set({ error: err.message, loading: false });
       return null;
     }
   },
