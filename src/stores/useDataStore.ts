@@ -37,14 +37,12 @@ export const useDataStore = create<DataStore>((set) => ({
         headers: defaultHeaders,
         ...(body && { body: JSON.stringify(body) }),
       };
-      console.log({ options })
       const response = await fetch(`/api${endPoint}`, options);
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API Error ${response.status}: ${errorText}`);
       }
       const data = await response.json();
-      console.log("API Response:", data);
       set({ data: data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });

@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useSuccessDialogStore } from "@/stores/useSuccessDialogStore";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,50 +29,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useDataStore } from "@/stores/useDataStore";
 import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  CircleX,
   Edit,
   Plus,
   Search,
   Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { EmployeeService } from "@/services/employeeService";
+import { SpinnerCustom } from "@/components/ui/spinner";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
 export default function EmployeeList({ onSort, sortConfig }) {
   const navigate = useNavigate();
-  const API_BASE = import.meta.env.VITE_API_URL;
-  const { data, loading, fetchData } = useDataStore();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [data, setData] = useState({});
+  const [searchName, setSearchName] = useState("");
+  const [searchRole, setSearchRole] = useState("");
+  const { open, description, onConfirm, closeDialog, openDialog } =
+    useSuccessDialogStore();
+  const [loading, setLoading] = useState(false);
+  let [roles, setRoles] = useState([]);
+  const [debouncedFilters, setDebouncedFilters] = useState({
+    name: "",
+    role: "",
+  });
+
+  // Debounce effect
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFilters({
+        name: searchName,
+        role: searchRole,
+      });
+    }, 700); // 500ms delay
+
+    return () => clearTimeout(handler);
+  }, [searchName]);
 
   // ✅ Fetch employee list from API
   useEffect(() => {
-    const loadData = async () => {
+    (async () => {
       try {
-        await fetchData({ endPoint: `/Employee/list` });
+        setLoading(true);
+        const fetchEmployees = await EmployeeService.fetchEmployees(
+          searchName,
+          1,
+          10
+        );
+        const fetchRoles = await EmployeeService.fetchRoles();
+        setRoles(fetchRoles.data);
+        setData(fetchEmployees);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
-    };
-    loadData();
-  }, [fetchData]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    })();
+  }, [debouncedFilters]);
 
   // ✅ Flatten API data
   const employees = data?.items || [];
   const totalRows = data?.totalCount || 0;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const fetchRoles = roles?.items || [];
 
   // ✅ Client-side pagination
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -88,9 +117,9 @@ export default function EmployeeList({ onSort, sortConfig }) {
     onSort({ key: column, direction });
   };
 
-  const handleEdit = (e: React.MouseEvent, employeeCode: string) => {
-    e.stopPropagation();
-    const employee = employees.find((emp) => emp.employeeCode === employeeCode);
+  const handleEdit = async (employeeCode: string) => {
+    event?.stopPropagation();
+    const employee = await EmployeeService.fetchEmployee(employeeCode);
     if (employee) {
       navigate(`/employee/edit/${employeeCode}`, { state: { employee } });
     }
@@ -103,18 +132,24 @@ export default function EmployeeList({ onSort, sortConfig }) {
   };
 
   const confirmDelete = async () => {
-    // TODO: Add DELETE API call here
-    await fetchData({
-      endPoint: `/Employee/delete/${employeeToDelete}`,
-      method: "DELETE",
-    });
+    try {
+      await EmployeeService.deleteEmployee(employeeToDelete);
+      openDialog("Delete Employee successful!", onConfirm);
+    } catch (error) {
+      console.log(error);
+    }
     setDeleteDialogOpen(false);
-    setEmployeeToDelete(null);
+    setEmployeeToDelete("");
   };
 
   const cancelDelete = () => {
     setDeleteDialogOpen(false);
-    setEmployeeToDelete(null);
+    setEmployeeToDelete("");
+  };
+
+  const handleSuccessConfirm = () => {
+    if (onConfirm) onConfirm();
+    closeDialog();
   };
 
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
@@ -125,52 +160,58 @@ export default function EmployeeList({ onSort, sortConfig }) {
   return (
     <div className="p-6 w-full flex-1">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-5">
         <p className="font-bold text-primary-400">Employee</p>
 
-        <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
           {/* Search */}
           <div className="relative w-full md:w-[200px] text-primary-800">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
             <Input
               type="text"
+              value={searchName}
               placeholder="Search..."
+              onInput={(e) => setSearchName(e.target.value)}
               className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
             />
+            {searchName ? (
+              <CircleX
+                onClick={() => setSearchName("")}
+                className="cursor-pointer absolute absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4"
+              />
+            ) : (
+              ""
+            )}
           </div>
 
-          {/* Filter */}
-          <Select>
-            <SelectTrigger className="text-primary-400">
-              <SelectValue placeholder="Role" className="font-semibold" />
-            </SelectTrigger>
-            <SelectContent className="bg-natural-100">
-              <SelectGroup>
-                <SelectItem value="Admin">Admin</SelectItem>
-                <SelectItem value="Editor">Editor</SelectItem>
-                <SelectItem value="Viewer">Viewer</SelectItem>
-                <SelectItem value="HR">HR</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          {/* Create Button */}
-          <Link to="/employee/new">
-            <Button
-              variant="outline"
-              className="bg-primary-400 border-none text-white flex items-center gap-1"
-            >
-              <Plus className="h-4 w-4 text-white" />
-              Create
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Select>
+              <SelectTrigger className="text-primary-400">
+                <SelectValue placeholder="Role" className="font-semibold" />
+              </SelectTrigger>
+              <SelectContent className="bg-natural-100 text-primary-400">
+                <SelectGroup>
+                  {fetchRoles.map((role) => (
+                    <SelectItem id={role.roleId} value={role.roleName}>
+                      {role.roleName}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Link to="/employee/new">
+              <Button className="outline-btn">
+                <Plus className="h-4 w-4" />
+                Create
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* Table */}
       <Table className="w-full overflow-auto shadow-sm rounded-md">
         <TableHeader className="bg-primary-400 text-center">
-          {/* ✅ Wrap TableHead in TableRow */}
           <TableRow>
             <TableHead className="px-4 py-2 font-semibold">#</TableHead>
             <TableHead className="px-4 py-2 font-semibold">
@@ -185,12 +226,13 @@ export default function EmployeeList({ onSort, sortConfig }) {
               >
                 Name
                 <ArrowUpDown
-                  className={`h-4 w-4 transition-transform ${sortConfig?.key === "name"
-                    ? sortConfig.direction === "asc"
-                      ? "rotate-180"
-                      : ""
-                    : "opacity-50"
-                    }`}
+                  className={`h-4 w-4 transition-transform ${
+                    sortConfig?.key === "name"
+                      ? sortConfig.direction === "asc"
+                        ? "rotate-180"
+                        : ""
+                      : "opacity-50"
+                  }`}
                 />
               </Button>
             </TableHead>
@@ -202,35 +244,45 @@ export default function EmployeeList({ onSort, sortConfig }) {
         </TableHeader>
 
         <TableBody>
-          {currentData.map((user, index) => (
-            <TableRow
-              key={user.employeeCode}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-              onClick={() =>
-                navigate(`/employee/detail/${user.employeeCode}`, {
-                  state: { employee: user },
-                })
-              }
-            >
-              <TableCell>{startIndex + index + 1}</TableCell>
-              <TableCell>{user.employeeCode}</TableCell>
-              <TableCell>{user.username}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.roleCode}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phoneNo}</TableCell>
-              <TableCell className="flex gap-4 justify-center">
-                <Edit
-                  className="h-4 w-4 text-black cursor-pointer hover:text-primary-500"
-                  onClick={(e) => handleEdit(e, user.employeeCode)}
-                />
-                <Trash2
-                  className="h-4 w-4 text-black cursor-pointer hover:text-red-500"
-                  onClick={(e) => handleDelete(e, user.employeeCode)}
-                />
+          {loading ? (
+            <TableRow key="title">
+              <TableCell colSpan={8} className="h-24 text-center">
+                <div className="flex items-center justify-center text-primary-500">
+                  <SpinnerCustom />
+                </div>
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            currentData.map((user, index) => (
+              <TableRow
+                key={user.employeeCode}
+                className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
+                onClick={() =>
+                  navigate(`/employee/detail/${user.employeeCode}`, {
+                    state: { employee: user },
+                  })
+                }
+              >
+                <TableCell>{startIndex + index + 1}</TableCell>
+                <TableCell>{user.employeeCode}</TableCell>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.roleName}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.phoneNo}</TableCell>
+                <TableCell className="flex gap-4 justify-center">
+                  <Edit
+                    className="h-4 w-4 text-black cursor-pointer hover:text-primary-500"
+                    onClick={() => handleEdit(user.employeeCode)}
+                  />
+                  <Trash2
+                    className="h-4 w-4 text-black cursor-pointer hover:text-red-500"
+                    onClick={(e) => handleDelete(e, user.employeeCode)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
 
@@ -251,10 +303,11 @@ export default function EmployeeList({ onSort, sortConfig }) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${page === currentPage
-                ? "bg-primary-500 text-white"
-                : "bg-white hover:bg-gray-200"
-                }`}
+              className={`px-3 py-1 rounded ${
+                page === currentPage
+                  ? "bg-primary-500 text-white"
+                  : "bg-white hover:bg-gray-200"
+              }`}
             >
               {page}
             </button>
@@ -311,6 +364,13 @@ export default function EmployeeList({ onSort, sortConfig }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <SuccessDialog
+        open={open}
+        onOpenChange={closeDialog}
+        onConfirm={handleSuccessConfirm}
+        description={description}
+      />
     </div>
   );
 }
