@@ -2,11 +2,11 @@ import { useDataStore } from "@/stores/useDataStore";
 
 export const attendanceService = {
 
-  fetchAttendanceRecords: async () => {
+  fetchAttendanceRecords: async (pageNo: number = 1, pageSize: number = 100) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceList`,
+      endPoint: `/Attendance/AttendanceList?pageNo=${pageNo}&pageSize=${pageSize}`,
     });
-     return useDataStore.getState().data?.data?.attendanceList ?? [];
+    return useDataStore.getState().data?.data?.attendanceList ?? [];
   },
 
   createAttendanceRecord: async (data: any) => {
@@ -20,23 +20,26 @@ export const attendanceService = {
 
   updateAttendanceRecord: async (code: string, data: any) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceUpdate`,
-      method: "POST",
+      endPoint: `/Attendance/update/${code}`,
+      method: "PUT",
       body: data,
     });
   },
 
   editAttendanceRecord: async (code: string) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceEdit?attendanceCode=${code}`,
+      endPoint: `/Attendance/edit/${code}`,
+      method: "GET",
     });
      return useDataStore.getState().data?.data ?? [];
   },
 
   deleteAttendanceRecord: async (code: string) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceDelete?attendanceCode=${code}`,
+      endPoint: `/Attendance/delete/${code}`,
       method: "DELETE",
+      body: { attendanceCode: code },
     });
+    return useDataStore.getState().data?.data ?? [];
   },
 };

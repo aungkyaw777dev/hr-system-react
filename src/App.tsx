@@ -20,12 +20,13 @@ import ManagementDashboard from "./pages/Management/Dashboard/Index";
 import Location from "./pages/Management/Attendance/Location/Index";
 import LocationCreate from "./pages/Management/Attendance/Location/LocationCreate";
 import LocationDetail from "./pages/Management/Attendance/Location/LocationDetail";
-import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit";
+import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit"; 
 
 // attendance
 import { CreateAttendance } from "./pages/Management/Attendance/Create";
 import { AttendanceList } from "./pages/Management/Attendance/Index";
 import { UpdateAttendance } from "./pages/Management/Attendance/Edit";
+import { DetailsAttendance } from "./pages/Management/Attendance/Detail";
 
 // Payroll
 import Payroll from "./pages/Management/Payroll/Payroll";
@@ -128,6 +129,10 @@ function App() {
             <Route
               path="/attendance/create"
               element={<CreateAttendance />}
+            ></Route>
+            <Route
+              path="/attendance/:code/detail"
+              element={<DetailsAttendance />}
             ></Route>
             <Route
               path="/attendance/:code/update"

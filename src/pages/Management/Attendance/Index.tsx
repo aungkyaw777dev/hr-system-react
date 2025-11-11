@@ -28,6 +28,7 @@ import {
   Calendar1Icon,
   FileUp,
   Divide,
+  EyeIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -41,6 +42,17 @@ import {
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { attendanceService } from "@/services/attendanceService";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useSuccessDialogStore } from "@/stores/useSuccessDialogStore";
 
 export function AttendanceList() {
   const navigate = useNavigate()
@@ -53,6 +65,10 @@ export function AttendanceList() {
     from: Date | undefined;
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [attendanceToDelete, setAttendanceToDelete] = useState("");
+  const { open, description, onConfirm, closeDialog, openDialog } =
+      useSuccessDialogStore();
 
   const totalPages = attendanceList
     ? Math.ceil(attendanceList.length / rowsPerPage)
@@ -71,7 +87,10 @@ export function AttendanceList() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const data = await attendanceService.fetchAttendanceRecords();
+        const data = await attendanceService.fetchAttendanceRecords(
+          currentPage,
+          rowsPerPage
+        );
         setAttendanceList(data);
       } catch (error) {
         console.log(error);
@@ -89,19 +108,50 @@ export function AttendanceList() {
   const goToLast = () => setCurrentPage(totalPages);
   const goToFirst = () => setCurrentPage(1);
 
+  const handleSuccessConfirm = () => {
+    if (onConfirm) onConfirm();
+    closeDialog();
+  };
+
   const goToCreatForm = () => {
     navigate("/attendance/create");
   };
 
-  const updateAttendance = (code: string) => {
+  const updateAttendance = (e: React.MouseEvent, code: string) => {
+    e.stopPropagation();
     navigate(`/attendance/${code}/update`);
   };
 
-  const deleteAttendance = (code: string) => {};
-  const handleSuccessConfirm = () => {
-    setSuccessDialogOpen(false);
-    navigate("/attendance");
+  const handleRowClick = (code: string) => {
+    navigate(`/attendance/${code}/detail`);
+  }
+
+  const handleDelete = (e: React.MouseEvent, attendanceCode: string) => {
+    e.stopPropagation();
+    setAttendanceToDelete(attendanceCode);
+    setDeleteDialogOpen(true);
   };
+  const confirmDelete = async () => {
+      try {
+        setLoading(true);
+        await attendanceService.deleteAttendanceRecord(attendanceToDelete);
+        // Refresh list with current paging
+        const data = await attendanceService.fetchAttendanceRecords(currentPage, rowsPerPage);
+        setAttendanceList(data);
+        openDialog("Delete Attendance successful!", onConfirm);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+        setDeleteDialogOpen(false);
+        setAttendanceToDelete("");
+      }
+    };
+  
+    const cancelDelete = () => {
+      setDeleteDialogOpen(false);
+      setAttendanceToDelete("");
+    };
   return (
     <div className="p-6 w-full flex-1">
       <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
@@ -206,9 +256,10 @@ export function AttendanceList() {
                       <TableRow
                         key={index}
                         className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
+                        onClick={() => handleRowClick(user.attendanceCode)}
                       >
                         <TableCell>{startIndex + index + 1}</TableCell>
-                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.employeeName}</TableCell>
                         <TableCell>
                           {formatDateTime(user.attendanceDate)}
                         </TableCell>
@@ -224,11 +275,11 @@ export function AttendanceList() {
                         <TableCell className="flex justify-center gap-2">
                           <Edit
                             className="text-primary-500 cursor-pointer"
-                            onClick={() => updateAttendance(user.attendanceCode)}
+                            onClick={(e) => updateAttendance(e, user.attendanceCode)}
                           />
                           <Trash2
                             className="text-error-400 cursor-pointer"
-                            onClick={() => deleteAttendance(user.attendanceCode)}
+                            onClick={(e) => handleDelete(e, user.attendanceCode)}
                           />
                         </TableCell>
                       </TableRow>
@@ -320,10 +371,37 @@ export function AttendanceList() {
         )}
       </>
 
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-secondary-50">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              <div className="flex gap-3">
+                <Trash2 className="h-6 w-6 text-gray-600" />
+                Are you sure you want to delete this record?
+              </div>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <SuccessDialog
         open={successDialogOpen}
         onOpenChange={setSuccessDialogOpen}
         onConfirm={handleSuccessConfirm}
+        description={description}
       />
     </div>
   );
