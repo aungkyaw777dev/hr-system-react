@@ -11,7 +11,7 @@ interface User {
     phoneNo: string,
     profileImage: string,
     roleName: string,
-    userName: string
+    username: string
 }
 interface AuthState {
     user: User | null;
