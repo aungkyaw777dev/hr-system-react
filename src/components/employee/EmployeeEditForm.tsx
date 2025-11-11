@@ -80,9 +80,8 @@ export default function EmployeeForm() {
   const form = useForm<z.infer<typeof employeeSchema>>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
-      employeeCode: "",
+      // employeeCode: "",
       username: "",
-      password: "",
       salary: 0,
       name: "",
       roleCode: "",

@@ -1,16 +1,9 @@
 "use client";
 
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,14 +12,14 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { EmployeeService } from "@/services/employeeService";
 
 interface Employee {
   employeeCode: string;
   username: string;
-  password?: string;
   salary: number;
   name: string;
-  roleCode: "ADMIN" | "HR" | "CEO" | "Viewer" | "Editor";
+  roleCode: string;
   email: string;
   phoneNo: string;
   startDate: string;
@@ -34,17 +27,32 @@ interface Employee {
 }
 
 export default function EmployeeDetail() {
-  const { EmployeeCode } = useParams<{ EmployeeCode: string }>();
+  const { code } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [employee, setEmployee] = useState<Employee | null>(null);
-
   useEffect(() => {
-    if (location.state?.employee) {
-      setEmployee(location.state.employee);
-    }
-  }, [location.state]);
+    const fetchEmployeeData = async () => {
+      if (!code) return;
+      try {
+        const employee = await EmployeeService.fetchEmployee(code);
+        setEmployee({
+          employeeCode: employee.employeeCode ?? "",
+          username: employee.username ?? "",
+          salary: employee.salary ?? 0,
+          name: employee.name ?? "",
+          roleCode: employee.roleCode ?? "",
+          email: employee.email ?? "",
+          phoneNo: employee.phoneNo ?? "",
+          startDate: employee.startDate ?? "",
+          resignDate: employee.resignDate ?? "",
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchEmployeeData();
+  }, [code]);
 
   const handleBack = () => navigate("/employee");
 
@@ -78,23 +86,11 @@ export default function EmployeeDetail() {
             <Input value={employee.username} disabled readOnly />
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block mb-1 font-medium text-sm">Password</label>
-            <Input
-              type="password"
-              value={employee.password}
-              disabled
-              readOnly
-            />
-          </div>
-
           {/* Salary */}
           <div>
             <label className="block mb-1 font-medium text-sm">Salary</label>
             <Input value={employee.salary} disabled readOnly />
           </div>
-          {console.log("EmployeeSalary:", employee.salary)}
           {/* Name */}
           <div>
             <label className="block mb-1 font-medium text-sm">Name</label>
@@ -104,18 +100,7 @@ export default function EmployeeDetail() {
           {/* Role */}
           <div>
             <label className="block mb-1 font-medium text-sm">Role</label>
-            <Select value={employee.roleCode} disabled>
-              <SelectTrigger>
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-50">
-                <SelectItem value="CEO">CEO</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
-                <SelectItem value="Editor">Editor</SelectItem>
-                <SelectItem value="HR">HR</SelectItem>
-                <SelectItem value="Viewer">Viewer</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input value={employee.roleCode} disabled readOnly />
           </div>
 
           {/* Email */}

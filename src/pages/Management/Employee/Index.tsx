@@ -36,7 +36,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   CircleX,
-  Divide,
   Edit,
   Plus,
   Search,
@@ -46,6 +45,7 @@ import { useNavigate } from "react-router-dom";
 import { EmployeeService } from "@/services/employeeService";
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
+import { set } from "zod";
 
 export default function EmployeeList({ onSort, sortConfig }) {
   const navigate = useNavigate();
@@ -77,11 +77,11 @@ export default function EmployeeList({ onSort, sortConfig }) {
         currentPage: currentPage,
         rowsPerPage: rowsPerPage,
       });
-    }, 700); // 500ms delay
+    }, 700); // 700ms delay
 
     return () => clearTimeout(handler);
   }, [searchName]);
-  console.log(rowsPerPage);
+
   // ✅ Fetch employee list from API
   useEffect(() => {
     (async () => {
