@@ -56,6 +56,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const [data, setData] = useState({});
   const [searchName, setSearchName] = useState("");
   const [searchRole, setSearchRole] = useState("");
+  const [employees, setEmployees] = useState([]);
   const { open, description, onConfirm, closeDialog, openDialog } =
     useSuccessDialogStore();
   const [loading, setLoading] = useState(false);
@@ -86,15 +87,17 @@ export default function EmployeeList({ onSort, sortConfig }) {
     const loadData = async () => {
       try {
         setLoading(true);
-        setData({});
+        setEmployees([]);
         const fetchEmployees = await EmployeeService.fetchEmployees(
           searchName,
           currentPage,
           rowsPerPage
         );
+        setData(fetchEmployees);
+        setEmployees(fetchEmployees?.items || []);
         const fetchRoles = await EmployeeService.fetchRoles();
         setRoles(fetchRoles.data);
-        setData(fetchEmployees);
+
         setRowsPerPage(fetchEmployees.pageSize);
         setCurrentPage(fetchEmployees.pageNo);
         setLoading(false);
@@ -106,7 +109,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   }, [debouncedFilters]);
 
   // ✅ Flatten API data
-  const employees = data?.items || [];
+
   const totalRows = data?.totalCount || 0;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const fetchRoles = roles?.items || [];
@@ -316,7 +319,10 @@ export default function EmployeeList({ onSort, sortConfig }) {
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
-              onClick={() => setCurrentPage(page)}
+              onClick={() => {
+                setCurrentPage(page);
+                setEmployees([]);
+              }}
               className={`px-3 py-1 rounded ${
                 page === currentPage
                   ? "bg-primary-500 text-white"
@@ -326,7 +332,12 @@ export default function EmployeeList({ onSort, sortConfig }) {
               {page}
             </button>
           ))}
-          <button onClick={goNext} disabled={currentPage === totalPages}>
+          <button
+            onClick={() => {
+              goNext();
+            }}
+            disabled={currentPage === totalPages}
+          >
             <ChevronRight />
           </button>
           <button onClick={goToLast} disabled={currentPage === totalPages}>
@@ -337,11 +348,12 @@ export default function EmployeeList({ onSort, sortConfig }) {
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">Rows per page:</span>
           <select
-            value={debouncedFilters.rowsPerPage}
+            value={debouncedFilters.pageSize}
             onChange={(e) => {
               const newRows = Number(e.target.value);
               setRowsPerPage(newRows);
               setCurrentPage(1);
+              setEmployees([]);
               setDebouncedFilters((prev) => ({
                 ...prev,
                 pageNo: newRows,
