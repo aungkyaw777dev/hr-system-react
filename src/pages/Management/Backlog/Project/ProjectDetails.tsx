@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Calendar1Icon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDataStore } from "@/stores/useDataStore";
+import { projectService } from "@/services/projectService";
 import { format } from "date-fns";
 
 type Project = {
@@ -31,19 +32,19 @@ const toDMY = (s?: string | null) => {
 export function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data, loading, error, fetchData } = useDataStore();
-
-  const url = useMemo(
-    () => `http://localhost:5067/api/Project/edit/${id}`,
-    [id]
-  );
+  const { data, loading, error } = useDataStore();
 
   useEffect(() => {
     if (!id) return;
-    fetchData({ url });
-  }, [id, url, fetchData]);
+    projectService.fetchProjectById(id);
+  }, [id]);
 
-  const project = (data.data ?? null) as Project | null;
+  const payload =
+    data && typeof data === "object" && "isSuccess" in data
+      ? (data as { data?: unknown }).data
+      : data;
+
+  const project = (payload ?? null) as Project | null;
 
   if (loading) {
     return (
@@ -98,12 +99,12 @@ export function ProjectDetails() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
         {/* Code */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <label className="text-sm font-medium">
             Code <span className="text-red-500">*</span>
           </label>
           <Input value={project.projectCode} readOnly className="bg-muted/30" />
-        </div>
+        </div> */}
 
         {/* Name */}
         <div className="space-y-2">
@@ -114,7 +115,6 @@ export function ProjectDetails() {
         {/* Status */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Status</label>
-          {/* Keep Select (read-only) but make sure values match your data */}
           <Select value={project.projectStatus} disabled>
             <SelectTrigger className="bg-muted/30">
               <SelectValue placeholder="-" />
@@ -125,11 +125,9 @@ export function ProjectDetails() {
               <SelectItem value="DONE">Done</SelectItem>
             </SelectContent>
           </Select>
-          {/* If you prefer a simpler read-only field, swap the Select above with: */}
-          {/* <Input value={project.projectStatus} readOnly className="bg-muted/30" /> */}
         </div>
 
-        {/* Start Date (read-only style) */}
+        {/* Start Date */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Start Date</label>
           <div className="relative">
@@ -146,7 +144,7 @@ export function ProjectDetails() {
           </div>
         </div>
 
-        {/* Due Date (read-only style) */}
+        {/* Due Date */}
         <div className="space-y-2 md:col-span-1">
           <label className="text-sm font-medium">Due Date</label>
           <div className="relative">

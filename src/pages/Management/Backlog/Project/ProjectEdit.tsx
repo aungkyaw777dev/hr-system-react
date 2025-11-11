@@ -1,36 +1,49 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProjectForm, type ProjectFormValues } from "./ProjectForm";
 import { useDataStore } from "@/stores/useDataStore";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { projectService } from "@/services/projectService";
 import { Button } from "@/components/ui/button";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
+// ...imports
 type ApiProject = {
-  id: string | number;
+  id?: string | number;
   projectCode?: string;
   projectName: string;
   projectDescription?: string | null;
-  startDate?: string | null; // ISO from API
-  endDate?: string | null; // ISO from API
-  projectStatus: "Planned" | "InProgress" | "DONE";
+  startDate?: string | null;
+  endDate?: string | null;
+  projectStatus: "Active" | "Completed" | "Cancelled" | "Planned";
 };
 
 export function ProjectEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data, loading, error, fetchData } = useDataStore();
-
-  const fetchUrl = useMemo(
-    () => `http://localhost:5067/api/Project/edit/${id}`,
-    [id]
+  const { data, loading, error } = useDataStore();
+  const token = useAuthStore((s) => s.token);
+  const authHeaders = useMemo(
+    () => (token ? { Authorization: `Bearer ${token}` } : undefined),
+    [token]
   );
+  const [successOpen, setSuccessOpen] = useState(false);
 
-  // Load current project
   useEffect(() => {
     if (!id) return;
-    fetchData({ url: fetchUrl }); // GET by default
-  }, [id, fetchUrl, fetchData]);
+    projectService.fetchProjectById(id, authHeaders);
+  }, [id, authHeaders]);
 
-  const proj = (data.data ?? null) as ApiProject | null;
+  function isApiResponse<T>(x: unknown): x is { isSuccess: unknown; data: T } {
+    return (
+      typeof x === "object" && x !== null && "isSuccess" in x && "data" in x
+    );
+  }
+
+  const payload = isApiResponse<ApiProject>(data)
+    ? data.data
+    : (data as unknown as ApiProject | null);
+  const proj = (payload ?? null) as ApiProject | null;
 
   if (loading && !proj) {
     return (
@@ -60,44 +73,61 @@ export function ProjectEdit() {
     );
   }
 
-  if (!proj) {
-    return <div className="p-6">Project not found.</div>;
-  }
+  if (!proj) return <div className="p-6">Project not found.</div>;
 
   const initialValues: Partial<ProjectFormValues> = {
     code: proj.projectCode ?? "",
     name: proj.projectName ?? "",
     description: proj.projectDescription ?? "",
-    status: proj.projectStatus ?? "",
+    status: proj.projectStatus, // <-- direct
     start: proj.startDate ? new Date(proj.startDate) : null,
     due: proj.endDate ? new Date(proj.endDate) : null,
   };
 
   return (
-    <ProjectForm
-      mode="edit"
-      initialValues={initialValues}
-      submitting={loading}
-      serverError={error ?? undefined}
-      onCancel={() => navigate(-1)}
-      onSubmit={async (vals) => {
-        // Build payload exactly as API expects
-        const payload = {
-          projectName: vals.name,
-          projectDescription: vals.description || "",
-          startDate: vals.start ? vals.start.toISOString() : null,
-          endDate: vals.due ? vals.due.toISOString() : null,
-          projectStatus: vals.status, // "Planned" | "InProgress" | "DONE"
-        };
+    <>
+      <ProjectForm
+        key={proj.projectCode || String(id)}
+        mode="edit"
+        initialValues={initialValues}
+        submitting={loading}
+        serverError={error ?? undefined}
+        onCancel={() => navigate(-1)}
+        onSubmit={async (vals) => {
+          useDataStore.setState({ error: null });
 
-        const res = await fetchData({
-          url: `http://localhost:5067/api/Project/update/${id}`,
-          method: "PUT",
-          body: payload,
-        });
+          const body = {
+            projectName: vals.name,
+            projectDescription: vals.description || "",
+            startDate: vals.start ? vals.start.toISOString() : "",
+            endDate: vals.due ? vals.due.toISOString() : "",
+            projectStatus: vals.status, // <-- direct
+          };
 
-        if (res) navigate("/project");
-      }}
-    />
+          const resp = await projectService.updateProject(
+            id!,
+            body,
+            authHeaders
+          );
+          const latestErr = useDataStore.getState().error;
+          const ok =
+            !latestErr &&
+            (resp?.isSuccess === undefined || resp?.isSuccess === true);
+
+          if (ok) setSuccessOpen(true);
+        }}
+      />
+
+      <SuccessDialog
+        open={successOpen}
+        onOpenChange={setSuccessOpen}
+        title="Project updated"
+        description="Your changes have been saved successfully."
+        onConfirm={() => {
+          setSuccessOpen(false);
+          navigate("/project");
+        }}
+      />
+    </>
   );
 }

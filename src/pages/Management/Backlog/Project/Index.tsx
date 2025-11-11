@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
@@ -32,8 +32,6 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
-
-// ⬇️ shadcn confirm dialog
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,50 +42,65 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { projectService } from "@/services/projectService";
 
+/* ---------- types ---------- */
 type ProjectItem = {
   projectCode: string;
   projectName: string;
   projectDescription: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   projectStatus: string;
-  createdAt: string;
-  createdBy: string;
-  modifiedAt: string | null;
-  modifiedBy: string | null;
+  createdAt?: string;
+  createdBy?: string;
+  modifiedAt?: string | null;
+  modifiedBy?: string | null;
 };
+type ListData = {
+  items: ProjectItem[];
+  totalCount: number;
+  pageNo: number;
+  pageSize: number;
+};
+type ApiEnvelope<T = unknown> = {
+  isSuccess?: boolean;
+  message?: string;
+  data?: T;
+  [k: string]: unknown;
+};
+const isApiEnvelope = <T,>(x: unknown): x is ApiEnvelope<T> =>
+  typeof x === "object" && x !== null && "data" in x;
 
-type ApiResponse = {
-  isSuccess: boolean;
-  data: {
-    items: ProjectItem[];
-    totalCount: number;
-    pageNo: number;
-    pageSize: number;
-  };
-  message: string;
+/* ---------- helpers ---------- */
+const toIsoStart = (d: Date) => {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x.toISOString();
+};
+const toIsoEnd = (d: Date) => {
+  const x = new Date(d);
+  x.setHours(23, 59, 59, 999);
+  return x.toISOString();
 };
 
 type Row = {
   id: string; // projectCode
   name: string;
   status: string;
-  startDate: string; // localized string for table
-  endDate: string; // localized string for table
+  startDate: string;
+  endDate: string;
 };
-
-const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function ProjectListing() {
   const navigate = useNavigate();
-  const token = useAuthStore((s) => s.token);
   const roleName = useAuthStore((s) => s.user?.roleName);
+
 
   // UI state
   const [date, setDate] = useState<{ from?: Date; to?: Date }>({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   // data state
@@ -109,76 +122,58 @@ export default function ProjectListing() {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  // helpers for date range → ISO (inclusive)
-  const toIsoStart = (d: Date) => {
-    const x = new Date(d);
-    x.setHours(0, 0, 0, 0);
-    return x.toISOString();
-  };
-  const toIsoEnd = (d: Date) => {
-    const x = new Date(d);
-    x.setHours(23, 59, 59, 999);
-    return x.toISOString();
-  };
-
+  // derived paging
   const totalPages = Math.max(1, Math.ceil(totalCount / rowsPerPage));
   const startRow = totalCount === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalCount);
-
-  // keep page in range if totalCount shrinks
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
   }, [totalPages, currentPage]);
+
+  // memo’d params object (prevents unnecessary fetches)
+  const listParams = useMemo(
+    () => ({
+      pageNo: currentPage,
+      pageSize: rowsPerPage,
+      search: debouncedSearch || undefined,
+      from: date.from ? toIsoStart(date.from) : undefined,
+      to: date.to ? toIsoEnd(date.to) : undefined,
+    }),
+    [currentPage, rowsPerPage, debouncedSearch, date.from, date.to]
+  );
 
   const fetchList = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const url = new URL(`${API_BASE}/Project/list`);
-      url.searchParams.set("pageNo", String(currentPage));
-      url.searchParams.set("pageSize", String(rowsPerPage));
-      if (debouncedSearch) url.searchParams.set("search", debouncedSearch);
-      if (date.from) url.searchParams.set("from", toIsoStart(date.from));
-      if (date.to) url.searchParams.set("to", toIsoEnd(date.to));
+      const res = await projectService.fetchProjects(listParams);
 
-      const res = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+      // unwrap flexible envelope or raw payload
+      const payload: ListData | undefined = isApiEnvelope<ListData>(res)
+        ? (res.data as ListData | undefined)
+        : (res as unknown as ListData | undefined);
 
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      const json = (await res.json()) as ApiResponse;
-      if (!json.isSuccess) throw new Error(json.message || "Request failed");
+      if (!payload) throw new Error("Failed to load projects");
 
-      const mapped: Row[] = json.data.items.map((p) => ({
+      const mapped: Row[] = (payload.items ?? []).map((p) => ({
         id: p.projectCode,
         name: p.projectName,
         status: p.projectStatus,
-        startDate: new Date(p.startDate).toLocaleDateString(),
-        endDate: new Date(p.endDate).toLocaleDateString(),
+        startDate: p.startDate
+          ? new Date(p.startDate).toLocaleDateString()
+          : "-",
+        endDate: p.endDate ? new Date(p.endDate).toLocaleDateString() : "-",
       }));
 
       setRows(mapped);
-      setTotalCount(json.data.totalCount);
+      setTotalCount(payload.totalCount ?? 0);
     } catch (e: any) {
       setError(e?.message ?? "Failed to load projects");
     } finally {
       setLoading(false);
     }
-  }, [
-    API_BASE,
-    currentPage,
-    rowsPerPage,
-    debouncedSearch,
-    date.from,
-    date.to,
-    token,
-  ]);
+  }, [listParams]);
 
-  // fetch data
   useEffect(() => {
     fetchList();
   }, [fetchList]);
@@ -189,52 +184,37 @@ export default function ProjectListing() {
   const goToLast = () => setCurrentPage(totalPages);
   const goToFirst = () => setCurrentPage(1);
 
-  // open confirm
+  // delete handlers
   const confirmDelete = (id: string) => {
     setDeleteId(id);
     setDeleteError(null);
     setDeleteOpen(true);
   };
 
-  // do delete
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
     setDeleteError(null);
     try {
-      const res = await fetch(
-        `${API_BASE}/Project/delete/${encodeURIComponent(deleteId)}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        }
-      );
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || `Delete failed (${res.status})`);
+      const delRes = await projectService.deleteProject(deleteId);
+      if (isApiEnvelope<boolean>(delRes) && delRes.isSuccess === false) {
+        throw new Error(delRes.message || "Delete failed");
       }
 
       // optimistic local update
       setRows((prev) => prev.filter((r) => r.id !== deleteId));
       setTotalCount((c) => Math.max(0, c - 1));
 
-      // if page becomes empty and there are previous pages, go back one and refetch
-      setTimeout(() => {
-        setDeleteOpen(false);
-        setDeleting(false);
-        setDeleteId(null);
-        const pageNowWouldBeEmpty = rows.length === 1 && currentPage > 1;
-        if (pageNowWouldBeEmpty) {
-          setCurrentPage((p) => Math.max(1, p - 1));
-        } else {
-          // refetch to sync server pagination/total
-          fetchList();
-        }
-      }, 0);
+      setDeleteOpen(false);
+      setDeleting(false);
+      setDeleteId(null);
+
+      const pageNowWouldBeEmpty = rows.length === 1 && currentPage > 1;
+      if (pageNowWouldBeEmpty) {
+        setCurrentPage((p) => Math.max(1, p - 1));
+      } else {
+        fetchList();
+      }
     } catch (e: any) {
       setDeleteError(e?.message ?? "Failed to delete");
       setDeleting(false);
@@ -245,7 +225,7 @@ export default function ProjectListing() {
     <div className="p-6 w-full flex-1">
       {/* Header row */}
       <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
-        <p className="">Project Listing</p>
+        <p>Project Listing</p>
 
         {/* date picker */}
         <div className="grid gap-2">
@@ -305,7 +285,7 @@ export default function ProjectListing() {
         </div>
 
         <Button
-          className="outline-btn"
+          className="outline-btn cursor-pointer"
           onClick={() => {
             const header = ["Code", "Name", "Status", "Start Date", "End Date"];
             const rowsCsv = rows.map((r) =>
@@ -386,7 +366,7 @@ export default function ProjectListing() {
                 <TableCell>
                   <div className="flex items-center justify-end gap-3">
                     <button
-                      className="p-1 hover:bg-primary-300/50 rounded"
+                      className="p-1 hover:bg-primary-300/50 rounded cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/projects/${row.id}/edit`);
@@ -396,7 +376,7 @@ export default function ProjectListing() {
                       <Edit className="h-4 w-4 text-primary-500" />
                     </button>
                     <button
-                      className="p-1 hover:bg-primary-300/50 rounded"
+                      className="p-1 hover:bg-primary-300/50 rounded cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/projects/${row.id}`);
@@ -406,7 +386,7 @@ export default function ProjectListing() {
                       <Eye className="h-4 w-4 text-primary-700" />
                     </button>
                     <button
-                      className="p-1 hover:bg-primary-300/50 rounded"
+                      className="p-1 hover:bg-primary-300/50 rounded cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         confirmDelete(row.id);
@@ -415,13 +395,13 @@ export default function ProjectListing() {
                     >
                       <Trash2 className="h-4 w-4 text-error-400" />
                     </button>
-                    <button
+                    {/* <button
                       className="p-1 hover:bg-primary-300/50 rounded"
                       onClick={(e) => e.stopPropagation()}
                       title="More"
                     >
                       <MoreVertical className="h-4 w-4 text-primary-700" />
-                    </button>
+                    </button> */}
                   </div>
                 </TableCell>
               </TableRow>
@@ -454,7 +434,6 @@ export default function ProjectListing() {
             <ChevronLeft />
           </button>
 
-          {/* compact page window */}
           {Array.from({ length: totalPages }, (_, i) => i + 1)
             .filter(
               (p) =>
@@ -532,7 +511,11 @@ export default function ProjectListing() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="outline-btn"
+            >
               {deleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>

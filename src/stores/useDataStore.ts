@@ -1,7 +1,10 @@
+// stores/useDataStore.ts
 import { create } from "zustand";
 
+const BASE_URL = import.meta.env.VITE_API_URL; // <- "http://18.142.90.5/api"
+
 interface FetchConfig {
-  url: string;
+  endPoint: string;
   method?: string;
   body?: any;
   headers?: Record<string, string>;
@@ -18,9 +21,8 @@ export const useDataStore = create<DataStore>((set) => ({
   loading: false,
   error: null,
 
-  // Fetch data from API
   fetchData: async ({
-    url,
+    endPoint,
     method = "GET",
     body,
     headers = {},
@@ -32,22 +34,28 @@ export const useDataStore = create<DataStore>((set) => ({
         ...(headers || {}),
       };
 
-      const options = {
+      const options: RequestInit = {
         method,
         headers: defaultHeaders,
         ...(body && { body: JSON.stringify(body) }),
       };
 
-      const response = await fetch(url, options);
-      const data = await response.json();
+      const response = await fetch(`${BASE_URL}${endPoint}`, options);
+
+      const data = response.status === 204 ? null : await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API Error ${response.status}: ${errorText}`);
+        const msg =
+          (data && (data.message || data.error)) ||
+          `API Error ${response.status}`;
+        throw new Error(msg);
       }
-      set({ data: data, loading: false });
-      return data; 
-    } catch (err) {
+
+      set({ data, loading: false });
+      return data;
+    } catch (err: any) {
       set({ error: err.message, loading: false });
+      return null;
     }
   },
 }));

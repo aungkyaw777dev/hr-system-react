@@ -1,5 +1,5 @@
-// ProjectForm.tsx
-import { useState } from "react";
+// src/pages/projects/ProjectForm.tsx
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,13 +17,13 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea"; 
+import { Textarea } from "@/components/ui/textarea";
 
 export type ProjectFormValues = {
   code: string;
   name: string;
-  description: string; 
-  status: "Planned" | "InProgress" | "DONE" | "";
+  description: string;
+  status: "Active" | "Completed" | "Cancelled" | "Planned" | "";
   start: Date | null;
   due: Date | null;
 };
@@ -49,10 +49,33 @@ export function ProjectForm({
     code: initialValues?.code ?? "PJ1234",
     name: initialValues?.name ?? "",
     description: initialValues?.description ?? "",
-    status: initialValues?.status ?? "",
+    status: (initialValues?.status as ProjectFormValues["status"]) ?? "",
     start: initialValues?.start ?? null,
     due: initialValues?.due ?? null,
   });
+
+  // re-hydrate when editing once data arrives
+  useEffect(() => {
+    if (!initialValues) return;
+    setValues((prev) => ({
+      ...prev,
+      code: initialValues.code ?? prev.code,
+      name: initialValues.name ?? prev.name,
+      description: initialValues.description ?? prev.description,
+      status:
+        (initialValues.status as ProjectFormValues["status"]) ?? prev.status,
+      start: initialValues.start ?? prev.start,
+      due: initialValues.due ?? prev.due,
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    initialValues?.code,
+    initialValues?.name,
+    initialValues?.description,
+    initialValues?.status,
+    initialValues?.start?.toString(),
+    initialValues?.due?.toString(),
+  ]);
 
   const update = <K extends keyof ProjectFormValues>(
     key: K,
@@ -70,7 +93,9 @@ export function ProjectForm({
       }}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Project Information</h2>
+        <h2 className="text-lg font-semibold">
+          {mode === "create" ? "Create Project" : "Edit Project"}
+        </h2>
       </div>
 
       {serverError && (
@@ -80,8 +105,8 @@ export function ProjectForm({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
-        {/* Code (local-only) */}
-        <div className="space-y-2">
+        {/* Code */}
+        {/* <div className="space-y-2">
           <label className="text-sm font-medium">
             Code <span className="text-red-500">*</span>
           </label>
@@ -91,7 +116,7 @@ export function ProjectForm({
             onChange={(e) => update("code", e.target.value)}
             disabled={submitting}
           />
-        </div>
+        </div> */}
 
         {/* Name */}
         <div className="space-y-2">
@@ -131,8 +156,9 @@ export function ProjectForm({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Planned">Planned</SelectItem>
-              <SelectItem value="InProgress">In Progress</SelectItem>
-              <SelectItem value="DONE">Done</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Completed">Completed</SelectItem>
+              <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -149,7 +175,6 @@ export function ProjectForm({
               >
                 <Calendar1Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 {values.start ? (
-                  // show as M/d/yyyy (e.g., 6/11/2025)
                   format(values.start, "M/d/yyyy")
                 ) : (
                   <span className="text-muted-foreground">
@@ -163,7 +188,6 @@ export function ProjectForm({
                 mode="single"
                 selected={values.start ?? undefined}
                 onSelect={(d) => update("start", d ?? null)}
-                initialFocus
               />
             </PopoverContent>
           </Popover>
@@ -208,7 +232,7 @@ export function ProjectForm({
         >
           Cancel
         </Button>
-        <Button type="submit" className="outline-btn" variant="default" disabled={submitting}>
+        <Button type="submit" className="outline-btn" disabled={submitting}>
           {submitting ? "Saving..." : submitLabel}
         </Button>
       </div>
