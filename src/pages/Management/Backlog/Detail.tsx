@@ -16,7 +16,7 @@ export function BacklogDetail() {
         setLoading(true);
         const result = await backlogService.fetchTaskById(id as string);
 
-        if (result.isSuccess && result.data?.tasks) {
+        if (result && result.data?.tasks) {
           setTask(result.data.tasks);
         } else {
           console.error("Task not found or error:", result);

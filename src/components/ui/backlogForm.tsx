@@ -51,7 +51,6 @@ const formSchema = z.object({
   workingHour: z.string().nonempty("Working Hours cannot be empty!"),
 });
 
-
 interface BacklogFormProps {
   mode: "create" | "edit" | "view";
   initialData?: {
@@ -112,8 +111,6 @@ export default function BacklogForm({
 
   const isDisabled = mode === "view";
 
-  // Fetch project dropdown options for create and edit modes
-  // Fetch dropdown data whenever we can edit the form.
   useEffect(() => {
     if (mode === "view") {
       return;
@@ -128,26 +125,27 @@ export default function BacklogForm({
         setProjectsError(null);
 
         const empRes = await backlogService.fetchEmployees(1, 100);
-         console.log("Employee: ", empRes);
+        console.log("Employee: ", empRes);
         if (isMounted) {
           setEmployees(
-            (empRes.items ?? []).map((emp: EmployeeApiItem) => ({
-              name: emp.name ?? "",
-              code: emp.employeeCode ?? "",
-            }))
-            .filter((emp: LookupOption) => Boolean(emp.name))
+            (empRes.items ?? [])
+              .map((emp: EmployeeApiItem) => ({
+                name: emp.name ?? "",
+                code: emp.employeeCode ?? "",
+              }))
+              .filter((emp: LookupOption) => Boolean(emp.name))
           );
         }
-       
 
         const projRes = await backlogService.fetchProjects(1, 100);
         if (isMounted) {
           setProjects(
-            (projRes.items ?? []).map((p: ProjectApiItem) => ({
-              name: p.projectName ?? "",
-              code: p.projectCode ?? "",
-            }))
-            .filter((proj: LookupOption) => Boolean(proj.name))
+            (projRes.items ?? [])
+              .map((p: ProjectApiItem) => ({
+                name: p.projectName ?? "",
+                code: p.projectCode ?? "",
+              }))
+              .filter((proj: LookupOption) => Boolean(proj.name))
           );
         }
       } catch (err) {
@@ -225,6 +223,7 @@ export default function BacklogForm({
                   : "space-y-5 md:space-y-8"
               }
             >
+              {/* Task  Code */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -241,6 +240,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Task  Name */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -261,6 +261,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Task  Description */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -286,6 +287,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Assignee */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -329,7 +331,8 @@ export default function BacklogForm({
                                   Loading assignees…
                                 </div>
                               )}
-                              {!employeesLoading && filteredAssignees.length > 0 &&
+                              {!employeesLoading &&
+                                filteredAssignees.length > 0 &&
                                 filteredAssignees.map((assignee) => (
                                   <button
                                     key={assignee.code || assignee.name}
@@ -345,11 +348,12 @@ export default function BacklogForm({
                                     {assignee.name}
                                   </button>
                                 ))}
-                              {!employeesLoading && filteredAssignees.length === 0 && (
-                                <div className="px-3 py-2 text-sm text-gray-500">
-                                  {employeesError || "No results"}
-                                </div>
-                              )}
+                              {!employeesLoading &&
+                                filteredAssignees.length === 0 && (
+                                  <div className="px-3 py-2 text-sm text-gray-500">
+                                    {employeesError || "No results"}
+                                  </div>
+                                )}
                             </div>
                           </div>
                         </PopoverContent>
@@ -360,6 +364,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Project  Name */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -447,6 +452,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Task  Status */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -467,6 +473,52 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Due Date - Create Mode */}
+              {mode === "create" && (
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Due Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full justify-start text-left font-normal p-3 h-auto border-gray-300",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, "LLL dd, y")
+                              ) : (
+                                <span>Enter due date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 bg-white"
+                          align="start"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Start  Date */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -528,6 +580,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Working  Hours */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -563,6 +616,7 @@ export default function BacklogForm({
                   : "space-y-5 md:space-y-8 pr-5"
               }
             >
+              {/* Task  Description */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -583,6 +637,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Task  Name */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -608,6 +663,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Project  Name */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -683,6 +739,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Assignee */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -735,7 +792,8 @@ export default function BacklogForm({
                                     Loading assignees…
                                   </div>
                                 )}
-                                {!employeesLoading && filteredAssignees.length > 0 &&
+                                {!employeesLoading &&
+                                  filteredAssignees.length > 0 &&
                                   filteredAssignees.map((assignee) => (
                                     <button
                                       key={assignee.code || assignee.name}
@@ -751,11 +809,12 @@ export default function BacklogForm({
                                       {assignee.name}
                                     </button>
                                   ))}
-                                {!employeesLoading && filteredAssignees.length === 0 && (
-                                  <div className="px-3 py-2 text-sm text-gray-500">
-                                    {employeesError || "No results"}
-                                  </div>
-                                )}
+                                {!employeesLoading &&
+                                  filteredAssignees.length === 0 && (
+                                    <div className="px-3 py-2 text-sm text-gray-500">
+                                      {employeesError || "No results"}
+                                    </div>
+                                  )}
                               </div>
                             </div>
                           </PopoverContent>
@@ -767,6 +826,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Task  Status */}
               {mode !== "create" && (
                 <FormField
                   control={form.control}
@@ -792,6 +852,7 @@ export default function BacklogForm({
                 />
               )}
 
+              {/* Start  Date */}
               {mode === "create" && (
                 <FormField
                   control={form.control}
@@ -836,65 +897,69 @@ export default function BacklogForm({
                 />
               )}
 
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Due Date</FormLabel>
-                    {isDisabled ? (
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            value={
-                              field.value
-                                ? format(field.value, "yyyy-MM-dd")
-                                : ""
-                            }
-                            disabled
-                            className="pl-10 bg-natural-500"
-                          />
-                        </FormControl>
-                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
-                      </div>
-                    ) : (
-                      <Popover>
-                        <PopoverTrigger asChild>
+              {/* Due Date */}
+              {mode !== "create" && (
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Due Date</FormLabel>
+                      {isDisabled ? (
+                        <div className="relative">
                           <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full justify-start text-left font-normal p-3 h-auto border-gray-300",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? (
-                                format(field.value, "LLL dd, y")
-                              ) : (
-                                <span>Enter due date</span>
-                              )}
-                            </Button>
+                            <Input
+                              value={
+                                field.value
+                                  ? format(field.value, "yyyy-MM-dd")
+                                  : ""
+                              }
+                              disabled
+                              className="pl-10 bg-natural-500"
+                            />
                           </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto p-0 bg-white"
-                          align="start"
-                        >
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
+                        </div>
+                      ) : (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full justify-start text-left font-normal p-3 h-auto border-gray-300",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value ? (
+                                  format(field.value, "LLL dd, y")
+                                ) : (
+                                  <span>Enter due date</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto p-0 bg-white"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
+              {/* Working  Hours */}
               {mode === "create" && (
                 <FormField
                   control={form.control}

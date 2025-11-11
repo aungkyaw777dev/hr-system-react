@@ -11,7 +11,7 @@ export const backlogService = {
   deleteTask: async (taskId: number) => {
     await useDataStore.getState().fetchData({
       endPoint: `/Task/delete?taskId=${taskId}`,
-      method: "POST",
+      method: "DELETE",
     });
     return useDataStore.getState().data ?? { isSuccess: false };
   },
@@ -43,6 +43,15 @@ export const backlogService = {
     await useDataStore.getState().fetchData({
       endPoint: `/Task/create`,
       method: "POST",
+      body: payload,
+    });
+    return useDataStore.getState().data ?? { isSuccess: false };
+  },
+  
+ updateTask: async (payload: any) => {
+    await useDataStore.getState().fetchData({
+      endPoint: `/Task/update`,
+      method: "PUT",
       body: payload,
     });
     return useDataStore.getState().data ?? { isSuccess: false };
