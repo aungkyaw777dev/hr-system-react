@@ -16,15 +16,21 @@ import { roleMenuPermissionService } from "@/services/roleMenuPermissionService"
 
 export default function RoleMenuPermissionPanel() {
   const [roles, setRoles] = useState();
-
   const [menus, setMenus] = useState();
-
   const [permissions, setPermissions] = useState();
 
   const [selectedRole, setSelectedRole] = useState();
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    (async () => {
+      const fetchRoles = await roleMenuPermissionService.fetchRoles();
+      const fetchedMenus = await roleMenuPermissionService.fetchMenus();
+      console.log(fetchRoles);
+      console.log(fetchedMenus);
+    })();
+  });
   // useEffect(() => {
   //   // ensure selectedRole exists after (fake) data changes
   //   if (!roles.find((r) => r.id === selectedRole)) {
@@ -69,8 +75,8 @@ export default function RoleMenuPermissionPanel() {
 
   const filteredMenus = menus
     ? menus.filter((m) =>
-      m.menuName.toLowerCase().includes(search.toLowerCase())
-    )
+        m.menuName.toLowerCase().includes(search.toLowerCase())
+      )
     : [];
 
   useEffect(() => {
@@ -97,14 +103,14 @@ export default function RoleMenuPermissionPanel() {
           <SelectContent className="w-full">
             {roles
               ? roles.map((r) => (
-                <SelectItem
-                  key={r.roleId}
-                  value={r.roleId}
-                  className="w-full"
-                >
-                  {r.roleName}
-                </SelectItem>
-              ))
+                  <SelectItem
+                    key={r.roleId}
+                    value={r.roleId}
+                    className="w-full"
+                  >
+                    {r.roleName}
+                  </SelectItem>
+                ))
               : null}
           </SelectContent>
         </Select>
@@ -121,10 +127,10 @@ export default function RoleMenuPermissionPanel() {
                   <Checkbox
                     className="data-[state=checked]:border-primary-500 border border-2  data-[state=checked]:text-primary-500"
                     id={`chk-${selectedRole}-${menu.menuId}`}
-                  // checked={isAllowed(selectedRole, menu.id)}
-                  // onCheckedChange={() =>
-                  //   togglePermission(selectedRole, menu.id)
-                  // }
+                    // checked={isAllowed(selectedRole, menu.id)}
+                    // onCheckedChange={() =>
+                    //   togglePermission(selectedRole, menu.id)
+                    // }
                   />
                   <div className="font-medium">{menu.menuName}</div>
                 </div>
