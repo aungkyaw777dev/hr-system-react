@@ -20,7 +20,7 @@ import ManagementDashboard from "./pages/Management/Dashboard/Index";
 import Location from "./pages/Management/Attendance/Location/Index";
 import LocationCreate from "./pages/Management/Attendance/Location/LocationCreate";
 import LocationDetail from "./pages/Management/Attendance/Location/LocationDetail";
-import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit"; 
+import LocationEdit from "./pages/Management/Attendance/Location/LocationEdit";
 
 // attendance
 import { CreateAttendance } from "./pages/Management/Attendance/Create";
@@ -68,11 +68,13 @@ import Profile from "./pages/Profile/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/Role-Menu-Permission/Create";
+import { ScrollToTop } from "./pages/ScrollToTop";
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route element={<AuthLayout />}>
             <Route path="/" element={<LoginPage />} />
