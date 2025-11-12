@@ -12,9 +12,9 @@ import {
   Briefcase,
   Menu,
   LayoutDashboardIcon,
+  PanelTopOpen,
 } from "lucide-react";
 import { useState } from "react";
-import { Item } from "@radix-ui/react-dropdown-menu";
 
 export default function Sidebar({ onClose }: { onClose: () => void }) {
   const [isBacklogSubMenuOpen, setIsBacklogSubMenuOpen] = useState(false);
@@ -74,6 +74,7 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
             className="sidebar-btn"
             onClick={onClose}
           >
+            <PanelTopOpen />
             Menu Item
           </Link>
         </div>
