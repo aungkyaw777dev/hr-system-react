@@ -19,7 +19,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://18.142.90.5'
+      '/api': {
+        target: import.meta.env.VITE_API_URL,
+        changeOrigin: false,
+        secure: false
+      }
     }
   }
 });
