@@ -17,7 +17,6 @@ import { roleMenuPermissionService } from "@/services/roleMenuPermissionService"
 export default function RoleMenuPermissionPanel() {
   const [roles, setRoles] = useState();
   const [menus, setMenus] = useState();
-  const [permissions, setPermissions] = useState();
 
   const [selectedRole, setSelectedRole] = useState();
   const [search, setSearch] = useState("");

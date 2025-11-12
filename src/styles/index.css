@@ -153,7 +153,7 @@
   }
   
   .outline-btn {
-    @apply border border-primary-800! text-primary-800! bg-natural-50 hover:bg-primary-500 hover:text-natural-50! hover:border-none
+    @apply border border-natural-500! text-primary-700! bg-natural-50 hover:bg-primary-500 hover:text-natural-50! hover:border-none
   }
 
   [data-slot="table-container"] {

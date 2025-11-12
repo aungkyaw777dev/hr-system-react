@@ -180,7 +180,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
               value={searchName}
               placeholder="Search..."
               onInput={(e) => setSearchName(e.target.value)}
-              className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
+              className="border-primary-700 bg-natural-50 focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
             />
             {searchName ? (
               <CircleX
@@ -192,15 +192,19 @@ export default function EmployeeList({ onSort, sortConfig }) {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 text-primary-700 bg-natural-50">
             <Select>
               <SelectTrigger className="text-primary-400">
                 <SelectValue placeholder="Role" className="font-semibold" />
               </SelectTrigger>
-              <SelectContent className="bg-natural-100 text-primary-400">
+              <SelectContent className="bg-natural-50 text-primary-700">
                 <SelectGroup>
                   {fetchRoles.map((role) => (
-                    <SelectItem id={role.roleId} value={role.roleName}>
+                    <SelectItem
+                      id={role.roleId}
+                      value={role.roleName}
+                      key={role.roleId}
+                    >
                       {role.roleName}
                     </SelectItem>
                   ))}
@@ -220,7 +224,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
       {/* Table */}
       <Table className="w-full overflow-auto shadow-sm rounded-md">
         <TableHeader className="bg-primary-400 text-center">
-          <TableRow>
+          <TableRow key="header">
             <TableHead className="px-4 py-2 font-semibold">#</TableHead>
             <TableHead className="px-4 py-2 font-semibold">
               Employee Code
@@ -253,7 +257,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
 
         <TableBody>
           {loading ? (
-            <TableRow key="title">
+            <TableRow key="loading">
               <TableCell colSpan={8} className="h-24 text-center">
                 <div className="flex items-center justify-center text-primary-500">
                   <SpinnerCustom />
@@ -263,7 +267,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
           ) : employees.length ? (
             employees.map((user, index) => (
               <TableRow
-                key={user.employeeCode}
+                key={user.employeeCode || startIndex + index + 1}
                 className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
                 onClick={() =>
                   navigate(`/employee/detail/${user.employeeCode}`, {
@@ -280,18 +284,18 @@ export default function EmployeeList({ onSort, sortConfig }) {
                 <TableCell>{user.phoneNo}</TableCell>
                 <TableCell className="flex gap-4 justify-center">
                   <Edit
-                    className="h-4 w-4 text-black cursor-pointer hover:text-primary-500"
+                    className="h-4 w-4 text-primary-500 cursor-pointer hover:text-primary-500"
                     onClick={() => handleEdit(user.employeeCode)}
                   />
                   <Trash2
-                    className="h-4 w-4 text-black cursor-pointer hover:text-red-500"
+                    className="h-4 w-4 text-error-400 cursor-pointer hover:text-red-500"
                     onClick={(e) => handleDelete(e, user.employeeCode)}
                   />
                 </TableCell>
               </TableRow>
             ))
           ) : (
-            <TableRow key="title">
+            <TableRow key="no-data">
               <TableCell colSpan={8} className="h-24 text-center">
                 <div className="flex items-center justify-center text-primary-500">
                   No Data Matched.
