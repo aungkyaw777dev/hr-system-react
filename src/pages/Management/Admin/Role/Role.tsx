@@ -95,7 +95,7 @@ const Role: React.FC = () => {
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
     setIsModalOpen(true);
-  };
+  };  
 
   const handelCloseModal = () => {
     setIsModalOpen(false);
@@ -111,6 +111,8 @@ const Role: React.FC = () => {
     }
     handelCloseModal();
   };
+
+
 
   return (
     <div className="p-3 sm:p-6 md:p-8 w-full">
@@ -257,7 +259,7 @@ const Role: React.FC = () => {
       {/* --- MODAL (Unchanged) --- */}
       {isModalOpen && roleToDelete && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50"
+          className="fixed inset-0 bg-opacity-100 backdrop-blur-sm flex justify-center items-center z-50"
           onClick={handelCloseModal}
         >
           <div
@@ -266,12 +268,13 @@ const Role: React.FC = () => {
           >
             <div className="flex justify-center mb-4">
               <div className="bg-gray-100 p-4 rounded-full">
-                <Trash2 size={40} className="text-gray-800" />
+                <Trash2 size={40} className="text-red-800" />
               </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Are you sure you want to delete the role?
-            </h2>
+            <h1 className="text-xl font-bold text-black-800 mb-4">
+              Are you sure you want to delete this record?
+            </h1>
+            <p className="text-base text-gray-400 mb-4">This action cannot be undone</p>
             <div className="flex justify-center gap-4 mt-8">
               <button
                 onClick={handelCloseModal}
@@ -281,7 +284,7 @@ const Role: React.FC = () => {
               </button>
               <button
                 onClick={handelDeleteRole}
-                className="py-2 px-8 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+                className="py-2 px-8 bg-red-700 text-white rounded-lg font-semibold hover:bg-red-900 transition-colors"
               >
                 Delete
               </button>
