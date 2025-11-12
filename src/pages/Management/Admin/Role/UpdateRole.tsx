@@ -11,7 +11,7 @@ const UpdateRole: React.FC = () => {
         
         {/* Header Section */}
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
-          Update The Role
+          Edit Role
         </h1>
 
         {/* Form Section */}
@@ -46,13 +46,13 @@ const UpdateRole: React.FC = () => {
           <div className="flex justify-end gap-4">
             <Link 
               to="/role" 
-              className="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+              className="bg-gray-200 text-[rgba(2,177,108,1)] py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors"
             >
-              Back
+              Cancel
             </Link>
             <button 
               type="submit"
-              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-colors"
+              className="bg-[rgba(2,177,108,1)] text-white py-2 px-6 rounded-lg hover:bg-green-700 transition-colors"
             >
               Update
             </button>

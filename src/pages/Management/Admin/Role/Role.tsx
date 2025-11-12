@@ -132,7 +132,7 @@ const Role: React.FC = () => {
 
         {/* Table Section */}
         <div className="overflow-x-auto">
-          <table className="w-full justify-between">
+          <table className="w-full justify-between overflow-hidden rounded-lg border">
             <thead>
               <tr className="bg-[#55CB9D] font-bold text-m text-black-800">
                 <th className="py-3 pr-4 text-center">No</th>
