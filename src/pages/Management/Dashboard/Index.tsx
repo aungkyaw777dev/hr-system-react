@@ -6,10 +6,10 @@ import { UsersRound } from "lucide-react";
 export default function () {
   return (
     <>
-      <div className="flex flex-col gap-2 p-5 w-full h-auto">
+      <div className="flex flex-col gap-2 p-3 w-full h-auto">
         <div className="w-full flex flex-col md:flex-row gap-2">
           <div className="w-full md:w-[50%] bg-natural-50 p-2 rounded-xl shadow-sm flex flex-col justify-center md:justify-between">
-            <p className="text-text font-medium text-2xl">Check In/Out</p>
+            <p className="text-text font-medium text-xl">Check In/Out</p>
             <div className="flex items-center justify-end flex-col gap-2 flex-1">
               <div className="checkin-circle flex items-center justify-center">
                 <p className="text-white font-bold text-xl">Check In</p>
@@ -28,9 +28,9 @@ export default function () {
             <PieChartWithPercentage />
           </div>
         </div>
-        <div className="bg-natural-50 rounded p-4">
+        <div className="bg-natural-50 rounded p-3">
           <div className="flex justify-between">
-            <p className="text-2xl font-medium">Attendance Overview</p>
+            <p className="text-xl font-medium">Attendance Overview</p>
             <div className="p-2 bg-primary-50 text-primary-500 rounded">
               <p>Today</p>
             </div>
