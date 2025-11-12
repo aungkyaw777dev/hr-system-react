@@ -34,10 +34,15 @@ import PayrollCreate from "./pages/Management/Payroll/PayrollCreate";
 import PayrollDetail from "./pages/Management/Payroll/PayrollDetail";
 import PayrollEdit from "./pages/Management/Payroll/PayrollEdit";
 
+// menu Group
+import MenuGroupList from "./pages/Management/Admin/MenuGroup/Index";
+import MenuGroupCreate from "./pages/Management/Admin/MenuGroup/Create";
+import MenuGroupEdit from "./pages/Management/Admin/MenuGroup/Edit";
+
 // menu item
-import MenuItem from "./pages/Management/Admin/Menu/MenuItem";
-import MenuItemCreate from "./pages/Management/Admin/Menu/MenuItemCreate";
-import MenuItemEdit from "./pages/Management/Admin/Menu/MenuItemEdit";
+import MenuItemCreate from "./pages/Management/Admin/MenuGroup/MenuItem/Create";
+import MenuItemEdit from "./pages/Management/Admin/MenuGroup/MenuItem/Edit";
+import MenuItemList from "./pages/Management/Admin/MenuGroup/MenuItem/Index";
 
 // project
 import ProjectList from "./pages/Management/Backlog/Project/Index";
@@ -76,6 +81,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
+          {/* Auth  */}
           <Route element={<AuthLayout />}>
             <Route path="/" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -89,8 +95,54 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
 
-          {/* admin */}
+          {/*Main Layou */}
           <Route element={<MainLayout />}>
+            {/* Admin Only */}
+            <Route
+              path="/management/admin/menu-group"
+              element={<MenuGroupList />}
+            ></Route>
+            <Route
+              path="/management/admin/menu-group/create"
+              element={<MenuGroupCreate />}
+            />
+            <Route
+              path="/management/admin/menu-group/edit"
+              element={<MenuGroupEdit />}
+            />
+
+            <Route
+              path="/management/admin/menu-item"
+              element={<MenuItemList />}
+            ></Route>
+            <Route
+              path="/management/admin/menu-item/create"
+              element={<MenuItemCreate />}
+            />
+            <Route
+              path="/management/admin/menu-item/edit"
+              element={<MenuItemEdit />}
+            />
+
+            <Route path="/management/admin/role" element={<Role />}></Route>
+            <Route
+              path="/management/admin/role/create"
+              element={<CreateRole />}
+            ></Route>
+            <Route
+              path="/management/admin/role/update"
+              element={<UpdateRole />}
+            ></Route>
+            <Route
+              path="/management/admin/role/view"
+              element={<ViewRole />}
+            ></Route>
+
+            <Route
+              path="/management/admin/role-menu-permission"
+              element={<RoleMenuTreeViewCreate />}
+            ></Route>
+
             <Route
               path="/management/dashboard"
               element={
@@ -99,14 +151,12 @@ function App() {
                 </RoleGuard>
               }
             ></Route>
-            <Route
-              path="/management/admin/role-menu-permission"
-              element={<RoleMenuTreeViewCreate />}
-            ></Route>
+
             <Route path="/backlog" element={<Backlog />}></Route>
             <Route path="/backlog/:id" element={<BacklogDetail />} />
             <Route path="/backlog/create" element={<BacklogCreate />}></Route>
             <Route path="/backlog/edit/:id" element={<BacklogEdit />}></Route>
+
             <Route path="/project" element={<ProjectList />}></Route>
             <Route path="/projects/new" element={<ProjectCreate />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
@@ -118,10 +168,6 @@ function App() {
               element={<RemoveEmployee />}
             />
 
-            <Route path="/role" element={<Role />}></Route>
-            <Route path="/role/create" element={<CreateRole />}></Route>
-            <Route path="/role/update" element={<UpdateRole />}></Route>
-            <Route path="/role/view" element={<ViewRole />}></Route>
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
             <Route path="/location/edit/:id" element={<LocationEdit />} />
@@ -140,13 +186,12 @@ function App() {
               path="/attendance/:code/update"
               element={<UpdateAttendance />}
             ></Route>
+
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>
             <Route path="/payroll/:id/edit" element={<PayrollEdit />}></Route>
             <Route path="/payroll/:id" element={<PayrollDetail />}></Route>
-            <Route path="/menuitem" element={<MenuItem />}></Route>
-            <Route path="/menuitem/create" element={<MenuItemCreate />} />
-            <Route path="/menuitem/edit" element={<MenuItemEdit />} />
+
             <Route path="/employee" element={<EmployeeList />}></Route>
             <Route path="/employee/new" element={<EmployeeCreate />}></Route>
             <Route path="/employee/edit/:code" element={<EmployeeEdit />} />

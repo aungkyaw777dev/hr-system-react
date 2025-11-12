@@ -31,7 +31,7 @@ type MenuItem = {
   order: number;
 };
 
-export default function MenuItemList() {
+export default function MenuGroupList() {
   const [data, setData] = useState<MenuItem[]>([
     {
       id: 1,
@@ -413,10 +413,11 @@ export default function MenuItemList() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${page === currentPage
-                  ? "bg-primary-500 text-natural-50"
-                  : "bg-natural-50 text-black hover:bg-gray-200"
-                  }`}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-primary-500 text-natural-50"
+                    : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
               >
                 {page}
               </button>

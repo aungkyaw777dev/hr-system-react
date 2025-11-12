@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  ChevronDown,
-  LayoutDashboard,
   UsersRound,
   UserRound,
   LogOut,
@@ -9,8 +7,14 @@ import {
   LayoutTemplate,
   Clock,
   ChevronUp,
+  Map,
+  ListCheck,
+  Briefcase,
+  Menu,
+  LayoutDashboardIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { Item } from "@radix-ui/react-dropdown-menu";
 
 export default function Sidebar({ onClose }: { onClose: () => void }) {
   const [isBacklogSubMenuOpen, setIsBacklogSubMenuOpen] = useState(false);
@@ -29,10 +33,14 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         onClick={onClose}
         className="sidebar-btn"
       >
-        <LayoutDashboard />
+        <LayoutDashboardIcon />
         Dashboard
       </Link>
-      <Link to="/role" onClick={onClose} className="sidebar-btn">
+      <Link
+        to="/management/admin/role"
+        onClick={onClose}
+        className="sidebar-btn"
+      >
         <UserRound />
         Role
       </Link>
@@ -41,7 +49,7 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         onClick={() => toglemenuItem()}
       >
         <span className="cursor-pointer flex gap-1">
-          <LayoutDashboard />
+          <LayoutDashboardIcon />
           Menu
         </span>
         <ChevronUp
@@ -52,11 +60,23 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         />
       </div>
       {isSubMenuItemOpen && (
-        <>
-          <Link to="/menuitem" className="sidebar-btn" onClick={onClose}>
+        <div className="ms-2 w-[90%]">
+          <Link
+            to="/management/admin/menu-group"
+            className="sidebar-btn"
+            onClick={onClose}
+          >
+            <Menu />
+            MenuGroup
+          </Link>
+          <Link
+            to="management/admin/menu-item"
+            className="sidebar-btn"
+            onClick={onClose}
+          >
             Menu Item
           </Link>
-        </>
+        </div>
       )}
       <Link
         to="/management/admin/role-menu-permission"
@@ -86,14 +106,16 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         />
       </div>
       {isBackLogMenuOpen && (
-        <>
+        <div className="ms-2 w-[90%]">
           <Link to="/backlog" className="sidebar-btn" onClick={onClose}>
+            <ListCheck />
             Backlog
           </Link>
           <Link to="/project" className="sidebar-btn" onClick={onClose}>
+            <Briefcase />
             Project
           </Link>
-        </>
+        </div>
       )}
       <div
         className="sidebar-btn flex w-full justify-between"
@@ -113,14 +135,16 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         />
       </div>
       {isSubMenuOpen && (
-        <>
+        <div className="ms-2 w-[90%]">
           <Link to="/location" onClick={onClose} className="sidebar-btn">
+            <Map />
             Location
           </Link>
           <Link to="/attendance" onClick={onClose} className="sidebar-btn">
+            <Clock />
             Attendance
           </Link>
-        </>
+        </div>
       )}
       <Link to="/payroll" onClick={onClose} className="sidebar-btn">
         <DollarSign /> Payroll
