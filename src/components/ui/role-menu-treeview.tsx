@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { roleMenuPermissionService } from "@/services/roleMenuPermissionService";
+import { Plus } from "lucide-react";
 
 export default function RoleMenuPermissionPanel() {
   const [roleMenuPermission, setRoleMenuPermission] = useState([]);
@@ -37,22 +38,23 @@ export default function RoleMenuPermissionPanel() {
       const fetchedRoles = await roleMenuPermissionService.fetchRoles();
       setRoleMenuPermission(fetchRMP);
       setRoles(fetchedRoles.items);
+      console.log(fetchedRoles.items);
     })();
   }, []);
 
   return (
     <div className="pt-6 max-w-6xl mx-auto w-full flex">
-      <div className="flex flex-col gap-3 mb-4 w-full">
+      <div className="flex flex-col gap-3 mb-4 w-full ">
         <Label className="mb-1">Role</Label>
         <Select onValueChange={(v) => setSelectedRole(v)}>
-          <SelectTrigger className="bg-white">
+          <SelectTrigger className="bg-white text-primary-700">
             <SelectValue placeholder="Select role">
               {roles
                 ? roles.filter((r) => r.roleId === selectedRole)?.roleName
                 : null}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="w-full">
+          <SelectContent className="w-full bg-natural-50 text-primary-700">
             {roles
               ? roles.map((r) => (
                   <SelectItem
@@ -71,23 +73,32 @@ export default function RoleMenuPermissionPanel() {
         <Card className="border-none shadow-none">
           <CardContent>
             {roleMenuPermission.map((menuGroup) => (
-              <div
-                key={menuGroup.menuGroupCode}
-                className="flex flex-col items-start justify-between p-3"
-              >
-                <div className="flex items-center gap-2">
-                  <Checkbox className="data-[state=checked]:border-primary-500 border border-1  data-[state=checked]:text-primary-500" />
-                  <div className="font-medium">{menuGroup.menuGroupCode}</div>
-                </div>
+              <div className="flex">
                 <div>
-                  {menuGroup.childMenus.map((menu: any) => (
-                    <div key={menu.menuItemCode}>
-                      <div className="flex items-center gap-2 ps-4">
-                        <Checkbox className="data-[state=checked]:border-primary-500 border border-1  data-[state=checked]:text-primary-500" />
-                        <div className="font-medium">{menu.menuItemName}</div>
+                  {menuGroup.childMenus.length ? (
+                    <Plus className="text-primary-700 mt-3" />
+                  ) : (
+                    <div className="ms-6"></div>
+                  )}
+                </div>
+                <div
+                  key={menuGroup.menuGroupCode}
+                  className="flex flex-col items-start justify-between p-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <Checkbox className="data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500" />
+                    <div className="font-medium">{menuGroup.menuGroupCode}</div>
+                  </div>
+                  <div>
+                    {menuGroup.childMenus.map((menu: any) => (
+                      <div key={menu.menuItemCode}>
+                        <div className="flex items-center gap-2 ps-6">
+                          <Checkbox className="data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500" />
+                          <div className="font-medium">{menu.menuItemName}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

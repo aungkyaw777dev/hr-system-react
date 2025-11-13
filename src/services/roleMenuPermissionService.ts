@@ -13,7 +13,7 @@ export const roleMenuPermissionService = {
         await useDataStore.getState().fetchData({
             endPoint: `/Role/list`
         })
-        return useDataStore.getState().data ?? {}
+        return useDataStore.getState().data?.data ?? {}
     },
   
 
