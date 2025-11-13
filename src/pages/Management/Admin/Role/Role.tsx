@@ -156,8 +156,8 @@ const Role: React.FC = () => {
                   <td className="py-4 px-6">
                     <div className="flex justify-end items-center gap-3 sm:gap-4">
                       <Link
-                        to="/role/update"
-                        className="p-1 sm:p-2 text-black-500 hover:text-blue-700"
+                        to="/management/admin/role/update"
+                        className="text-gray-500 hover:text-blue-500"
                       >
                         <Pencil size={18} />
                       </Link>
@@ -168,8 +168,8 @@ const Role: React.FC = () => {
                         <Trash2 size={18} />
                       </button>
                       <Link
-                        to="/role/view"
-                        className="p-1 sm:p-2 text-black-500 hover:text-green-700"
+                        to="/management/admin/role/view"
+                        className="text-gray-500 hover:text-green-500"
                       >
                         <Eye size={18} />
                       </Link>
