@@ -27,8 +27,6 @@ import {
   Search,
   Calendar1Icon,
   FileUp,
-  Divide,
-  EyeIcon,
   CircleX,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -55,7 +53,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSuccessDialogStore } from "@/stores/useSuccessDialogStore";
 
-export function AttendanceList() {
+export function CompanyRulesList() {
   const navigate = useNavigate()
   const [attendanceList, setAttendanceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -166,7 +164,7 @@ export function AttendanceList() {
             <PopoverTrigger asChild>
               <Button
                 className={cn(
-                  "justify-between text-left font-normal w-[250px] outline-btn font-semibold",
+                  "justify-between text-left font-normal w-[250px] outline-btn",
                   !date && "text-muted-foreground"
                 )}
               >
@@ -197,6 +195,8 @@ export function AttendanceList() {
             </PopoverContent>
           </Popover>
         </div>
+
+        {/* search */}
         <div className="relative w-full md:w-[200px] text-primary-800">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
             <Input

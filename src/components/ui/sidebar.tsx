@@ -111,6 +111,18 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         Role & Menu Permission
       </Link>
       <Link
+        to="/management/admin/company-rules"
+        onClick={onClose}
+        className={`sidebar-btn ${
+          location.pathname === "/management/admin/company-rules"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
+      >
+        <UserRound />
+        Company Rules
+      </Link>
+      <Link
         to="/employee"
         onClick={onClose}
         className={`sidebar-btn ${
