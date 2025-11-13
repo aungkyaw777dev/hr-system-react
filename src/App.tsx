@@ -93,6 +93,7 @@ function App() {
           {/* error handling */}
           <Route>
             <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Unauthorized />} />
           </Route>
 
           {/*Main Layou */}

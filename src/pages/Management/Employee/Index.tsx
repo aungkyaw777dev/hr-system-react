@@ -88,17 +88,10 @@ export default function EmployeeList({ onSort, sortConfig }) {
       try {
         setLoading(true);
         setEmployees([]);
-        const fetchEmployees = await EmployeeService.fetchEmployees(
-          searchName,
-          currentPage,
-          rowsPerPage
-        );
-        setData(fetchEmployees);
-        setEmployees(fetchEmployees?.items || []);
+        fetchEmployees();
         const fetchRoles = await EmployeeService.fetchRoles();
         setRoles(fetchRoles.data);
-        setRowsPerPage(fetchEmployees.pageSize);
-        setCurrentPage(fetchEmployees.pageNo);
+
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -107,6 +100,17 @@ export default function EmployeeList({ onSort, sortConfig }) {
     loadData();
   }, [debouncedFilters]);
 
+  const fetchEmployees = async () => {
+    const fetchEmployees = await EmployeeService.fetchEmployees(
+      searchName,
+      currentPage,
+      rowsPerPage
+    );
+    setRowsPerPage(fetchEmployees.pageSize);
+    setCurrentPage(fetchEmployees.pageNo);
+    setData(fetchEmployees);
+    setEmployees(fetchEmployees?.items || []);
+  };
   // ✅ Flatten API data
 
   const totalRows = data?.totalCount || 0;
@@ -142,6 +146,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
   const confirmDelete = async () => {
     try {
       await EmployeeService.deleteEmployee(employeeToDelete);
+      await fetchEmployees();
       openDialog("Delete Employee successful!", onConfirm);
     } catch (error) {
       console.log(error);
