@@ -13,49 +13,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { roleMenuPermissionService } from "@/services/roleMenuPermissionService";
+import { Plus } from "lucide-react";
 
 export default function RoleMenuPermissionPanel() {
-  const [roles, setRoles] = useState();
-
-  const [menus, setMenus] = useState();
-
-  const [permissions, setPermissions] = useState();
-
-  const [selectedRole, setSelectedRole] = useState();
-  const [search, setSearch] = useState("");
+  const [roleMenuPermission, setRoleMenuPermission] = useState([]);
   const [saving, setSaving] = useState(false);
-
-  // useEffect(() => {
-  //   // ensure selectedRole exists after (fake) data changes
-  //   if (!roles.find((r) => r.id === selectedRole)) {
-  //     setSelectedRole(roles[0]?.id ?? null);
-  //   }
-  // }, [roles, selectedRole]);
-
-  // function togglePermission(roleId: string, menuId: string) {
-  //   setPermissions((prev) => {
-  //     const clone = { ...prev };
-  //     const setForRole = new Set(clone[roleId] ?? []);
-  //     if (setForRole.has(menuId)) setForRole.delete(menuId);
-  //     else setForRole.add(menuId);
-  //     clone[roleId] = setForRole;
-  //     return clone;
-  //   });
-  // }
-
-  function isAllowed(roleId: string, menuId: string) {
-    return !!permissions[roleId] && permissions[roleId].has(menuId);
-  }
-
-  function toggleAllForRole(roleId: string, enable: boolean) {
-    setPermissions((prev) => {
-      const clone = { ...prev };
-      if (enable) clone[roleId] = new Set(menus.map((m) => m.id));
-      else clone[roleId] = new Set();
-      return clone;
-    });
-  }
-
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState();
   async function handleSave() {
     setSaving(true);
     try {
@@ -67,34 +31,30 @@ export default function RoleMenuPermissionPanel() {
     }
   }
 
-  const filteredMenus = menus
-    ? menus.filter((m) =>
-        m.menuName.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
-
   useEffect(() => {
     (async () => {
+      const fetchRMP =
+        await roleMenuPermissionService.fetchRoleMenuPermission();
       const fetchedRoles = await roleMenuPermissionService.fetchRoles();
-      const fetchedMenus = await roleMenuPermissionService.fetchMenus();
+      setRoleMenuPermission(fetchRMP);
       setRoles(fetchedRoles.items);
-      setMenus(fetchedMenus);
+      console.log(fetchedRoles.items);
     })();
   }, []);
 
   return (
     <div className="pt-6 max-w-6xl mx-auto w-full flex">
-      <div className="flex flex-col gap-3 mb-4 w-full">
+      <div className="flex flex-col gap-3 mb-4 w-full ">
         <Label className="mb-1">Role</Label>
         <Select onValueChange={(v) => setSelectedRole(v)}>
-          <SelectTrigger className="bg-white">
+          <SelectTrigger className="bg-white text-primary-700">
             <SelectValue placeholder="Select role">
               {roles
                 ? roles.filter((r) => r.roleId === selectedRole)?.roleName
                 : null}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="w-full">
+          <SelectContent className="w-full bg-natural-50 text-primary-700">
             {roles
               ? roles.map((r) => (
                   <SelectItem
@@ -109,31 +69,43 @@ export default function RoleMenuPermissionPanel() {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col w-full">
+      <div className="flex w-full">
         <Card className="border-none shadow-none">
           <CardContent>
-            {filteredMenus.map((menu) => (
-              <div
-                key={menu.menuId}
-                className="flex items-center justify-between p-3"
-              >
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    className="data-[state=checked]:border-primary-500 border border-2  data-[state=checked]:text-primary-500"
-                    id={`chk-${selectedRole}-${menu.menuId}`}
-                    // checked={isAllowed(selectedRole, menu.id)}
-                    // onCheckedChange={() =>
-                    //   togglePermission(selectedRole, menu.id)
-                    // }
-                  />
-                  <div className="font-medium">{menu.menuName}</div>
+            {roleMenuPermission.map((menuGroup) => (
+              <div className="flex">
+                <div>
+                  {menuGroup.childMenus.length ? (
+                    <Plus className="text-primary-700 mt-3" />
+                  ) : (
+                    <div className="ms-6"></div>
+                  )}
+                </div>
+                <div
+                  key={menuGroup.menuGroupCode}
+                  className="flex flex-col items-start justify-between p-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <Checkbox className="data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500" />
+                    <div className="font-medium">{menuGroup.menuGroupCode}</div>
+                  </div>
+                  <div>
+                    {menuGroup.childMenus.map((menu: any) => (
+                      <div key={menu.menuItemCode}>
+                        <div className="flex items-center gap-2 ps-6">
+                          <Checkbox className="data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500" />
+                          <div className="font-medium">{menu.menuItemName}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
 
-            {filteredMenus.length === 0 && (
+            {roleMenuPermission.length === 0 && (
               <div className="p-4 text-sm text-muted-foreground">
-                No menus match your search.
+                No menus matched.
               </div>
             )}
             <div className="flex gap-4">

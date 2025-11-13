@@ -1,3 +1,4 @@
+// stores/useDataStore.ts
 import { create } from "zustand";
 
 interface FetchConfig {
@@ -18,7 +19,6 @@ export const useDataStore = create<DataStore>((set) => ({
   loading: false,
   error: null,
 
-  // Fetch data from API
   fetchData: async ({
     endPoint,
     method = "GET",
@@ -32,21 +32,23 @@ export const useDataStore = create<DataStore>((set) => ({
         ...(headers || {}),
       };
 
-      const options = {
+      const options: RequestInit = {
         method,
         headers: defaultHeaders,
         ...(body && { body: JSON.stringify(body) }),
       };
-
       const response = await fetch(`/api${endPoint}`, options);
-      const data = await response.json();
+      const data = response.status === 204 ? null : await response.json();
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API Error ${response.status}: ${errorText}`);
+        const msg =
+          (data && (data.message || data.error)) ||
+          `API Error ${response.status}`;
+        throw new Error(msg);
       }
       set({ data: data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });
+      return null;
     }
   },
 }));

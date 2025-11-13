@@ -95,7 +95,7 @@ const Role: React.FC = () => {
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
     setIsModalOpen(true);
-  };
+  };  
 
   const handelCloseModal = () => {
     setIsModalOpen(false);
@@ -112,18 +112,20 @@ const Role: React.FC = () => {
     handelCloseModal();
   };
 
+
+
   return (
-    <div className="p-6 md:p-8 w-full">
+    <div className="p-3 sm:p-6 md:p-8 w-full">
       {/* Main content wrapper */}
       <div className="p-6 md:p-8 bg-white rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-Black-800">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-Black-800">
             Role
           </h1>
           <Link
-            to="/role/create"
-            className="flex items-center gap-2 text-white bg-[rgba(2,177,108,1)] py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+            to="/management/admin/role/create"
+            className="flex items-center gap-2 text-white bg-[rgba(2,177,108,1)] py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
           >
             <Plus size={20} />
             Create
@@ -132,12 +134,12 @@ const Role: React.FC = () => {
 
         {/* Table Section */}
         <div className="overflow-x-auto">
-          <table className="w-full justify-between">
+          <table className="w-full justify-between overflow-hidden rounded-lg border text-sm sm:text-base">
             <thead>
               <tr className="bg-[#55CB9D] font-bold text-m text-black-800">
-                <th className="py-3 pr-4 text-center">No</th>
-                <th className="py-3 pr-4 text-center">Role Name</th>
-                <th className="py-3 pr-4 text-right">Action</th>
+                <th className="py-3 px-6 text-center">No</th>
+                <th className="py-3 px-6 text-center">Role Name</th>
+                <th className="py-3 px-6 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -147,27 +149,27 @@ const Role: React.FC = () => {
                   key={role.no}
                   className="border-b odd:bg-[#E6F7F0] even:bg-[#B1E7D1] hover:bg-accent transition-colors"
                 >
-                  <td className="py-4 pr-4 text-center">{role.no}</td>
-                  <td className="py-4 pr-4 text-gray-800 font-medium text-center">
+                  <td className="py-4 px-6 text-center">{role.no}</td>
+                  <td className="py-4 px-6 text-gray-800 font-medium text-center">
                     {role.name}
                   </td>
-                  <td className="py-4 pr-4">
-                    <div className="flex justify-end items-center gap-4">
+                  <td className="py-4 px-6">
+                    <div className="flex justify-end items-center gap-3 sm:gap-4">
                       <Link
-                        to="/role/update"
-                        className="text-black-500 hover:text-blue-700"
+                        to="/management/admin/role/update"
+                        className="p-1 sm:p-2 text-black-500 hover:text-blue-700"
                       >
                         <Pencil size={18} />
                       </Link>
                       <button
                         onClick={() => handelOpenModal(role)}
-                        className="text-black-500 hover:text-red-500"
+                        className="p-1 sm:p-2 text-black-500 hover:text-red-500"
                       >
                         <Trash2 size={18} />
                       </button>
                       <Link
-                        to="/role/view"
-                        className="text-black-500 hover:text-green-700"
+                        to="/management/admin/role/view"
+                        className="p-1 sm:p-2 text-black-500 hover:text-green-700"
                       >
                         <Eye size={18} />
                       </Link>
@@ -180,7 +182,7 @@ const Role: React.FC = () => {
         </div>
 
         {/* --- DYNAMIC PAGINATION SECTION --- */}
-        <div className="flex justify-between items-center mt-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
           {/* Left: Row count */}
           <div className="text-sm text-gray-600">
             {startItem}-{endItem} of {totalItems}
@@ -257,7 +259,7 @@ const Role: React.FC = () => {
       {/* --- MODAL (Unchanged) --- */}
       {isModalOpen && roleToDelete && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50"
+          className="fixed inset-0 bg-opacity-100 backdrop-blur-sm flex justify-center items-center z-50"
           onClick={handelCloseModal}
         >
           <div
@@ -266,12 +268,13 @@ const Role: React.FC = () => {
           >
             <div className="flex justify-center mb-4">
               <div className="bg-gray-100 p-4 rounded-full">
-                <Trash2 size={40} className="text-gray-800" />
+                <Trash2 size={40} className="text-red-800" />
               </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Are you sure you want to delete the role?
-            </h2>
+            <h1 className="text-xl font-bold text-black-800 mb-4">
+              Are you sure you want to delete this record?
+            </h1>
+            <p className="text-base text-gray-400 mb-4">This action cannot be undone</p>
             <div className="flex justify-center gap-4 mt-8">
               <button
                 onClick={handelCloseModal}
@@ -281,7 +284,7 @@ const Role: React.FC = () => {
               </button>
               <button
                 onClick={handelDeleteRole}
-                className="py-2 px-8 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+                className="py-2 px-8 bg-red-700 text-white rounded-lg font-semibold hover:bg-red-900 transition-colors"
               >
                 Delete
               </button>

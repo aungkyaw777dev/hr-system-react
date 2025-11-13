@@ -318,7 +318,7 @@ export default function MenuItemList() {
         <div className="flex justify-between gap-2 items-center mb-4">
           <p className="text-xl md:text-2xl lg:text-3xl  font-bold">
             {" "}
-            Menu Group
+            Menu Item
           </p>
 
           <div className="flex gap-3 items-center">
@@ -413,10 +413,11 @@ export default function MenuItemList() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${page === currentPage
-                  ? "bg-primary-500 text-natural-50"
-                  : "bg-natural-50 text-black hover:bg-gray-200"
-                  }`}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-primary-500 text-natural-50"
+                    : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
               >
                 {page}
               </button>

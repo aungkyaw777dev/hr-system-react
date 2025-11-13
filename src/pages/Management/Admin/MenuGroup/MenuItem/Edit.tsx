@@ -42,7 +42,7 @@ function MenuItemEdit() {
           <div className="grid grid-cols-2 gap-15">
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Menu Group Name
+                Menu Item Name
               </label>
               <Input
                 type="text"
@@ -54,7 +54,7 @@ function MenuItemEdit() {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Menu Name
+                Menu Item Name
               </label>
               <Input
                 type="text"
