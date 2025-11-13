@@ -60,6 +60,9 @@ import EmployeeDetail from "./pages/Management/Employee/EmployeeDetail";
 import EmployeeEdit from "./pages/Management/Employee/EmployeeEdit";
 import EmployeeList from "./pages/Management/Employee/Index";
 
+// company rules
+import { CompanyRulesList } from "./pages/Management/Admin/CompanyRules";
+
 //auth
 import AuthLayout from "./layouts/AuthLayout";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
@@ -125,6 +128,8 @@ function App() {
               element={<MenuItemEdit />}
             />
 
+            <Route path="/management/admin/company-rules" element={<CompanyRulesList />}></Route>
+
             <Route path="/management/admin/role" element={<Role />}></Route>
             <Route
               path="/management/admin/role/create"
@@ -164,10 +169,7 @@ function App() {
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
 
             <Route path="/projects/add-employee" element={<AddEmployee />} />
-            <Route
-              path="/projects/remove-employee"
-              element={<RemoveEmployee />}
-            />
+            <Route path="/projects/remove-employee" element={<RemoveEmployee />} />
 
             <Route path="/location" element={<Location />}></Route>
             <Route path="/location/create" element={<LocationCreate />}></Route>
@@ -175,18 +177,9 @@ function App() {
             <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
 
-            <Route
-              path="/attendance/create"
-              element={<CreateAttendance />}
-            ></Route>
-            <Route
-              path="/attendance/:code/detail"
-              element={<DetailsAttendance />}
-            ></Route>
-            <Route
-              path="/attendance/:code/update"
-              element={<UpdateAttendance />}
-            ></Route>
+            <Route path="/attendance/create" element={<CreateAttendance />}></Route>
+            <Route path="/attendance/:code/detail" element={<DetailsAttendance />}></Route>
+            <Route path="/attendance/:code/update" element={<UpdateAttendance />}></Route>
 
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>

@@ -20,6 +20,7 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import { useEffect, useState } from "react";
+import { EmployeeService } from "@/services/employeeService";
 import { useNavigate, useParams } from "react-router-dom";
 import { SuccessDialog } from "./SuccessDialog";
 
@@ -50,7 +51,6 @@ export default function AttendanceForm({
   initialValues?: Partial<AttendanceFormValues> | any;
 }) {
   const { code } = useParams();
-  const [open, setOpen] = useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,6 +72,7 @@ export default function AttendanceForm({
 
   const checkinTime = form.watch("checkinTime");
   const checkoutTime = form.watch("checkoutTime");
+  const employeeCode = form.watch("employeeCode");
 
   // Normalize initial values coming from backend (datetime strings etc.)
   useEffect(() => {
@@ -87,12 +88,10 @@ export default function AttendanceForm({
     const extractTime = (dtOrTime: any) => {
       if (!dtOrTime) return "";
       if (typeof dtOrTime === "string") {
-        // If string contains 'T' assume ISO datetime
         if (dtOrTime.includes("T")) {
           const t = new Date(dtOrTime);
           return `${pad(t.getHours())}:${pad(t.getMinutes())}`;
         }
-        // If already in HH:mm format
         if (/^\d{2}:\d{2}/.test(dtOrTime)) return dtOrTime.slice(0, 5);
       }
       if (dtOrTime instanceof Date) return `${pad(dtOrTime.getHours())}:${pad(dtOrTime.getMinutes())}`;
@@ -115,6 +114,24 @@ export default function AttendanceForm({
     form.reset(vals);
   }, [initialValues]);
 
+  // When employee code changes, fetch employee details and populate employeeName
+  useEffect(() => {
+    if (!employeeCode) return;
+    // debounce to avoid many requests on fast typing
+    const t = setTimeout(async () => {
+      try {
+        const emp = await EmployeeService.fetchEmployee(employeeCode);
+        // EmployeeService returns an object with 'name' or 'employeeName'
+        const name = emp?.name ?? emp?.employeeName ?? "";
+        if (name) form.setValue("employeeName", name);
+      } catch (err) {
+        // ignore fetch errors silently; user can still type name manually
+        console.warn("Failed to fetch employee for code", employeeCode, err);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [employeeCode]);
+
   useEffect(() => {
     if (!checkinTime || !checkoutTime) return;
     const status = calculateAttendanceStatus(checkinTime, checkoutTime);
@@ -127,10 +144,6 @@ export default function AttendanceForm({
     const toMinutes = (timeStr: string) => {
       const [hours, minutes] = timeStr.split(":").map(Number);
       return hours * 60 + minutes;
-    };
-
-    const handleBack = () => {
-      navigate("/AttendanceList");
     };
 
     // Reference points
@@ -235,7 +248,7 @@ export default function AttendanceForm({
                     <FormControl>
                       <Input
                         {...field}
-                        className="bg-natural-50 border-natural-500 h-10 text-natural-800"
+                        className="bg-natural-400 border-natural-500 text-gray-700 h-10"
                         placeholder="Enter employee code"
                         disabled={mode === "view"}
                       />
