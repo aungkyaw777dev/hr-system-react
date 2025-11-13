@@ -8,8 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Edit, Search, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Edit, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,374 +21,276 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-type MenuItem = {
-  id: number;
-  group: string;
-  name: string;
-  url: string;
-  icon: string;
-  order: number;
-};
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  menuGroupService,
+  type MenuGroupItem,
+} from "@/services/menuGroupService";
+import { useDataStore } from "@/stores/useDataStore";
 
 export default function MenuGroupList() {
-  const [data, setData] = useState<MenuItem[]>([
-    {
-      id: 1,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 1,
-    },
-    {
-      id: 2,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 2,
-    },
-    {
-      id: 3,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 3,
-    },
-    {
-      id: 4,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 4,
-    },
-    {
-      id: 5,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 5,
-    },
-    {
-      id: 6,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 6,
-    },
-    {
-      id: 7,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 7,
-    },
-    {
-      id: 8,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 8,
-    },
-    {
-      id: 9,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 9,
-    },
-    {
-      id: 10,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 10,
-    },
-    {
-      id: 11,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 11,
-    },
-    {
-      id: 12,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 12,
-    },
-    {
-      id: 13,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 13,
-    },
-    {
-      id: 14,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 14,
-    },
-    {
-      id: 15,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 15,
-    },
-    {
-      id: 16,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 16,
-    },
-    {
-      id: 17,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 17,
-    },
-    {
-      id: 18,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 18,
-    },
-    {
-      id: 19,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 19,
-    },
-    {
-      id: 20,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 20,
-    },
-    {
-      id: 21,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 21,
-    },
-    {
-      id: 22,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 22,
-    },
-    {
-      id: 23,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 23,
-    },
-    {
-      id: 24,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 24,
-    },
-    {
-      id: 25,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 25,
-    },
-    {
-      id: 26,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 26,
-    },
-    {
-      id: 27,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 27,
-    },
-    {
-      id: 28,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 28,
-    },
-    {
-      id: 29,
-      group: "PayRoll",
-      name: "PayRoll",
-      url: "www.hrsystem.com",
-      icon: "Admin.jpeg",
-      order: 29,
-    },
-    {
-      id: 30,
-      group: "Attendance",
-      name: "Attendance",
-      url: "www.hrsystem.com",
-      icon: "User.jpeg",
-      order: 30,
-    },
-  ]);
+  const [data, setData] = useState<MenuGroupItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
 
-  const totalRows = data.length;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [groupCodeToDelete, setGroupCodeToDelete] = useState<string | null>(
+    null
+  );
+
+  const listParams = useMemo(
+    () => ({
+      pageNo: currentPage,
+      pageSize: rowsPerPage,
+    }),
+    [currentPage, rowsPerPage]
+  );
+
+  useEffect(() => {
+    const fetchMenuGroups = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const resp = await menuGroupService.fetchMenuGroups(listParams);
+
+        if (!resp?.isSuccess) {
+          setError(resp?.message || "Failed to load menu groups");
+          return;
+        }
+
+        if (resp.data) {
+          if (Array.isArray(resp.data)) {
+            setData(resp.data);
+            setTotalRows(resp.data.length);
+          } else {
+            setData(resp.data.items);
+            setTotalRows(resp.data.totalCount);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Something went wrong while fetching menu groups.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuGroups();
+  }, [listParams]);
+
+  const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startRow = (currentPage - 1) * rowsPerPage;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
-  const paginatedData = data.slice(startRow, endRow);
+  const paginatedData = data;
 
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-
-  const handleDelete = (e: React.MouseEvent, taskId: number) => {
+  // === Delete handlers ===
+  const handleDelete = (e: React.MouseEvent, code: string) => {
     e.stopPropagation();
-    setTaskToDelete(taskId);
+    setGroupCodeToDelete(code);
     setDeleteDialogOpen(true);
   };
-  const confirmDelete = () => {
-    // Remove the item from the array
-    setData((prevData) => prevData.filter((item) => item.id !== taskToDelete));
 
-    const newTotalPages = Math.ceil((data.length - 1) / rowsPerPage);
-    if (currentPage > newTotalPages && newTotalPages > 0) {
-      setCurrentPage(newTotalPages);
+  const confirmDelete = async () => {
+    if (!groupCodeToDelete) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const resp = await menuGroupService.deleteMenuGroup(groupCodeToDelete);
+
+      const latestErr = useDataStore.getState().error;
+      const ok =
+        !latestErr &&
+        (resp?.isSuccess === undefined || resp?.isSuccess === true);
+
+      if (!ok) {
+        setError(resp?.message || "Delete failed");
+        return;
+      }
+
+      // Optimistically update list for current page
+      setData((prev) =>
+        prev.filter((x) => x.menuGroupCode !== groupCodeToDelete)
+      );
+      setTotalRows((prev) => Math.max(0, prev - 1));
+
+      // If current page is now beyond last page, pull it back
+      const newTotalPages = Math.max(
+        1,
+        Math.ceil((totalRows - 1) / rowsPerPage)
+      );
+      if (currentPage > newTotalPages) {
+        setCurrentPage(newTotalPages);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong while deleting.");
+    } finally {
+      setLoading(false);
+      setDeleteDialogOpen(false);
+      setGroupCodeToDelete(null);
     }
-
-    setDeleteDialogOpen(false);
-    setTaskToDelete(null);
   };
 
   const cancelDelete = () => {
     setDeleteDialogOpen(false);
-    setTaskToDelete(null);
+    setGroupCodeToDelete(null);
   };
+
   return (
     <>
       <div className="p-6 w-full flex flex-col">
         <div className="flex justify-between gap-2 items-center mb-4">
-          <p className="text-xl md:text-2xl lg:text-3xl  font-bold">
-            {" "}
+          <p className="text-xl md:text-2xl lg:text-3xl font-bold">
             Menu Group
           </p>
 
           <div className="flex gap-3 items-center">
-            <div className="relative w-[250px] md:w-[350px] lg:w-[450px] ">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5 " />
+            <div className="relative w-[250px] md:w-[350px] lg:w-[450px] border-primary-500 border rounded-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary-600" />
               <Input
                 type="text"
                 placeholder="Search..."
-                className="pl-9 text-black focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 rounded-md shadow-sm border-0  "
+                className="pl-9 placeholder:text-primary-600 focus-visible:ring-1 focus-visible:ring-primary-500 focus-visible:ring-offset-0 focus-visible:border-primary-500 border-0 shadow-sm rounded-md"
+                // TODO: wire search to API or client filter
               />
             </div>
 
-            <Button asChild className="outline-btn">
-              <Link to="/menuitem/create">+ Create</Link>
+            <Button asChild className="bg-primary-500 text-white">
+              <Link to="/management/admin/menu-group/create">
+                <Plus /> Create
+              </Link>
             </Button>
           </div>
         </div>
 
+        {/* Table */}
         <div>
-          <Table className="w-full border-collapse ">
+          <Table className="w-full border-collapse">
             <TableHeader>
-              <TableRow className="  bg-primary-300 py-18 border-0">
-                <TableHead className="w-[100px] text-center py-4">No</TableHead>
+              <TableRow className="bg-primary-300 border-0">
+                <TableHead className="w-[80px] text-center py-4">No.</TableHead>
                 <TableHead className="text-center py-4">
                   Menu Group Name
                 </TableHead>
-                <TableHead className="text-center py-4">Menu Name</TableHead>
                 <TableHead className="text-center py-4">Url</TableHead>
                 <TableHead className="text-center py-4">Icon</TableHead>
                 <TableHead className="text-center py-4">Sort Order</TableHead>
-
+                <TableHead className="text-center py-4">
+                  Has Menu Item
+                </TableHead>
                 <TableHead className="text-center py-4">Action</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
-              {paginatedData.map((item, items) => (
-                <TableRow
-                  key={items}
-                  className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-                >
-                  <TableCell className="text-center">{item.id}</TableCell>
-                  <TableCell className="text-center">{item.group}</TableCell>
-                  <TableCell className="text-center">{item.name}</TableCell>
-                  <TableCell className="text-center">{item.url}</TableCell>
-                  <TableCell className="text-center">{item.icon}</TableCell>
-                  <TableCell className="text-center">{item.order}</TableCell>
-                  <TableCell className="flex justify-center gap-2">
-                    <Button asChild className="text-primary-500 cursor-pointer">
-                      <Link to={`/menuitem/edit`} state={{ item }}>
-                        <Edit className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      className="text-error-400 cursor-pointer"
-                      onClick={(e) => handleDelete(e, item.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-6">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
+
+              {error && !loading && (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-6 text-red-600"
+                  >
+                    {error}
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!loading && !error && paginatedData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-6">
+                    No menu groups found.
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!loading &&
+                !error &&
+                paginatedData.map((item, index) => (
+                  <TableRow
+                    key={item.menuGroupId}
+                    className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none"
+                  >
+                    {/* No. */}
+                    <TableCell className="text-center">
+                      {startRow + index + 1}
+                    </TableCell>
+
+                    {/* Menu Group Name */}
+                    <TableCell className="text-center">
+                      {item.menuGroupName}
+                    </TableCell>
+
+                    {/* Url */}
+                    <TableCell className="text-center">{item.url}</TableCell>
+
+                    {/* Icon */}
+                    <TableCell className="text-center">{item.icon}</TableCell>
+
+                    {/* Sort Order */}
+                    <TableCell className="text-center">
+                      {item.sortOrder}
+                    </TableCell>
+
+                    {/* Has Menu Item (checkbox) */}
+                    <TableCell className="text-center">
+                      <Checkbox
+                        checked={item.hasMenuItem}
+                        disabled
+                        className="pointer-events-none"
+                      />
+                    </TableCell>
+
+                    {/* Action */}
+                    <TableCell className="flex justify-center gap-2">
+                      <Button
+                        asChild
+                        className="text-primary-500 cursor-pointer"
+                      >
+                        <Link
+                          to={`/management/admin/menu-group/edit/${item.menuGroupCode}`}
+                          state={{ item }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button
+                        className="text-error-400 cursor-pointer"
+                        onClick={(e) => handleDelete(e, item.menuGroupCode)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>
 
         {/* Pagination */}
         <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
-          <div className="text-sm text-gray-600">
-            Showing {startRow + 1}–{endRow} of {totalRows}
+          <div>
+            {totalRows === 0
+              ? "0-0 of 0"
+              : `${startRow + 1}-${endRow} of ${totalRows}`}
           </div>
+
           <div className="flex gap-1">
             <button
               onClick={() => setCurrentPage(1)}
@@ -404,11 +306,7 @@ export default function MenuGroupList() {
             >
               ‹
             </button>
-            <Button
-              onClick={goPrev}
-              disabled={currentPage === 1}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            ></Button>
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -422,22 +320,17 @@ export default function MenuGroupList() {
                 {page}
               </button>
             ))}
-            <button
-              onClick={goNext}
-              disabled={currentPage === totalPages}
-              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
-            ></button>
 
             <button
               onClick={goNext}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalRows === 0}
               className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               ›
             </button>
             <button
               onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalRows === 0}
               className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
             >
               »
@@ -445,16 +338,17 @@ export default function MenuGroupList() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Rows per page:</span>
+            <span>Row/Page</span>
             <select
               value={rowsPerPage}
               onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
+                const value = Number(e.target.value);
+                setRowsPerPage(value);
                 setCurrentPage(1);
               }}
               className="border rounded px-2 py-1 text-sm"
             >
-              {[5, 10, 20, 30].map((n) => (
+              {[7, 10, 20, 30].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -463,6 +357,8 @@ export default function MenuGroupList() {
           </div>
         </div>
       </div>
+
+      {/* Delete dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-secondary-50">
           <AlertDialogHeader>

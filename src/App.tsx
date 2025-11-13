@@ -108,7 +108,7 @@ function App() {
               element={<MenuGroupCreate />}
             />
             <Route
-              path="/management/admin/menu-group/edit"
+              path="/management/admin/menu-group/edit/:id"
               element={<MenuGroupEdit />}
             />
 
