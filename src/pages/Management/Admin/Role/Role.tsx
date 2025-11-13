@@ -24,16 +24,29 @@ type RoleType = {
 // Create a mock dataset of 300 roles to make pagination functional
 const generateMockRoles = (): RoleType[] => {
   const roles = [
-    "Manager", "Executive", "HR", "Designer", "Developer",
-    "Software Engineer", "Digital Marketer", "Sales Director",
-    "Receptionist", "Security Guard", "Accountant", "QA Tester",
-    "Project Manager", "Data Analyst", "Systems Admin",
+    "Manager",
+    "Executive",
+    "HR",
+    "Designer",
+    "Developer",
+    "Software Engineer",
+    "Digital Marketer",
+    "Sales Director",
+    "Receptionist",
+    "Security Guard",
+    "Accountant",
+    "QA Tester",
+    "Project Manager",
+    "Data Analyst",
+    "Systems Admin",
   ];
   const data: RoleType[] = [];
   for (let i = 1; i <= 300; i++) {
     data.push({
       no: i,
-      name: `${roles[Math.floor(Math.random() * roles.length)]} ${i > 15 ? i : ''}`.trim(),
+      name: `${roles[Math.floor(Math.random() * roles.length)]} ${
+        i > 15 ? i : ""
+      }`.trim(),
     });
   }
   return data;
@@ -66,11 +79,14 @@ const Role: React.FC = () => {
   // --- PAGINATION HANDLERS ---
   const handleFirstPage = () => setCurrentPage(1);
   const handleLastPage = () => setCurrentPage(totalPages);
-  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handleNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handlePageClick = (page: number) => setCurrentPage(page);
 
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleItemsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1); // Reset to page 1 when items per page changes
   };
@@ -86,8 +102,11 @@ const Role: React.FC = () => {
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
-    
-    return Array.from({ length: (endPage - startPage + 1) }, (_, i) => startPage + i);
+
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i
+    );
   };
   const pageNumbers = getPageNumbers();
 
@@ -95,7 +114,7 @@ const Role: React.FC = () => {
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
     setIsModalOpen(true);
-  };  
+  };
 
   const handelCloseModal = () => {
     setIsModalOpen(false);
@@ -112,8 +131,6 @@ const Role: React.FC = () => {
     handelCloseModal();
   };
 
-
-
   return (
     <div className="p-3 sm:p-6 md:p-8 w-full">
       {/* Main content wrapper */}
@@ -124,7 +141,7 @@ const Role: React.FC = () => {
             Role
           </h1>
           <Link
-            to="/role/create"
+            to="/management/admin/role/create"
             className="flex items-center gap-2 text-white bg-[rgba(2,177,108,1)] py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
           >
             <Plus size={20} />
@@ -206,14 +223,14 @@ const Role: React.FC = () => {
             </button>
 
             {/* Render dynamic page numbers */}
-            {pageNumbers.map(page => (
+            {pageNumbers.map((page) => (
               <button
                 key={page}
                 onClick={() => handlePageClick(page)}
                 className={`w-8 h-8 rounded-md text-sm font-medium ${
                   currentPage === page
-                    ? 'bg-[rgba(2,177,108,1)] text-white'
-                    : 'bg-white text-gray-800 hover:bg-gray-100 border'
+                    ? "bg-[rgba(2,177,108,1)] text-white"
+                    : "bg-white text-gray-800 hover:bg-gray-100 border"
                 }`}
               >
                 {page}
@@ -250,7 +267,10 @@ const Role: React.FC = () => {
                 <option value={30}>30</option>
                 <option value={50}>50</option>
               </select>
-              <ChevronDown size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
+              <ChevronDown
+                size={16}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"
+              />
             </div>
           </div>
         </div>
@@ -274,7 +294,9 @@ const Role: React.FC = () => {
             <h1 className="text-xl font-bold text-black-800 mb-4">
               Are you sure you want to delete this record?
             </h1>
-            <p className="text-base text-gray-400 mb-4">This action cannot be undone</p>
+            <p className="text-base text-gray-400 mb-4">
+              This action cannot be undone
+            </p>
             <div className="flex justify-center gap-4 mt-8">
               <button
                 onClick={handelCloseModal}

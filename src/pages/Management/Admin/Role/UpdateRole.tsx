@@ -1,12 +1,7 @@
 // src/pages/UpdateRole.tsx
 
-<<<<<<< HEAD
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-=======
-import React from "react";
-import { Link } from "react-router-dom";
->>>>>>> develop
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const UpdateRole: React.FC = () => {
   const navigate = useNavigate();
@@ -15,20 +10,20 @@ const UpdateRole: React.FC = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // State for the form inputs, now starting empty
-  const [fullName, setFullName] = useState('');
-  const [adminCode, setAdminCode] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [adminCode, setAdminCode] = useState("");
 
   // Handles the form submission
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the page from reloading
-    
+
     // ---
     // In a real app, you would put your API call logic here
     // e.g., api.updateRole({ name: fullName, code: adminCode });
     // ---
-    
-    console.log('Updating role with:', { fullName, adminCode });
-    
+
+    console.log("Updating role with:", { fullName, adminCode });
+
     // Show the success modal
     setIsSuccessModalOpen(true);
   };
@@ -36,7 +31,7 @@ const UpdateRole: React.FC = () => {
   // Closes the success modal and navigates to the /role page
   const handleCloseModal = () => {
     setIsSuccessModalOpen(false);
-    navigate('/role'); 
+    navigate("/role");
   };
 
   return (
@@ -106,7 +101,7 @@ const UpdateRole: React.FC = () => {
 
       {/* --- Success Modal --- */}
       {isSuccessModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-0 backdrop-blur-sm"
           aria-labelledby="modal-title"
           role="dialog"
@@ -114,25 +109,32 @@ const UpdateRole: React.FC = () => {
         >
           {/* Modal Content */}
           <div className="bg-white rounded-lg shadow-xl p-8 pt-10 w-full max-w-sm mx-auto flex flex-col items-center text-center">
-            
             {/* Green Checkmark Icon */}
             <div className="bg-green-100 rounded-full p-4 mb-5">
               <div className="bg-[rgba(2,177,108,1)] rounded-full p-4">
                 {/* Simple SVG Checkmark */}
-                <svg 
-                  className="w-10 h-10 text-white" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className="w-10 h-10 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
             </div>
 
             {/* Modal Text */}
-            <h2 id="modal-title" className="text-2xl font-bold text-gray-800 mb-6">
+            <h2
+              id="modal-title"
+              className="text-2xl font-bold text-gray-800 mb-6"
+            >
               Update Successful!
             </h2>
 
@@ -148,7 +150,6 @@ const UpdateRole: React.FC = () => {
         </div>
       )}
       {/* --- End of Success Modal --- */}
-
     </div>
   );
 };
