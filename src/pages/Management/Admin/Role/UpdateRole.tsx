@@ -30,7 +30,7 @@ const UpdateRole: React.FC = () => {
   // Closes the success modal and navigates to the /role page
   const handleCloseModal = () => {
     setIsSuccessModalOpen(false);
-    navigate("/role");
+    navigate("/management/admin/role");
   };
 
   return (

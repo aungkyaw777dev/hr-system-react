@@ -45,7 +45,7 @@ const CreateRole: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex justify-end gap-4">
             <Link 
-              to="/role" 
+              to="/management/admin/role" 
               className="bg-gray-200 text-[rgba(2,177,108,1)] py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors"
             >
               Cancel
