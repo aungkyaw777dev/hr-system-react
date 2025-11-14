@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -70,17 +71,29 @@ export function LocationForm({
   onSubmit: handleSubmit,
   onCancel,
   onBack,
-  error
+  error,
 }: LocationFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: locationData?.name || "",
-      latitude: locationData?.latitude || "1",
-      longitude: locationData?.longitude || "1",
-      radius: locationData?.radius || "1",
+      name: "",
+      latitude: "",
+      longitude: "",
+      radius: "",
     },
   });
+
+  // Reset form when locationData changes
+  useEffect(() => {
+    if (locationData) {
+      form.reset({
+        name: locationData.name || "",
+        latitude: locationData.latitude || "",
+        longitude: locationData.longitude || "",
+        radius: locationData.radius || "",
+      });
+    }
+  }, [locationData, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     handleSubmit?.(values);

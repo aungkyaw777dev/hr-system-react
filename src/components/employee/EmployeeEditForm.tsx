@@ -101,6 +101,7 @@ export default function EmployeeForm() {
     })();
   }, []);
 
+  
   useEffect(() => {
     const fetchEmployeeData = async () => {
       if (!code) return;
@@ -126,6 +127,7 @@ export default function EmployeeForm() {
 
     fetchEmployeeData();
   }, [code, reset]);
+
 
   const handleFormSubmit = async (values: z.infer<typeof employeeSchema>) => {
     const employeeData = {

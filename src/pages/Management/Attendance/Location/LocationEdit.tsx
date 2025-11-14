@@ -3,45 +3,50 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LocationForm } from "./LocationForm";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { useDataStore } from "@/stores/useDataStore";
+import { LocationService } from "@/services/LocationService ";
 
 export default function LocationEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [locationData, setLocationData] = useState(null);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-  const { fetchData, error, clearError } = useDataStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const { error, data } = useDataStore();
 
   useEffect(() => {
-    const handleEdit = async (id: string) => {
-      clearError();
-      const result = await fetchData({
-        url: `${import.meta.env.VITE_API_URL}/Location/edit/${id}`,
-      });
-
-      if (result?.isSuccess && result?.data) {
-        const location = result.data;
-
-        setLocationData({
-          name: location.name,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          radius: location.radius,
-        });
+    const loadLocationForEdit = async () => {
+      if (id) {
+        setIsLoading(true);
+        await LocationService.fetchLocation(id);
+        setIsLoading(false);
       }
     };
-    handleEdit(id);
+
+    loadLocationForEdit();
   }, [id]);
 
-  const handleSubmit = async (values: any) => {
-    // console.log("Update location:", id, values);
+  useEffect(() => {
+    if (data?.data) {
+      const location = data.data;
 
-    const result = await fetchData({
-      url: `${import.meta.env.VITE_API_URL}/Location/update/${id}`,
-      method: "PUT",
-      body: values,
-    });
-    if (result?.isSuccess) {
-      setSuccessDialogOpen(true);
+      setLocationData({
+        name: location.name || "",
+        latitude: location.latitude || "",
+        longitude: location.longitude || "",
+        radius: location.radius || "",
+      });
+    }
+  }, [data]);
+
+  const handleSubmit = async (values: any) => {
+    if (id) {
+      await LocationService.updateLocation(id, values);
+
+      // Check success from the store after update
+      const storeData = useDataStore.getState().data;
+      if (storeData?.isSuccess) {
+        setSuccessDialogOpen(true);
+      }
     }
   };
 
@@ -54,8 +59,8 @@ export default function LocationEdit() {
     navigate("/location");
   };
 
-  if (error) return <div>Error: {error}</div>;
-  if (!locationData) return <div>Loading...</div>;
+  if (error) return <div className="p-6">Error: {error}</div>;
+  if (isLoading || !locationData) return <div className="p-6">Loading...</div>;
 
   return (
     <>
