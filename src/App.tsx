@@ -172,6 +172,7 @@ function App() {
             <Route path="/projects/remove-employee" element={<RemoveEmployee />} />
 
             <Route path="/location" element={<Location />}></Route>
+
             <Route path="/location/create" element={<LocationCreate />}></Route>
             <Route path="/location/edit/:id" element={<LocationEdit />} />
             <Route path="/location/detail/:id" element={<LocationDetail />} />

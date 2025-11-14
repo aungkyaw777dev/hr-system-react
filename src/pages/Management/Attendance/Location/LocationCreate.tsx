@@ -1,20 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LocationForm } from "./LocationForm";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
+import { useDataStore } from "@/stores/useDataStore";
+import { LocationService } from "@/services/LocationService ";
 
 export default function LocationCreate() {
   const navigate = useNavigate();
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { error, data } = useDataStore();
 
-  const handleSubmit = (values: any) => {
-    console.log("Create location:", values);
+  // Clear store data when component mounts
+  useEffect(() => {
+    // Clear old data to prevent confusion
+    useDataStore.setState({ data: null, error: null });
+  }, []);
 
-    // Add API call here
-    // Simulate API success
-    setTimeout(() => {
-      setSuccessDialogOpen(true);
-    }, 500);
+  // Watch data changes after submit
+  useEffect(() => {
+    if (isSubmitting && data) {
+      console.log("🔍 Create Response:", data);
+
+      // Check if API returned success
+      if (data.isSuccess === true) {
+        console.log("✅ Create Success!");
+        setSuccessDialogOpen(true);
+      } else {
+        console.log("❌ Create Failed:", data.message);
+      }
+
+      // Reset submitting flag
+      setIsSubmitting(false);
+    }
+  }, [data, isSubmitting]);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      console.log("📤 Submitting:", values);
+      setIsSubmitting(true);
+      await LocationService.createLocation(values);
+    } catch (error) {
+      console.log("❌ Error creating location:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const handleSuccessConfirm = () => {
@@ -32,6 +61,7 @@ export default function LocationCreate() {
         mode="add"
         onSubmit={handleSubmit}
         onCancel={handleCancel}
+        error={error}
       />
 
       <SuccessDialog

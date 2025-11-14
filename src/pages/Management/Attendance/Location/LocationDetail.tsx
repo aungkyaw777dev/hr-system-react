@@ -1,29 +1,42 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { LocationForm } from "./LocationForm";
 import { useState, useEffect } from "react";
+import { useDataStore } from "@/stores/useDataStore";
+import { LocationService } from "@/services/LocationService ";
 
 export default function LocationDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [locationData, setLocationData] = useState(null);
+  const { error, data } = useDataStore();
 
   useEffect(() => {
-    // Fetch location data by ID
-    // This is mock data - replace with actual API call
-    const mockData = {
-      name: "Insein",
-      latitude: "16.9028",
-      longitude: "96.1317",
-      radius: "3.5",
+    const loadLocationDetail = async () => {
+      if (id) {
+        await LocationService.fetchLocation(id);
+      }
     };
-    setLocationData(mockData);
+
+    loadLocationDetail();
   }, [id]);
+
+  useEffect(() => {
+    if (data?.data) {
+      const location = data.data;
+      setLocationData({
+        name: location.name,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        radius: location.radius,
+      });
+    }
+  }, [data]);
 
   const handleBack = () => {
     navigate("/location");
   };
 
-  if (!locationData) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <LocationForm

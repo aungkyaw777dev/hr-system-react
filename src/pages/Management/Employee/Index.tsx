@@ -135,6 +135,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
     if (employee) {
       navigate(`/employee/edit/${employeeCode}`, { state: { employee } });
     }
+    console.log(employee);
   };
 
   const handleDelete = (e: React.MouseEvent, employeeCode: string) => {
