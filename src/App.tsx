@@ -62,6 +62,8 @@ import EmployeeList from "./pages/Management/Employee/Index";
 
 // company rules
 import { CompanyRulesList } from "./pages/Management/Admin/CompanyRules";
+import {CompanyRulesDetails} from "./pages/Management/Admin/CompanyRules/Detail";
+import { CompanyRulesEdit } from "./pages/Management/Admin/CompanyRules/Edit";
 
 //auth
 import AuthLayout from "./layouts/AuthLayout";
@@ -129,6 +131,8 @@ function App() {
             />
 
             <Route path="/management/admin/company-rules" element={<CompanyRulesList />}></Route>
+            <Route path="/management/admin/company-rules/:companyRuleCode/detail" element={<CompanyRulesDetails />}></Route>
+            <Route path="/management/admin/company-rules/:companyRuleCode/edit" element={<CompanyRulesEdit />}></Route>
 
             <Route path="/management/admin/role" element={<Role />}></Route>
             <Route
