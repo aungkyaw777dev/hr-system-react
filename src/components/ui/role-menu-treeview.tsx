@@ -54,7 +54,7 @@ export default function RoleMenuPermissionPanel() {
 
       // Initialize newPermissions
       const flatPermissions: MenuPermissionItem[] = [];
-      (fetchRMP ?? []).forEach((group) => {
+      (fetchRMP ?? []).forEach((group: MenuPermissionItem) => {
         !!group.childMenus.length
           ? group.childMenus.forEach((menu: any) => {
               (fetchedPermissions ?? []).forEach((p: any) => {
@@ -74,13 +74,14 @@ export default function RoleMenuPermissionPanel() {
                   permissionCode: null,
                   isChecked: group.isChecked,
                 });
+              } else {
+                flatPermissions.push({
+                  menuGroupCode: group.menuGroupCode,
+                  menuItemCode: null,
+                  permissionCode: p.permissionCode,
+                  isChecked: group.isChecked,
+                });
               }
-              flatPermissions.push({
-                menuGroupCode: group.menuGroupCode,
-                menuItemCode: null,
-                permissionCode: p.permissionCode,
-                isChecked: group.isChecked,
-              });
             });
       });
       setNewPermissions({
@@ -206,103 +207,104 @@ export default function RoleMenuPermissionPanel() {
                           : "flex gap-2 ms-6"
                       }
                     >
-                      {!!menuGroup.childMenus.length ? (
-                        menuGroup.childMenus.map((menu: any) => {
-                          const menuChecked =
-                            newPermissions.menuPermissions.some(
-                              (mp) =>
-                                mp.menuItemCode === menu.menuItemCode &&
-                                mp.isChecked
-                            );
+                      {!!menuGroup.childMenus.length
+                        ? menuGroup.childMenus.map((menu: any) => {
+                            const menuChecked =
+                              newPermissions.menuPermissions.some(
+                                (mp) =>
+                                  mp.menuItemCode === menu.menuItemCode &&
+                                  mp.isChecked
+                              );
 
-                          return (
-                            <div key={menu.menuItemCode}>
-                              <div className="flex items-center ps-6 gap-2">
-                                {/* Child Menu Checkbox */}
-                                <Checkbox
-                                  checked={menuChecked}
-                                  onCheckedChange={(v) =>
-                                    toggleMenuItem(
-                                      menu.menuItemCode,
-                                      v === true
-                                    )
-                                  }
-                                />
-                                <div className="font-medium">
-                                  {menu.menuItemName}
+                            return (
+                              <div key={menu.menuItemCode}>
+                                <div className="flex items-center ps-6 gap-2">
+                                  {/* Child Menu Checkbox */}
+                                  <Checkbox
+                                    checked={menuChecked}
+                                    onCheckedChange={(v) =>
+                                      toggleMenuItem(
+                                        menu.menuItemCode,
+                                        v === true
+                                      )
+                                    }
+                                  />
+                                  <div className="font-medium">
+                                    {menu.menuItemName}
+                                  </div>
+                                </div>
+
+                                {/* Individual Permissions */}
+                                <div className="flex ps-12 gap-5 mt-1">
+                                  {permissions.map((p: any) => {
+                                    const permChecked =
+                                      newPermissions.menuPermissions.some(
+                                        (mp) =>
+                                          mp.menuItemCode ===
+                                            menu.menuItemCode &&
+                                          mp.permissionCode ===
+                                            p.permissionCode &&
+                                          mp.isChecked
+                                      );
+
+                                    return (
+                                      <div
+                                        key={p.permissionCode}
+                                        className="flex items-center gap-2"
+                                      >
+                                        <Checkbox
+                                          checked={permChecked}
+                                          onCheckedChange={(v) =>
+                                            togglePermission(
+                                              menu.menuItemCode,
+                                              p.permissionCode,
+                                              v === true
+                                            )
+                                          }
+                                        />
+                                        <div className="font-medium">
+                                          {p.permissionCode}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
-
-                              {/* Individual Permissions */}
-                              <div className="flex ps-12 gap-5 mt-1">
-                                {permissions.map((p: any) => {
-                                  const permChecked =
-                                    newPermissions.menuPermissions.some(
-                                      (mp) =>
-                                        mp.menuItemCode === menu.menuItemCode &&
-                                        mp.permissionCode ===
-                                          p.permissionCode &&
-                                        mp.isChecked
-                                    );
-
-                                  return (
-                                    <div
-                                      key={p.permissionCode}
-                                      className="flex items-center gap-2"
-                                    >
-                                      <Checkbox
-                                        checked={permChecked}
-                                        onCheckedChange={(v) =>
-                                          togglePermission(
-                                            menu.menuItemCode,
-                                            p.permissionCode,
-                                            v === true
-                                          )
-                                        }
-                                      />
-                                      <div className="font-medium">
-                                        {p.permissionCode}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        })
-                      ) : menuGroup.menuGroupCode === "DASHBOARD" ? (
-                        <></>
-                      ) : (
-                        permissions.map((p: any) => {
-                          const permChecked =
-                            newPermissions.menuPermissions.some(
-                              (mp) =>
-                                mp.permissionCode === p.permissionCode &&
-                                mp.isChecked
                             );
+                          })
+                        : permissions.map((p: any) => {
+                            const permChecked =
+                              newPermissions.menuPermissions.some(
+                                (mp) =>
+                                  mp.menuGroupCode ===
+                                    menuGroup.menuGroupCode &&
+                                  mp.permissionCode === p.permissionCode &&
+                                  mp.isChecked
+                              );
 
-                          return (
-                            <div
-                              key={p.permissionCode}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                checked={permChecked}
-                                onCheckedChange={(v) =>
-                                  togglePermission(
-                                    null,
-                                    p.permissionCode,
-                                    v === true
-                                  )
-                                }
-                              />
-                              <div className="font-medium">
-                                {p.permissionCode}
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
+                            return (
+                              menuGroup.menuGroupCode !== "DASHBOARD" && (
+                                <div
+                                  key={p.permissionCode}
+                                  className="flex items-center gap-2"
+                                >
+                                  <Checkbox
+                                    checked={permChecked}
+                                    onCheckedChange={(v) =>
+                                      togglePermission(
+                                        null,
+                                        p.permissionCode,
+                                        v === true
+                                      )
+                                    }
+                                  />
+                                  <div className="font-medium">
+                                    {p.permissionCode}
+                                  </div>
+                                </div>
+                              )
+                            );
+                          })}
                     </div>
                   </div>
                 </div>
