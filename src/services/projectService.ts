@@ -54,9 +54,7 @@ export const projectService = {
     const qs = new URLSearchParams({
       pageNo: String(params.pageNo),
       pageSize: String(params.pageSize),
-      ...(params.search ? { search: params.search } : {}),
-      ...(params.from ? { from: params.from } : {}),
-      ...(params.to ? { to: params.to } : {}),
+      ...(params.search ? { ProjectName: params.search } : {}),
     }).toString();
 
     await useDataStore.getState().fetchData({
