@@ -169,7 +169,9 @@
   }
 
   .check-menus {
-    @apply data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500
+    @apply border! border-1! border-natural-900! rounded-none! 
+    data-[state=checked]:text-primary-500!
+    data-[state=checked]:border-primary-500!
   }
 }
 

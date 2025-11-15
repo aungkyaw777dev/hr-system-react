@@ -22,15 +22,31 @@ interface MenuPermissionItem {
 }
 
 interface SavePermission {
-  roleCode: string;
+  roleCode: string | null;
   menuPermissions: MenuPermissionItem[];
 }
 
+interface Permission {
+  permissionId: string;
+  permissionCode: string;
+  permissionName: string;
+}
+
+interface Role {
+  roleId: string;
+  roleCode: string;
+  roleName: string;
+  createdAt: string;
+  createdBy: string;
+  modifiedAt: string | null;
+  modifiedBy: string | null;
+  deleteFlag: boolean;
+}
 // --------------------- Component ---------------------
 export default function RoleMenuPermissionPanel() {
   const [roleMenuPermission, setRoleMenuPermission] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [permissions, setPermissions] = useState<any[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [newPermissions, setNewPermissions] = useState<SavePermission>({
     roleCode: "",
@@ -42,7 +58,7 @@ export default function RoleMenuPermissionPanel() {
   useEffect(() => {
     (async () => {
       const fetchRMP = await roleMenuPermissionService.fetchRoleMenuPermission(
-        selectedRole
+        selectedRole ?? ""
       );
       const fetchedRoles = await roleMenuPermissionService.fetchRoles();
       const fetchedPermissions =
@@ -85,7 +101,7 @@ export default function RoleMenuPermissionPanel() {
             });
       });
       setNewPermissions({
-        roleCode: selectedRole,
+        roleCode: selectedRole ?? "",
         menuPermissions: flatPermissions,
       });
     })();
@@ -144,7 +160,9 @@ export default function RoleMenuPermissionPanel() {
         <Select onValueChange={(v) => setSelectedRole(v)}>
           <SelectTrigger className="bg-white text-primary-700">
             <SelectValue placeholder="Select role">
-              {roles.find((r) => r.roleCode === selectedRole)?.roleName}
+              {roles && roles.find((r) => r.roleCode === selectedRole)
+                ? roles.find((r) => r.roleCode === selectedRole)?.roleName
+                : "Select Role"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-natural-50 text-primary-700 w-full">
@@ -189,6 +207,7 @@ export default function RoleMenuPermissionPanel() {
                     {/* Parent Menu */}
                     <div className="flex items-center gap-2">
                       <Checkbox
+                        className="check-menus"
                         checked={groupChecked}
                         onCheckedChange={(v) =>
                           toggleMenuGroup(menuGroup.menuGroupCode, v === true)
@@ -221,6 +240,7 @@ export default function RoleMenuPermissionPanel() {
                                 <div className="flex items-center ps-6 gap-2">
                                   {/* Child Menu Checkbox */}
                                   <Checkbox
+                                    className="check-menus"
                                     checked={menuChecked}
                                     onCheckedChange={(v) =>
                                       toggleMenuItem(
@@ -253,6 +273,7 @@ export default function RoleMenuPermissionPanel() {
                                         className="flex items-center gap-2"
                                       >
                                         <Checkbox
+                                          className="check-menus"
                                           checked={permChecked}
                                           onCheckedChange={(v) =>
                                             togglePermission(
@@ -289,6 +310,7 @@ export default function RoleMenuPermissionPanel() {
                                   className="flex items-center gap-2"
                                 >
                                   <Checkbox
+                                    className="check-menus"
                                     checked={permChecked}
                                     onCheckedChange={(v) =>
                                       togglePermission(
