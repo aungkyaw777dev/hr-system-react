@@ -2,9 +2,9 @@ import { useDataStore } from "@/stores/useDataStore";
 
 export const roleMenuPermissionService = {
 
-  fetchRoleMenuPermission: async () => {
+  fetchRoleMenuPermission: async (roleCode:string) => {
     await  useDataStore.getState().fetchData({
-      endPoint: `/role-menu-permission/menu-tree`,
+      endPoint: `/role-menu-permission/menu-tree?RoleCode=${roleCode}`,
     });
      return useDataStore.getState().data?.menuTree ?? [];
   },
@@ -15,6 +15,19 @@ export const roleMenuPermissionService = {
         })
         return useDataStore.getState().data?.data ?? {}
     },
-  
+  fetchPermissions : async () => {
+    await useDataStore.getState().fetchData({
+      endPoint: '/role-menu-permission/permissions/list'
+    })
+    return useDataStore.getState().data?.data ?? {}
+  },
+
+  savePermissions: async (payload: {}) => {
+    await useDataStore.getState().fetchData({
+      endPoint: '/role-menu-permission/create',
+      body: payload,
+      method: 'POST'
+    })
+  }
 
 };

@@ -167,6 +167,10 @@
   .checkin-circle {
     @apply rounded-full bg-gradient-to-b from-[#55CB9D] via-[#83D9B7] to-[#3B9E77] w-33 h-33
   }
+
+  .check-menus {
+    @apply data-[state=checked]:border-primary-500 border border-1 border-natural-900 rounded-none data-[state=checked]:text-primary-500
+  }
 }
 
 /* 🌿 Thin custom scrollbar */
