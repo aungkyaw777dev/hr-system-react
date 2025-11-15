@@ -1,13 +1,23 @@
 import { useDataStore } from "@/stores/useDataStore";
 
 export const backlogService = {
-  fetchTasks: async (pageNo: number = 1, pageSize: number = 10) => {
-    await useDataStore.getState().fetchData({
-      endPoint: `/Task/list?pageNo=${pageNo}&pageSize=${pageSize}`,
+  fetchTasks: async (name: string = "", pageNo: number, pageSize: number) => {
+    const params = new URLSearchParams({
+      pageNo: pageNo.toString(),
+      PageSize: pageSize.toString(),
     });
-    return useDataStore.getState().data?.data ?? { tasks: [] };
+
+    if (name) {
+      params.append("TaskName", name);
+    }
+
+    await useDataStore.getState().fetchData({
+      endPoint: `/Task/list?${params.toString()}`,
+    });
+    return useDataStore.getState().data ?? {};
   },
 
+  
   deleteTask: async (taskId: number) => {
     await useDataStore.getState().fetchData({
       endPoint: `/Task/delete?taskId=${taskId}`,
@@ -23,14 +33,13 @@ export const backlogService = {
     return useDataStore.getState().data ?? { isSuccess: false, data: null };
   },
   fetchEmployees: async (pageNo = 1, pageSize = 100) => {
-  await useDataStore.getState().fetchData({
-    endPoint: `/Employee/list?pageNo=${pageNo}&pageSize=${pageSize}`,
-  });
-  const storeData = useDataStore.getState().data;
-  
-  // If data is directly in store.data (not store.data.data)
-  return storeData ?? { items: [] };
-},
+    await useDataStore.getState().fetchData({
+      endPoint: `/Employee/list?pageNo=${pageNo}&pageSize=${pageSize}`,
+    });
+    const storeData = useDataStore.getState().data;
+
+    return storeData ?? { items: [] };
+  },
 
   fetchProjects: async (pageNo = 1, pageSize = 100) => {
     await useDataStore.getState().fetchData({
@@ -47,8 +56,8 @@ export const backlogService = {
     });
     return useDataStore.getState().data ?? { isSuccess: false };
   },
-  
- updateTask: async (payload: any) => {
+
+  updateTask: async (payload: any) => {
     await useDataStore.getState().fetchData({
       endPoint: `/Task/update`,
       method: "PUT",
