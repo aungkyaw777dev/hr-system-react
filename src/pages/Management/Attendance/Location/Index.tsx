@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { capitalizeCamelCase } from "@/lib/utils";
 import {
   Edit,
   Trash2,
@@ -23,425 +22,182 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { DeleteDialog } from "@/components/ui/DeleteDialog";
+import { useDataStore } from "@/stores/useDataStore";
+import { LocationService } from "@/services/LocationService ";
+
+type Location = {
+  locationCode: string;
+  name: string;
+  latitude: string;
+  longitude: string;
+  radius: string;
+  createdAt: string;
+  createdBy: string;
+  modifiedBy: string | null;
+  modifiedAt: string | null;
+  deleteFlag: boolean;
+};
 
 export default function Location() {
   const navigate = useNavigate();
-  const [data, setData] = useState([
-    {
-      id: 1,
-      location: "Insein",
-      latitude: 16.9028,
-      longitude: 96.1317,
-      radius: 3.5,
-    },
-    {
-      id: 2,
-      location: "Hlaing",
-      latitude: 16.8307,
-      longitude: 96.1345,
-      radius: 2.0,
-    },
-    {
-      id: 3,
-      location: "Mayangone",
-      latitude: 16.8664,
-      longitude: 96.1251,
-      radius: 4.0,
-    },
-    {
-      id: 4,
-      location: "Sanchaung",
-      latitude: 16.8055,
-      longitude: 96.1399,
-      radius: 2.5,
-    },
-    {
-      id: 5,
-      location: "Bahan",
-      latitude: 16.811,
-      longitude: 96.1601,
-      radius: 3.0,
-    },
-    {
-      id: 6,
-      location: "Kamayut",
-      latitude: 16.8284,
-      longitude: 96.1305,
-      radius: 2.5,
-    },
-    {
-      id: 7,
-      location: "Thingangyun",
-      latitude: 16.8211,
-      longitude: 96.1877,
-      radius: 3.5,
-    },
-    {
-      id: 8,
-      location: "South Oakkalapa",
-      latitude: 16.8554,
-      longitude: 96.195,
-      radius: 3.0,
-    },
-    {
-      id: 9,
-      location: "North Dagon",
-      latitude: 16.9106,
-      longitude: 96.2153,
-      radius: 4.5,
-    },
-    {
-      id: 10,
-      location: "Tamwe",
-      latitude: 16.8119,
-      longitude: 96.1777,
-      radius: 2.0,
-    },
-    {
-      id: 11,
-      location: "Yankin",
-      latitude: 16.8397,
-      longitude: 96.1484,
-      radius: 2.5,
-    },
-    {
-      id: 12,
-      location: "Mingalar Taung Nyunt",
-      latitude: 16.7869,
-      longitude: 96.1761,
-      radius: 3.0,
-    },
-    {
-      id: 13,
-      location: "Thaketa",
-      latitude: 16.8234,
-      longitude: 96.2156,
-      radius: 4.0,
-    },
-    {
-      id: 14,
-      location: "Dagon Seikkan",
-      latitude: 16.9245,
-      longitude: 96.2489,
-      radius: 5.0,
-    },
-    {
-      id: 15,
-      location: "East Dagon",
-      latitude: 16.9567,
-      longitude: 96.2267,
-      radius: 4.5,
-    },
-    {
-      id: 16,
-      location: "North Oakkalapa",
-      latitude: 16.8789,
-      longitude: 96.1834,
-      radius: 3.5,
-    },
-    {
-      id: 17,
-      location: "Pazundaung",
-      latitude: 16.7845,
-      longitude: 96.1823,
-      radius: 2.5,
-    },
-    {
-      id: 18,
-      location: "Botahtaung",
-      latitude: 16.7712,
-      longitude: 96.1689,
-      radius: 2.0,
-    },
-    {
-      id: 19,
-      location: "Dagon",
-      latitude: 16.7934,
-      longitude: 96.1556,
-      radius: 2.5,
-    },
-    {
-      id: 20,
-      location: "Seikkan",
-      latitude: 16.9134,
-      longitude: 96.2567,
-      radius: 4.5,
-    },
-    {
-      id: 21,
-      location: "Kyauktada",
-      latitude: 16.7812,
-      longitude: 96.1534,
-      radius: 1.5,
-    },
-    {
-      id: 22,
-      location: "Pabedan",
-      latitude: 16.7756,
-      longitude: 96.1489,
-      radius: 1.5,
-    },
-    {
-      id: 23,
-      location: "Lanmadaw",
-      latitude: 16.7689,
-      longitude: 96.1423,
-      radius: 2.0,
-    },
-    {
-      id: 24,
-      location: "Latha",
-      latitude: 16.7734,
-      longitude: 96.1378,
-      radius: 1.5,
-    },
-    {
-      id: 25,
-      location: "Ahlone",
-      latitude: 16.7823,
-      longitude: 96.1234,
-      radius: 2.5,
-    },
-    {
-      id: 26,
-      location: "Kyimyindaing",
-      latitude: 16.8012,
-      longitude: 96.1189,
-      radius: 3.0,
-    },
-    {
-      id: 27,
-      location: "Sanchaung East",
-      latitude: 16.8123,
-      longitude: 96.1456,
-      radius: 2.0,
-    },
-    {
-      id: 28,
-      location: "Hlaing Thar Yar",
-      latitude: 16.8734,
-      longitude: 96.0623,
-      radius: 5.5,
-    },
-    {
-      id: 29,
-      location: "Shwe Pyi Thar",
-      latitude: 16.9234,
-      longitude: 96.0845,
-      radius: 5.0,
-    },
-    {
-      id: 30,
-      location: "Mingaladon",
-      latitude: 16.9456,
-      longitude: 96.1123,
-      radius: 4.5,
-    },
-    {
-      id: 31,
-      location: "Hlegu",
-      latitude: 17.0789,
-      longitude: 96.2345,
-      radius: 6.0,
-    },
-    {
-      id: 32,
-      location: "Hmawbi",
-      latitude: 17.0234,
-      longitude: 96.0567,
-      radius: 5.5,
-    },
-    {
-      id: 33,
-      location: "Htantabin",
-      latitude: 17.1234,
-      longitude: 96.2678,
-      radius: 6.5,
-    },
-    {
-      id: 34,
-      location: "Taikkyi",
-      latitude: 17.0456,
-      longitude: 95.9834,
-      radius: 5.0,
-    },
-    {
-      id: 35,
-      location: "Dala",
-      latitude: 16.7345,
-      longitude: 96.1456,
-      radius: 3.5,
-    },
-    {
-      id: 36,
-      location: "Seikkyi Kanaungto",
-      latitude: 16.6789,
-      longitude: 96.1234,
-      radius: 4.0,
-    },
-    {
-      id: 37,
-      location: "Twante",
-      latitude: 16.7123,
-      longitude: 95.9567,
-      radius: 4.5,
-    },
-    {
-      id: 38,
-      location: "Kungyangon",
-      latitude: 16.4567,
-      longitude: 96.2345,
-      radius: 5.5,
-    },
-    {
-      id: 39,
-      location: "Kawhmu",
-      latitude: 16.5234,
-      longitude: 96.3456,
-      radius: 5.0,
-    },
-    {
-      id: 40,
-      location: "Kayan",
-      latitude: 16.6123,
-      longitude: 96.4567,
-      radius: 4.5,
-    },
-    {
-      id: 41,
-      location: "South Dagon",
-      latitude: 16.8567,
-      longitude: 96.2234,
-      radius: 4.0,
-    },
-    {
-      id: 42,
-      location: "Dawbon",
-      latitude: 16.7889,
-      longitude: 96.1934,
-      radius: 3.0,
-    },
-    {
-      id: 43,
-      location: "Thakayta East",
-      latitude: 16.8345,
-      longitude: 96.2289,
-      radius: 3.5,
-    },
-    {
-      id: 44,
-      location: "Hlaing River",
-      latitude: 16.8456,
-      longitude: 96.1089,
-      radius: 2.5,
-    },
-    {
-      id: 45,
-      location: "Kyeemyindaing West",
-      latitude: 16.7967,
-      longitude: 96.1123,
-      radius: 2.0,
-    },
-    {
-      id: 46,
-      location: "Sanchaung North",
-      latitude: 16.8189,
-      longitude: 96.1423,
-      radius: 2.5,
-    },
-    {
-      id: 47,
-      location: "Yankin East",
-      latitude: 16.8456,
-      longitude: 96.1567,
-      radius: 2.0,
-    },
-    {
-      id: 48,
-      location: "Tamwe North",
-      latitude: 16.8234,
-      longitude: 96.1823,
-      radius: 2.5,
-    },
-    {
-      id: 49,
-      location: "Bahan North",
-      latitude: 16.8189,
-      longitude: 96.1678,
-      radius: 2.5,
-    },
-    {
-      id: 50,
-      location: "Kamayut East",
-      latitude: 16.8356,
-      longitude: 96.1389,
-      radius: 2.0,
-    },
-  ]);
+  const { data, loading, error } = useDataStore();
+
+  // Search state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = data.slice(startIndex, startIndex + rowsPerPage);
-  const totalRows = data.length;
-  const startRow = (currentPage - 1) * rowsPerPage + 1;
+
+  // Load locations with pagination and search
+  useEffect(() => {
+    loadLocations();
+  }, [currentPage, rowsPerPage, searchTerm]);
+
+  const loadLocations = async () => {
+    await LocationService.fetchLocations(searchTerm, currentPage, rowsPerPage);
+  };
+
+  // Handle search
+  const handleSearch = () => {
+    setSearchTerm(searchInput);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle search input change
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  // Get data from API response
+  const locations: Location[] = data?.data?.items || [];
+  const totalRows = data?.data?.totalCount || 0;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+  // Calculate row numbers for display
+  const startRow = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
   const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+
+  // Pagination handlers
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
   const goToLast = () => setCurrentPage(totalPages);
   const goToFirst = () => setCurrentPage(1);
 
+  // Delete dialog states
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
+  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(
     null
   );
 
+  // Navigation handlers
   const goToCreateForm = () => navigate("/location/create");
-  const goToEditForm = (id: number) => navigate(`/location/edit/${id}`);
-  const goToDetailView = (id: number) => navigate(`/location/detail/${id}`);
+  const goToEditForm = (locationCode: string) => {
+    navigate(`/location/edit/${locationCode}`);
+  };
+  const goToDetailView = (locationCode: string) =>
+    navigate(`/location/detail/${locationCode}`);
 
-  const openDeleteDialog = (id: number) => {
-    setSelectedLocationId(id);
+  const openDeleteDialog = (locationCode: string) => {
+    setSelectedLocationId(locationCode);
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (selectedLocationId) {
-      // Delete the location from data
-      setData((prevData) =>
-        prevData.filter((item) => item.id !== selectedLocationId)
-      );
-      console.log("Deleted location:", selectedLocationId);
-
-      // Close dialog and reset
+      await LocationService.deleteLocation(selectedLocationId);
+      loadLocations();
       setDeleteDialogOpen(false);
       setSelectedLocationId(null);
-
-      // Optional: Show success toast
-      // toast.success("Location deleted successfully");
     }
   };
 
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setSelectedLocationId(null);
+  // Handle rows per page change
+  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage);
+    setCurrentPage(1);
   };
 
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+
+      if (currentPage <= 3) {
+        endPage = maxPagesToShow;
+      }
+
+      if (currentPage >= totalPages - 2) {
+        startPage = totalPages - maxPagesToShow + 1;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
+  if (error) return <div className="p-6">Error: {error}</div>;
+
   return (
-    <div className="p-6 w-full flex-1">
+    <div className="p-6 w-full flex-1 bg-[#f0f3f1]">
       <div className="flex justify-between flex-col md:flex-row mb-4">
         <p className="font-bold text-2xl">Location</p>
 
         <div className="flex gap-2 flex-col md:flex-row ">
           {/* search */}
-          <div className="relative w-full md:w-[50%] text-primary-800">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primay-800 h-4 w-4" />
+          <div className="relative w-full md:w-[300px] text-primary-800">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-800 h-4 w-4" />
             <Input
               type="text"
-              placeholder="Search..."
-              className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9" // Add left padding so text doesn’t overlap the icon
+              placeholder="Search by location name..."
+              value={searchInput}
+              onChange={handleSearchInputChange}
+              onKeyPress={handleKeyPress}
+              className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 pr-20"
             />
+            {searchInput && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
+            <Button
+              onClick={handleSearch}
+              disabled={loading}
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 bg-primary-100 hover:bg-primary-600"
+            >
+              Search
+            </Button>
           </div>
+
           {/* buttons */}
           <Button className="outline-btn">
             <FolderUp />
@@ -454,102 +210,137 @@ export default function Location() {
         </div>
       </div>
 
-      <Table className="w-full overflow-auto shadow-sm rounded-md">
+      {/* Search results info */}
+      {searchTerm && (
+        <div className="mb-4 text-sm text-gray-600">
+          Showing results for: <strong>"{searchTerm}"</strong>
+          <button
+            onClick={handleClearSearch}
+            className="ml-2 text-primary-500 hover:text-primary-700 underline"
+          >
+            Clear search
+          </button>
+        </div>
+      )}
+
+      <Table className="w-full overflow-auto shadow-sm rounded-md text-center">
         <TableHeader className="bg-primary-300">
-          <TableRow className="border-none">
-            {Object.keys(data[0]).map((columnName) => (
-              <TableHead key={columnName}>
-                {columnName === "id" ? "No" : capitalizeCamelCase(columnName)}
-              </TableHead>
-            ))}
-            <TableHead>Action</TableHead>
+          <TableRow className="border-none ">
+            <TableHead className="text-center">No</TableHead>
+            <TableHead className="text-center">Name</TableHead>
+            <TableHead className="text-center">Latitude</TableHead>
+            <TableHead className="text-center">Longitude</TableHead>
+            <TableHead className="text-center">Radius</TableHead>
+            <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {currentData.map((location, index) => (
-            <TableRow
-              key={index}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-              onClick={() => goToDetailView(location.id)}
-            >
-              <TableCell>{location.id}</TableCell>
-              <TableCell>{location.location}</TableCell>
-              <TableCell>{location.latitude}</TableCell>
-              <TableCell>{location.longitude}</TableCell>
-              <TableCell>{location.radius}</TableCell>
 
-              <TableCell className="flex ">
-                {/* <Edit className="text-primary-500 cursor-pointer" />
-                <Trash2 className="text-error-400 cursor-pointer" /> */}
-                <Edit
-                  className="text-emerald-500 cursor-pointer hover:text-emerald-700"
-                  size={20}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goToEditForm(location.id);
-                  }}
-                />
-                <Trash2
-                  className="text-red-500 cursor-pointer hover:text-red-700"
-                  size={20}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openDeleteDialog(location.id);
-                  }}
-                />
+        {loading ? (
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-10">
+                Loading...
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
+          </TableBody>
+        ) : locations.length === 0 ? (
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-10">
+                {searchTerm
+                  ? `No locations found for "${searchTerm}"`
+                  : "No locations found"}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        ) : (
+          <TableBody>
+            {locations.map((location, index) => (
+              <TableRow
+                key={location.locationCode}
+                className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 cursor-pointer"
+                onClick={() => goToDetailView(location.locationCode)}
+              >
+                <TableCell>{startRow + index}</TableCell>
+                <TableCell>{location.name}</TableCell>
+                <TableCell>{location.latitude}</TableCell>
+                <TableCell>{location.longitude}</TableCell>
+                <TableCell>{location.radius}</TableCell>
+
+                <TableCell className="flex justify-center">
+                  <Edit
+                    className="text-emerald-500 cursor-pointer hover:text-emerald-700 mr-4"
+                    size={22}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToEditForm(location.locationCode);
+                    }}
+                  />
+                  <Trash2
+                    className="text-red-500 cursor-pointer hover:text-red-700"
+                    size={22}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDeleteDialog(location.locationCode);
+                    }}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        )}
       </Table>
 
       {/* Paginations */}
-      <div className="flex items-center justify-between p-4 border-t">
+      <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row items-center justify-between p-4 border-t ">
         {/* Left: Showing rows */}
         <div className="text-sm text-muted-foreground">
           {startRow}–{endRow} of {totalRows}
         </div>
 
         {/* Middle: Page buttons */}
-
         <div className="flex space-x-1">
           <button
             onClick={goToFirst}
-            disabled={currentPage === 1}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            disabled={currentPage === 1 || loading}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronsLeft />
           </button>
           <button
             onClick={goPrev}
-            disabled={currentPage === 1}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            disabled={currentPage === 1 || loading}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft />
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+
+          {getPageNumbers().map((page) => (
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${page === currentPage
-                ? "bg-primary-500 text-natural-50"
-                : "bg-natural-50 text-black hover:bg-gray-200"
-                }`}
+              disabled={loading}
+              className={`px-3 py-1 rounded ${
+                page === currentPage
+                  ? "bg-primary-500 text-natural-50"
+                  : "bg-natural-50 text-black hover:bg-gray-200"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {page}
             </button>
           ))}
+
           <button
             onClick={goNext}
-            disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            disabled={currentPage === totalPages || loading}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRight />
           </button>
           <button
             onClick={goToLast}
-            disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            disabled={currentPage === totalPages || loading}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronsRight />
           </button>
@@ -560,11 +351,9 @@ export default function Location() {
           <span className="text-sm text-muted-foreground">Rows/page:</span>
           <select
             value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1); // reset page
-            }}
-            className="border rounded px-2 py-1 text-sm p-3"
+            onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
+            disabled={loading}
+            className="border rounded px-2 py-1 text-sm p-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {[10, 20, 30, 50].map((n) => (
               <option key={n} value={n}>

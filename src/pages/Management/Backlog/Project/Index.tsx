@@ -42,6 +42,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { projectService } from "@/services/projectService";
+import { useExcelExport, type ExcelColumn } from "@/hooks/useExcelExport";
 
 /* ---------- types ---------- */
 type ProjectItem = {
@@ -95,7 +96,6 @@ export default function ProjectListing() {
   const navigate = useNavigate();
   const roleName = useAuthStore((s) => s.user?.roleName);
 
-
   // UI state
   const [date, setDate] = useState<{ from?: Date; to?: Date }>({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -135,11 +135,20 @@ export default function ProjectListing() {
       pageNo: currentPage,
       pageSize: rowsPerPage,
       search: debouncedSearch || undefined,
-      from: date.from ? toIsoStart(date.from) : undefined,
-      to: date.to ? toIsoEnd(date.to) : undefined,
     }),
-    [currentPage, rowsPerPage, debouncedSearch, date.from, date.to]
+    [currentPage, rowsPerPage, debouncedSearch]
   );
+
+  // Excel export hook
+  const exportToExcel = useExcelExport<Row>();
+
+  const excelColumns: ExcelColumn<Row>[] = [
+    { header: "Project Code", key: "id", width: 15 },
+    { header: "Name", key: "name", width: 30 },
+    { header: "Status", key: "status", width: 12 },
+    { header: "Start Date", key: "startDate", width: 15 },
+    { header: "End Date", key: "endDate", width: 15 },
+  ];
 
   const fetchList = useCallback(async () => {
     setLoading(true);
@@ -159,9 +168,9 @@ export default function ProjectListing() {
         name: p.projectName,
         status: p.projectStatus,
         startDate: p.startDate
-          ? new Date(p.startDate).toLocaleDateString()
-          : "-",
-        endDate: p.endDate ? new Date(p.endDate).toLocaleDateString() : "-",
+          ? format(new Date(p.startDate), "yyyy-MM-dd")
+          : "",
+        endDate: p.endDate ? format(new Date(p.endDate), "yyyy-MM-dd") : "",
       }));
 
       setRows(mapped);
@@ -227,7 +236,7 @@ export default function ProjectListing() {
         <p>Project Listing</p>
 
         {/* date picker */}
-        <div className="grid gap-2">
+        {/* <div className="grid gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -266,7 +275,7 @@ export default function ProjectListing() {
               />
             </PopoverContent>
           </Popover>
-        </div>
+        </div> */}
 
         {/* search */}
         <div className="relative w-full md:w-[20%] text-primary-800 flex items-center justify-center">
@@ -285,22 +294,14 @@ export default function ProjectListing() {
 
         <Button
           className="outline-btn cursor-pointer"
-          onClick={() => {
-            const header = ["Code", "Name", "Status", "Start Date", "End Date"];
-            const rowsCsv = rows.map((r) =>
-              [r.id, r.name, r.status, r.startDate, r.endDate]
-                .map((x) => `"${String(x).replace(/"/g, '""')}"`)
-                .join(",")
-            );
-            const csv = [header.join(","), ...rowsCsv].join("\n");
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `projects_page_${currentPage}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
+          onClick={() =>
+            exportToExcel({
+              columns: excelColumns,
+              rows,
+              fileName: `Projects_page_${currentPage}.xlsx`,
+              sheetName: "Projects",
+            })
+          }
         >
           Export
         </Button>

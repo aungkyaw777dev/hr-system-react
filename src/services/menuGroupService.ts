@@ -7,83 +7,85 @@ type ApiEnvelope<T = unknown> = {
   [k: string]: unknown;
 };
 
-type ListParams = {
+const asApi = <T = unknown>(x: unknown): ApiEnvelope<T> => x as ApiEnvelope<T>;
+
+export type MenuGroupListParams = {
   pageNo: number;
   pageSize: number;
-  search?: string;
-  from?: string;
-  to?: string;
 };
 
-type Payload = {
-  projectName: string;
-  projectDescription: string;
-  startDate: string;
-  endDate: string;
-  projectStatus: string;
+export type MenuGroupItem = {
+  menuGroupId: string;
+  menuGroupCode: string;
+  menuGroupName: string;
+  hasMenuItem: boolean;
+  url: string;
+  icon: string;
+  sortOrder: number;
+  createdAt: string;
+  createdBy: string;
+  modifiedAt: string | null;
+  modifiedBy: string | null;
+  deleteFlag: boolean;
 };
 
-type ProjectItem = {
-  projectCode: string;
-  projectName: string;
-  projectDescription: string;
-  startDate: string;
-  endDate: string;
-  projectStatus: string;
-  createdAt?: string;
-  createdBy?: string;
-  modifiedAt?: string | null;
-  modifiedBy?: string | null;
-};
-
-type ListData = {
-  items: ProjectItem[];
+export type MenuGroupListData = {
+  items: MenuGroupItem[];
   totalCount: number;
   pageNo: number;
   pageSize: number;
 };
 
-const asApi = <T = unknown>(x: unknown): ApiEnvelope<T> => x as ApiEnvelope<T>;
+type Payload = {
+  menuGroupCode?: string;
+  menuGroupName: string;
+  url: string;
+  icon: string;
+  sortOrder: number | null | undefined;
+  hasMenuItem: boolean;
+};
 
-export const projectService = {
-  // GET /Project/list
-  fetchProjects: async (
-    params: ListParams,
+// Service
+export const menuGroupService = {
+  // GET /MenuGroup/list?PageNo=1&PageSize=10
+  fetchMenuGroups: async (
+    params: MenuGroupListParams,
     headers?: Record<string, string>
-  ): Promise<ApiEnvelope<ListData>> => {
+  ): Promise<ApiEnvelope<MenuGroupItem[] | MenuGroupListData>> => {
     const qs = new URLSearchParams({
-      pageNo: String(params.pageNo),
-      pageSize: String(params.pageSize),
-      ...(params.search ? { ProjectName: params.search } : {}),
+      PageNo: String(params.pageNo),
+      PageSize: String(params.pageSize),
     }).toString();
 
     await useDataStore.getState().fetchData({
-      endPoint: `/Project/list?${qs}`,
+      endPoint: `/MenuGroup/list?${qs}`,
       headers,
     });
 
-    return asApi<ListData>(useDataStore.getState().data as unknown);
+    return asApi<MenuGroupItem[] | MenuGroupListData>(
+      useDataStore.getState().data as unknown
+    );
   },
 
-  // GET /Project/edit/:code
-  fetchProjectById: async (
+  // GET /MenuGroup/edit:code
+  fetchMenuGroupsByCode: async (
     code: string,
     headers?: Record<string, string>
-  ): Promise<ApiEnvelope<ProjectItem>> => {
+  ): Promise<ApiEnvelope<MenuGroupItem>> => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Project/edit/${encodeURIComponent(code)}`,
+      endPoint: `/MenuGroup/edit/${encodeURIComponent(code)}`,
       headers,
     });
-    return asApi<ProjectItem>(useDataStore.getState().data as unknown);
+    return asApi<MenuGroupItem>(useDataStore.getState().data as unknown);
   },
 
-  // POST /Project/create
-  createProject: async (
+  // POST /MenuGroup/create
+  createMenuGroup: async (
     payload: Payload,
     headers?: Record<string, string>
   ): Promise<ApiEnvelope<boolean> | null> => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Project/create`,
+      endPoint: `/MenuGroup/create`,
       method: "POST",
       body: payload,
       headers,
@@ -98,14 +100,14 @@ export const projectService = {
     return resp;
   },
 
-  // PUT /Project/update/:code
-  updateProject: async (
+  // PUT /MenuGroup/update/:code
+  updateMenuGroup: async (
     code: string,
     payload: Payload,
     headers?: Record<string, string>
   ): Promise<ApiEnvelope<boolean> | null> => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Project/update/${encodeURIComponent(code)}`,
+      endPoint: `/MenuGroup/update/${encodeURIComponent(code)}`,
       method: "PUT",
       body: payload,
       headers,
@@ -120,13 +122,13 @@ export const projectService = {
     return resp;
   },
 
-  // DELETE /Project/delete/:code
-  deleteProject: async (
+  // DELETE /MenuGroup/delete/:code
+  deleteMenuGroup: async (
     code: string,
     headers?: Record<string, string>
   ): Promise<ApiEnvelope<boolean>> => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Project/delete/${encodeURIComponent(code)}`,
+      endPoint: `/MenuGroup/delete/${encodeURIComponent(code)}`,
       method: "DELETE",
       headers,
     });

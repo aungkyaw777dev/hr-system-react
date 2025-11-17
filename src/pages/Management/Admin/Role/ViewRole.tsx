@@ -11,7 +11,7 @@ const UpdateRole: React.FC = () => {
         
         {/* Header Section */}
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
-          View The Role
+          View Role
         </h1>
 
         {/* Form Section */}
@@ -23,6 +23,7 @@ const UpdateRole: React.FC = () => {
                 Full Name
               </label>
               <input
+                readOnly
                 type="text"
                 id="fullName"
                 placeholder="Full Name"
@@ -34,6 +35,7 @@ const UpdateRole: React.FC = () => {
                 Admin Code
               </label>
               <input
+                readOnly
                 type="text"
                 id="adminCode"
                 placeholder="Admin Code"
@@ -45,8 +47,8 @@ const UpdateRole: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex justify-end gap-4">
             <Link 
-              to="/role" 
-              className="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+              to="/management/admin/role" 
+              className="bg-[rgba(2,177,108,1)] text-white py-2 px-6 rounded-lg hover:bg-green-700 transition-colors"
             >
               Back
             </Link>

@@ -145,7 +145,7 @@
   }
 
   .sidebar-btn {
-    @apply hover:bg-primary-500 hover:text-natural-50 mx-2 p-4 w-full shadow-sm flex gap-1 rounded-md;
+    @apply hover:bg-primary-500 hover:text-natural-50 focus:bg-primary-500 focus:text-natural-50 mx-2 p-4 w-full shadow-sm flex gap-1 rounded-md;
   }
 
   .pagination-btn {
@@ -155,7 +155,7 @@
   .outline-btn {
     @apply border border-natural-500! text-primary-700! bg-natural-50 hover:bg-primary-500 hover:text-natural-50! hover:border-none
   }
-
+ 
   [data-slot="table-container"] {
     @apply rounded-lg shadow-md;
   }
@@ -166,6 +166,12 @@
 
   .checkin-circle {
     @apply rounded-full bg-gradient-to-b from-[#55CB9D] via-[#83D9B7] to-[#3B9E77] w-33 h-33
+  }
+
+  .check-menus {
+    @apply border! border-1! border-natural-900! rounded-none! 
+    data-[state=checked]:text-primary-500!
+    data-[state=checked]:border-primary-500!
   }
 }
 

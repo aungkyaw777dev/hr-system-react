@@ -1,4 +1,3 @@
-// stores/useDataStore.ts
 import { create } from "zustand";
 
 interface FetchConfig {
@@ -26,6 +25,7 @@ export const useDataStore = create<DataStore>((set) => ({
     headers = {},
   }: FetchConfig) => {
     set({ loading: true, error: null });
+
     try {
       const defaultHeaders = {
         "Content-Type": "application/json",
@@ -51,4 +51,6 @@ export const useDataStore = create<DataStore>((set) => ({
       throw err;
     }
   },
+
+  clearError: () => set({ error: null }),
 }));

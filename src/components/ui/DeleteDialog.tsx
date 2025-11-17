@@ -27,7 +27,7 @@ export function DeleteDialog({
 }: DeleteDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-md border-none bg-primary-50">
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
             <div className="p-3 bg-red-100 rounded-full">
@@ -40,7 +40,7 @@ export function DeleteDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="border-gray-300">
+          <AlertDialogCancel className="bg-primary-50 border-gray-300">
             CANCEL
           </AlertDialogCancel>
           <AlertDialogAction
