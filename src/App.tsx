@@ -77,6 +77,7 @@ import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/Role-Menu-Permission/Create";
 import { ScrollToTop } from "./pages/ScrollToTop";
+import AdminDashboard from "./pages/Management/Dashboard/AdminDashboard";
 
 function App() {
   return (
@@ -128,7 +129,10 @@ function App() {
               element={<MenuItemEdit />}
             />
 
-            <Route path="/management/admin/company-rules" element={<CompanyRulesList />}></Route>
+            <Route
+              path="/management/admin/company-rules"
+              element={<CompanyRulesList />}
+            ></Route>
 
             <Route path="/management/admin/role" element={<Role />}></Route>
             <Route
@@ -154,6 +158,7 @@ function App() {
               element={
                 <RoleGuard allowedRoles={["admin", "hr"]}>
                   <ManagementDashboard />
+                  {/* <AdminDashboard /> */}
                 </RoleGuard>
               }
             ></Route>
@@ -169,7 +174,10 @@ function App() {
             <Route path="/projects/:id/edit" element={<ProjectEdit />} />
 
             <Route path="/projects/add-employee" element={<AddEmployee />} />
-            <Route path="/projects/remove-employee" element={<RemoveEmployee />} />
+            <Route
+              path="/projects/remove-employee"
+              element={<RemoveEmployee />}
+            />
 
             <Route path="/location" element={<Location />}></Route>
 
@@ -178,9 +186,18 @@ function App() {
             <Route path="/location/detail/:id" element={<LocationDetail />} />
             <Route path="/attendance" element={<AttendanceList />}></Route>
 
-            <Route path="/attendance/create" element={<CreateAttendance />}></Route>
-            <Route path="/attendance/:code/detail" element={<DetailsAttendance />}></Route>
-            <Route path="/attendance/:code/update" element={<UpdateAttendance />}></Route>
+            <Route
+              path="/attendance/create"
+              element={<CreateAttendance />}
+            ></Route>
+            <Route
+              path="/attendance/:code/detail"
+              element={<DetailsAttendance />}
+            ></Route>
+            <Route
+              path="/attendance/:code/update"
+              element={<UpdateAttendance />}
+            ></Route>
 
             <Route path="/payroll" element={<Payroll />}></Route>
             <Route path="/payroll/create" element={<PayrollCreate />}></Route>

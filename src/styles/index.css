@@ -167,6 +167,10 @@
   .checkin-circle {
     @apply rounded-full bg-gradient-to-b from-[#55CB9D] via-[#83D9B7] to-[#3B9E77] w-33 h-33
   }
+
+  .recharts-legend-item-text {
+    @apply text-natural-900!
+  }
 }
 
 /* 🌿 Thin custom scrollbar */
