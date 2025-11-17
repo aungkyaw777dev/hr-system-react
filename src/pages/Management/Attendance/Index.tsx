@@ -61,6 +61,12 @@ export function AttendanceList() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [debouncedFilters, setDebouncedFilters] = useState({
+    name: "",
+    pageNo: 0,
+    pageSize: 0,
+  });
+
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [date, setDate] = useState<{
     from: Date | undefined;
@@ -91,6 +97,7 @@ export function AttendanceList() {
       try {
         setLoading(true);
         const data = await attendanceService.fetchAttendanceRecords(
+          searchName,
           currentPage,
           rowsPerPage
         );
@@ -102,7 +109,20 @@ export function AttendanceList() {
       }
     };
     loadData();
-  }, []);
+  }, [debouncedFilters]);
+
+    // Debounce effect
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFilters({
+        name: searchName,
+        pageNo: currentPage,
+        pageSize: rowsPerPage,
+      });
+    }, 400); // 700ms delay
+
+    return () => clearTimeout(handler);
+  }, [searchName, currentPage, rowsPerPage]);
 
   if (loading) return;
 

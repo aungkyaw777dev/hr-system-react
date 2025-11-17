@@ -48,7 +48,7 @@ export const useDataStore = create<DataStore>((set) => ({
       set({ data: data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });
-      return null;
+      throw err;
     }
   },
 

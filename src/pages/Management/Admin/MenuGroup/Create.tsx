@@ -17,6 +17,11 @@ export default function MenuGroupCreatePage() {
   const { loading, error } = useDataStore();
   const [successOpen, setSuccessOpen] = useState(false);
 
+  function onReset() {
+    form.reset();
+    form.clearErrors();
+  }
+
   return (
     <>
       <MenuGroupForm

@@ -43,6 +43,7 @@ import MenuGroupEdit from "./pages/Management/Admin/MenuGroup/Edit";
 import MenuItemCreate from "./pages/Management/Admin/MenuGroup/MenuItem/Create";
 import MenuItemEdit from "./pages/Management/Admin/MenuGroup/MenuItem/Edit";
 import MenuItemList from "./pages/Management/Admin/MenuGroup/MenuItem/Index";
+import MenuItemDetail from "./pages/Management/Admin/MenuGroup/MenuItem/Detail";
 
 // project
 import ProjectList from "./pages/Management/Backlog/Project/Index";
@@ -62,6 +63,8 @@ import EmployeeList from "./pages/Management/Employee/Index";
 
 // company rules
 import { CompanyRulesList } from "./pages/Management/Admin/CompanyRules";
+import {CompanyRulesDetails} from "./pages/Management/Admin/CompanyRules/Detail";
+import { CompanyRulesEdit } from "./pages/Management/Admin/CompanyRules/Edit";
 
 //auth
 import AuthLayout from "./layouts/AuthLayout";
@@ -125,10 +128,14 @@ function App() {
               element={<MenuItemCreate />}
             />
             <Route
-              path="/management/admin/menu-item/edit"
+              path="/management/admin/menu-item/edit/:code"
               element={<MenuItemEdit />}
             />
 
+            <Route
+              path="/management/admin/menu-item/detail/:code"
+              element={<MenuItemDetail />}
+            />
             <Route
               path="/management/admin/company-rules"
               element={<CompanyRulesList />}

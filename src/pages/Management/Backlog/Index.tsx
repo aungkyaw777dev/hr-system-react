@@ -44,57 +44,40 @@ export default function BacklogList() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTaskName, setSearchTaskName] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const result = await backlogService.fetchTasks(
-          currentPage,
-          rowsPerPage
-        );
-        setTasks(result.tasks ?? []);
-      } catch (error) {
-        console.error("Error loading tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, [currentPage, rowsPerPage]);
 
   // Debounce effect for search
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-      setCurrentPage(1); // Reset to first page on search
-    }, 400); // 400ms delay
+      setDebouncedSearch(searchTaskName);
+    }, 400);
 
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [searchTaskName]);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
         const result = await backlogService.fetchTasks(
+          debouncedSearch,
           currentPage,
-          rowsPerPage,
-          debouncedSearch
+          rowsPerPage
         );
-        setTasks(result.tasks ?? []);
+        console.log('API Response:', result);
+        // FIX: Access tasks from result.data.tasks
+        setTasks(result.data?.tasks ?? []);
       } catch (error) {
         console.error("Error loading tasks:", error);
+        console.error("Error details:", error.response?.data);
+        setTasks([]);
       } finally {
         setLoading(false);
       }
     };
     loadData();
   }, [currentPage, rowsPerPage, debouncedSearch]);
-
- 
 
   const totalPages = Math.ceil(tasks.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -125,12 +108,9 @@ export default function BacklogList() {
 
   const handleExportCSV = () => {
     const allKeys = tasks.length > 0 ? Object.keys(tasks[0]) : [];
-
     const header = allKeys;
-
     const rowsCsv = tasks.map((task) => {
       const row = allKeys.map((key) => task[key] ?? "");
-
       return row
         .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
         .join(",");
@@ -155,10 +135,12 @@ export default function BacklogList() {
       if (result.isSuccess) {
         // Refetch the latest list
         const updatedData = await backlogService.fetchTasks(
+          debouncedSearch,
           currentPage,
           rowsPerPage
         );
-        setTasks(updatedData.tasks ?? []);
+        // FIX: Access tasks from updatedData.data.tasks
+        setTasks(updatedData.data?.tasks ?? []);
       } else {
         console.error("Delete failed:", result);
       }
@@ -182,18 +164,18 @@ export default function BacklogList() {
         <p className="font-semibold">Backlog Group Listing</p>
 
         {/* Search Bar */}
-        <div className="relative w-full md:w-[20%] text-primary-800">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-800 h-4 w-4" />
+        <div className="relative w-full md:w-[200px] text-primary-800">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
           <Input
             type="text"
-            value={searchQuery}
+            value={searchTaskName}
             placeholder="Search..."
-            onInput={(e) => setSearchQuery(e.target.value)}
-            className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9"
+            onChange={(e) => setSearchTaskName(e.target.value)}
+            className="border-primary-700 bg-natural-50 focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
           />
-          {searchQuery && (
+          {searchTaskName && (
             <CircleX
-              onClick={() => setSearchQuery("")}
+              onClick={() => setSearchTaskName("")}
               className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4"
             />
           )}
@@ -331,7 +313,8 @@ export default function BacklogList() {
           <select
             value={rowsPerPage}
             onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
+              const newRows = Number(e.target.value);
+              setRowsPerPage(newRows);
               setCurrentPage(1);
             }}
             className="border rounded px-2 py-1 text-sm p-3"

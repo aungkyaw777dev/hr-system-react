@@ -2,9 +2,9 @@ import { useDataStore } from "@/stores/useDataStore";
 
 export const attendanceService = {
 
-  fetchAttendanceRecords: async (pageNo: number = 1, pageSize: number = 100) => {
+  fetchAttendanceRecords: async (name: string = "", pageNo: number = 1, pageSize: number = 100) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceList?pageNo=${pageNo}&pageSize=${pageSize}`,
+      endPoint: `/Attendance/AttendanceList?EmployeeName=${name}&pageNo=${pageNo}&pageSize=${pageSize}`,
     });
     return useDataStore.getState().data?.data?.attendanceList ?? [];
   },
