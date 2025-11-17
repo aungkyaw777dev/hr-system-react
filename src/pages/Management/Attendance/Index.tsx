@@ -29,6 +29,7 @@ import {
   FileUp,
   Divide,
   EyeIcon,
+  CircleX,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -60,6 +61,12 @@ export function AttendanceList() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [debouncedFilters, setDebouncedFilters] = useState({
+    name: "",
+    pageNo: 0,
+    pageSize: 0,
+  });
+
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [date, setDate] = useState<{
     from: Date | undefined;
@@ -69,7 +76,8 @@ export function AttendanceList() {
   const [attendanceToDelete, setAttendanceToDelete] = useState("");
   const { open, description, onConfirm, closeDialog, openDialog } =
       useSuccessDialogStore();
-
+  const formatDateTime = (datetime: string) => datetime ? format(new Date(datetime), "yyyy-MM-dd HH:mm"): "-";
+  const formatDate = (dateStr: string) => dateStr ? format(new Date(dateStr), "yyyy-MM-dd"): "-";
   const totalPages = attendanceList
     ? Math.ceil(attendanceList.length / rowsPerPage)
     : 0;
@@ -82,12 +90,14 @@ export function AttendanceList() {
   const endRow = attendanceList
     ? Math.min(currentPage * rowsPerPage, totalRows)
     : 0;
+  const [searchName, setSearchName] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         const data = await attendanceService.fetchAttendanceRecords(
+          searchName,
           currentPage,
           rowsPerPage
         );
@@ -99,7 +109,20 @@ export function AttendanceList() {
       }
     };
     loadData();
-  }, []);
+  }, [debouncedFilters]);
+
+    // Debounce effect
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFilters({
+        name: searchName,
+        pageNo: currentPage,
+        pageSize: rowsPerPage,
+      });
+    }, 400); // 700ms delay
+
+    return () => clearTimeout(handler);
+  }, [searchName, currentPage, rowsPerPage]);
 
   if (loading) return;
 
@@ -154,8 +177,9 @@ export function AttendanceList() {
     };
   return (
     <div className="p-6 w-full flex-1">
-      <div className="flex justify-between flex-col md:flex-row gap-2 mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-5">
         <p className="text-3xl font-semibold">Attendance</p>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
         {/* date picker */}
         <div className="grid gap-2">
           <Popover>
@@ -193,23 +217,31 @@ export function AttendanceList() {
             </PopoverContent>
           </Popover>
         </div>
-
-        {/* search */}
-        <div className="relative w-full md:w-[20%] text-primary-800">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primay-800 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search..."
-            className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9" // Add left padding so text doesn’t overlap the icon
-          />
+        <div className="relative w-full md:w-[200px] text-primary-800">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
+            <Input
+              type="text"
+              value={searchName}
+              placeholder="Search..."
+              onInput={(e) => setSearchName(e.target.value)}
+              className="border-primary-700 bg-natural-50 focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
+            />
+            {searchName ? (
+              <CircleX
+                onClick={() => setSearchName("")}
+                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4"
+              />
+            ) : (
+              ""
+            )}
         </div>
         {/* buttons */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="outline-btn border border-primary-600 focus:outline-none py-1 px-2 rounded-md flex gap-2">
+          <DropdownMenuTrigger className="outline-btn border border-primary-700 focus:outline-none py-1 px-2 rounded-md flex gap-2">
             <FileUp />
             Export
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="z-20 bg-natural-50 w-24 p-4 rounded-md">
+          <DropdownMenuContent className="z-20 border border-primary-700 bg-natural-50 w-24 p-4 rounded-md">
             <DropdownMenuSeparator />
             <DropdownMenuItem> PDF</DropdownMenuItem>
             <DropdownMenuItem>Excel</DropdownMenuItem>
@@ -218,7 +250,8 @@ export function AttendanceList() {
         <Button className="outline-btn" onClick={goToCreatForm}>
           <Plus />
           Add new
-        </Button>
+        </Button> 
+      </div>
       </div>
       <>
         {!loading ? (
@@ -229,11 +262,6 @@ export function AttendanceList() {
               <Table className="w-full overflow-auto">
                 <TableHeader className="bg-primary-300">
                   <TableRow className="border-none">
-                    {/* {attendanceList ? Object.keys(attendanceList[0]).map((columnName) => (
-                      <TableHead key={columnName}>
-                        {capitalizeCamelCase(columnName)}
-                      </TableHead>
-                    )): ''} */}
                     <TableHead className="w-[60px]">No.</TableHead>
                     <TableHead className="text-center">Name</TableHead>
                     <TableHead className="text-center">Date</TableHead>
@@ -245,14 +273,16 @@ export function AttendanceList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {currentData?.map((user, index) => {
-                    // Format date/time display
-                    const formatDateTime = (datetime: string) =>
-                      datetime
-                        ? format(new Date(datetime), "yyyy-MM-dd HH:mm")
-                        : "-";
-
-                    return (
+                  {loading ? (
+                    <TableRow key="loading">
+                      <TableCell colSpan={8} className="h-24 text-center">
+                        <div className="flex items-center justify-center text-primary-500">
+                          <SpinnerCustom />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : attendanceList.length? (
+                     currentData?.map((user, index) => (
                       <TableRow
                         key={index}
                         className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
@@ -261,7 +291,7 @@ export function AttendanceList() {
                         <TableCell>{startIndex + index + 1}</TableCell>
                         <TableCell>{user.employeeName}</TableCell>
                         <TableCell>
-                          {formatDateTime(user.attendanceDate)}
+                          {formatDate(user.attendanceDate)}
                         </TableCell>
                         <TableCell>
                           {formatDateTime(user.checkInTime)}
@@ -283,8 +313,16 @@ export function AttendanceList() {
                           />
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
+                  )) 
+                  ) : (
+                  <TableRow key="no-data">
+                    <TableCell colSpan={8} className="h-24 text-center">
+                      <div className="flex items-center justify-center text-primary-500">
+                        No Data Matched.
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
                 </TableBody>
               </Table>
               <div className="flex flex-col md:flex-row items-center gap-2">

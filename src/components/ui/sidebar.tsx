@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   UsersRound,
   UserRound,
@@ -17,6 +18,8 @@ import {
 import { useState } from "react";
 
 export default function Sidebar({ onClose }: { onClose: () => void }) {
+  const location = useLocation();
+  console.log(location.pathname);
   const [isBacklogSubMenuOpen, setIsBacklogSubMenuOpen] = useState(false);
   const toggleBacklogSubmenu = () =>
     setIsBacklogSubMenuOpen(!isBacklogSubMenuOpen);
@@ -31,7 +34,11 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       <Link
         to="/management/dashboard"
         onClick={onClose}
-        className="sidebar-btn"
+        className={`sidebar-btn ${
+          location.pathname === "/management/dashboard"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
       >
         <LayoutDashboardIcon />
         Dashboard
@@ -39,7 +46,11 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       <Link
         to="/management/admin/role"
         onClick={onClose}
-        className="sidebar-btn"
+        className={`sidebar-btn ${
+          location.pathname === "/management/admin/role"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
       >
         <UserRound />
         Role
@@ -63,15 +74,23 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
         <div className="ms-2 w-[90%]">
           <Link
             to="/management/admin/menu-group"
-            className="sidebar-btn"
+            className={`sidebar-btn ${
+              location.pathname === "/management/admin/menu-group"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
             onClick={onClose}
           >
             <Menu />
             MenuGroup
           </Link>
           <Link
-            to="management/admin/menu-item"
-            className="sidebar-btn"
+            to="/management/admin/menu-item"
+            className={`sidebar-btn ${
+              location.pathname === "/management/admin/menu-item"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
             onClick={onClose}
           >
             <PanelTopOpen />
@@ -82,12 +101,36 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       <Link
         to="/management/admin/role-menu-permission"
         onClick={onClose}
-        className="sidebar-btn"
+        className={`sidebar-btn ${
+          location.pathname === "/management/admin/role-menu-permission"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
       >
         <UserRound />
         Role & Menu Permission
       </Link>
-      <Link to="/employee" onClick={onClose} className="sidebar-btn">
+      <Link
+        to="/management/admin/company-rules"
+        onClick={onClose}
+        className={`sidebar-btn ${
+          location.pathname === "/management/admin/company-rules"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
+      >
+        <UserRound />
+        Company Rules
+      </Link>
+      <Link
+        to="/employee"
+        onClick={onClose}
+        className={`sidebar-btn ${
+          location.pathname === "/employee"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
+      >
         <UsersRound />
         Employee
       </Link>
@@ -108,11 +151,27 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       </div>
       {isBackLogMenuOpen && (
         <div className="ms-2 w-[90%]">
-          <Link to="/backlog" className="sidebar-btn" onClick={onClose}>
+          <Link
+            to="/backlog"
+            className={`sidebar-btn ${
+              location.pathname === "/backlog"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
+            onClick={onClose}
+          >
             <ListCheck />
             Backlog
           </Link>
-          <Link to="/project" className="sidebar-btn" onClick={onClose}>
+          <Link
+            to="/project"
+            className={`sidebar-btn ${
+              location.pathname === "/project"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
+            onClick={onClose}
+          >
             <Briefcase />
             Project
           </Link>
@@ -137,17 +196,41 @@ export default function Sidebar({ onClose }: { onClose: () => void }) {
       </div>
       {isSubMenuOpen && (
         <div className="ms-2 w-[90%]">
-          <Link to="/location" onClick={onClose} className="sidebar-btn">
+          <Link
+            to="/location"
+            onClick={onClose}
+            className={`sidebar-btn ${
+              location.pathname === "/location"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
+          >
             <Map />
             Location
           </Link>
-          <Link to="/attendance" onClick={onClose} className="sidebar-btn">
+          <Link
+            to="/attendance"
+            onClick={onClose}
+            className={`sidebar-btn ${
+              location.pathname === "/attendance"
+                ? "bg-primary-500 text-natural-50"
+                : ""
+            }`}
+          >
             <Clock />
             Attendance
           </Link>
         </div>
       )}
-      <Link to="/payroll" onClick={onClose} className="sidebar-btn">
+      <Link
+        to="/payroll"
+        onClick={onClose}
+        className={`sidebar-btn ${
+          location.pathname === "/payroll"
+            ? "bg-primary-500 text-natural-50"
+            : ""
+        }`}
+      >
         <DollarSign /> Payroll
       </Link>
       <Link to="/logout" onClick={onClose} className="sidebar-btn">

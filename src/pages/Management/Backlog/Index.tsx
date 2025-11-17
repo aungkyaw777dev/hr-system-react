@@ -19,6 +19,7 @@ import {
   ChevronsRight,
   ChevronsLeft,
   Search,
+  CircleX,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -36,44 +37,47 @@ import { backlogService } from "@/services/backlogService";
 
 export default function BacklogList() {
   const navigate = useNavigate();
-  
+
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+  const [searchTaskName, setSearchTaskName] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce effect for search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTaskName);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchTaskName]);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const result = await backlogService.fetchTasks(currentPage, rowsPerPage);
-        setTasks(result.tasks ?? []);
+        const result = await backlogService.fetchTasks(
+          debouncedSearch,
+          currentPage,
+          rowsPerPage
+        );
+        console.log('API Response:', result);
+        // FIX: Access tasks from result.data.tasks
+        setTasks(result.data?.tasks ?? []);
       } catch (error) {
         console.error("Error loading tasks:", error);
+        console.error("Error details:", error.response?.data);
+        setTasks([]);
       } finally {
         setLoading(false);
       }
     };
     loadData();
-  }, [currentPage, rowsPerPage]);
-
-  // Handle loading
-  if (loading)
-    return (
-      <div className="flex items-center justify-center p-10">
-        <SpinnerCustom /> Loading...
-      </div>
-    );
-
-  // Handle no tasks
-  if (!tasks || tasks.length === 0)
-    return (
-      <div className="flex flex-col p-10 text-muted-foreground">
-        <p className="text-lg font-medium">No tasks found</p>
-      </div>
-    );
+  }, [currentPage, rowsPerPage, debouncedSearch]);
 
   const totalPages = Math.ceil(tasks.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -102,6 +106,26 @@ export default function BacklogList() {
     setDeleteDialogOpen(true);
   };
 
+  const handleExportCSV = () => {
+    const allKeys = tasks.length > 0 ? Object.keys(tasks[0]) : [];
+    const header = allKeys;
+    const rowsCsv = tasks.map((task) => {
+      const row = allKeys.map((key) => task[key] ?? "");
+      return row
+        .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
+        .join(",");
+    });
+
+    const csv = [header.join(","), ...rowsCsv].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `backlog_tasks_page_${currentPage}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const confirmDelete = async () => {
     if (!taskToDelete) return;
 
@@ -110,8 +134,13 @@ export default function BacklogList() {
 
       if (result.isSuccess) {
         // Refetch the latest list
-        const updatedData = await backlogService.fetchTasks(currentPage, rowsPerPage);
-        setTasks(updatedData.tasks ?? []);
+        const updatedData = await backlogService.fetchTasks(
+          debouncedSearch,
+          currentPage,
+          rowsPerPage
+        );
+        // FIX: Access tasks from updatedData.data.tasks
+        setTasks(updatedData.data?.tasks ?? []);
       } else {
         console.error("Delete failed:", result);
       }
@@ -135,17 +164,28 @@ export default function BacklogList() {
         <p className="font-semibold">Backlog Group Listing</p>
 
         {/* Search Bar */}
-        <div className="relative w-full md:w-[20%] text-primary-800">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-800 h-4 w-4" />
+        <div className="relative w-full md:w-[200px] text-primary-800">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 h-4 w-4" />
           <Input
             type="text"
+            value={searchTaskName}
             placeholder="Search..."
-            className="focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9"
+            onChange={(e) => setSearchTaskName(e.target.value)}
+            className="border-primary-700 bg-natural-50 focus-visible:ring-[1px] focus-visible:ring-ring focus-visible:ring-offset-0 pl-9 text-primary-400"
           />
+          {searchTaskName && (
+            <CircleX
+              onClick={() => setSearchTaskName("")}
+              className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4"
+            />
+          )}
         </div>
 
         {/* Action Buttons */}
-        <Button className="outline-btn">
+        <Button
+          className="outline-btn cursor-pointer"
+          onClick={handleExportCSV}
+        >
           <FolderUp /> Export
         </Button>
         <Link to="/backlog/create">
@@ -169,34 +209,52 @@ export default function BacklogList() {
         </TableHeader>
 
         <TableBody>
-          {currentData.map((task, index) => (
-            <TableRow
-              key={task.taskId}
-              onClick={() => handleRowClick(task.taskId)}
-              className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
-            >
-              <TableCell>{startIndex + index + 1}</TableCell>
-              <TableCell>{task.taskCode}</TableCell>
-              <TableCell>{task.taskName}</TableCell>
-              <TableCell>
-                {task.employeeName || task.employeeCode || "—"}
-              </TableCell>
-              <TableCell>
-                {task.projectName || task.projectCode || "—"}
-              </TableCell>
-
-              <TableCell className="flex gap-2">
-                <Edit
-                  className="text-primary-500 cursor-pointer"
-                  onClick={(e) => handleEdit(e, task.taskId)}
-                />
-                <Trash2
-                  className="text-error-400 hover:text-destructive cursor-pointer"
-                  onClick={(e) => handleDelete(e, task.taskId)}
-                />
+          {loading ? (
+            <TableRow key="title">
+              <TableCell colSpan={8} className="h-24 text-center">
+                <div className="flex items-center justify-center text-primary-500">
+                  <SpinnerCustom />
+                </div>
               </TableCell>
             </TableRow>
-          ))}
+          ) : currentData.length ? (
+            currentData.map((task, index) => (
+              <TableRow
+                key={task.taskId}
+                onClick={() => handleRowClick(task.taskId)}
+                className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3"
+              >
+                <TableCell>{startIndex + index + 1}</TableCell>
+                <TableCell>{task.taskCode}</TableCell>
+                <TableCell>{task.taskName}</TableCell>
+                <TableCell>
+                  {task.employeeName || task.employeeCode || "—"}
+                </TableCell>
+                <TableCell>
+                  {task.projectName || task.projectCode || "—"}
+                </TableCell>
+
+                <TableCell className="flex gap-2">
+                  <Edit
+                    className="text-primary-500 cursor-pointer"
+                    onClick={(e) => handleEdit(e, task.taskId)}
+                  />
+                  <Trash2
+                    className="text-error-400 hover:text-destructive cursor-pointer"
+                    onClick={(e) => handleDelete(e, task.taskId)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow key="title">
+              <TableCell colSpan={8} className="h-24 text-center">
+                <div className="flex items-center justify-center text-primary-500">
+                  No Data Matched.
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 
@@ -255,7 +313,8 @@ export default function BacklogList() {
           <select
             value={rowsPerPage}
             onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
+              const newRows = Number(e.target.value);
+              setRowsPerPage(newRows);
               setCurrentPage(1);
             }}
             className="border rounded px-2 py-1 text-sm p-3"

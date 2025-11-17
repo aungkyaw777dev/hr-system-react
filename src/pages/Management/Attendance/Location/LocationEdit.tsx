@@ -2,31 +2,52 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { LocationForm } from "./LocationForm";
 import { SuccessDialog } from "@/components/ui/SuccessDialog";
+import { useDataStore } from "@/stores/useDataStore";
+import { LocationService } from "@/services/LocationService ";
 
 export default function LocationEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [locationData, setLocationData] = useState(null);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { error, data } = useDataStore();
 
   useEffect(() => {
-    // Fetch location data by ID
-    const mockData = {
-      name: "Insein",
-      latitude: "16.9028",
-      longitude: "96.1317",
-      radius: "3.5",
+    const loadLocationForEdit = async () => {
+      if (id) {
+        setIsLoading(true);
+        await LocationService.fetchLocation(id);
+        setIsLoading(false);
+      }
     };
-    setLocationData(mockData);
+
+    loadLocationForEdit();
   }, [id]);
 
-  const handleSubmit = (values: any) => {
-    console.log("Update location:", id, values);
+  useEffect(() => {
+    if (data?.data) {
+      const location = data.data;
 
-    // Add API call here
-    setTimeout(() => {
-      setSuccessDialogOpen(true);
-    }, 500);
+      setLocationData({
+        name: location.name || "",
+        latitude: location.latitude || "",
+        longitude: location.longitude || "",
+        radius: location.radius || "",
+      });
+    }
+  }, [data]);
+
+  const handleSubmit = async (values: any) => {
+    if (id) {
+      await LocationService.updateLocation(id, values);
+
+      // Check success from the store after update
+      const storeData = useDataStore.getState().data;
+      if (storeData?.isSuccess) {
+        setSuccessDialogOpen(true);
+      }
+    }
   };
 
   const handleSuccessConfirm = () => {
@@ -38,7 +59,8 @@ export default function LocationEdit() {
     navigate("/location");
   };
 
-  if (!locationData) return <div>Loading...</div>;
+  if (error) return <div className="p-6">Error: {error}</div>;
+  if (isLoading || !locationData) return <div className="p-6">Loading...</div>;
 
   return (
     <>

@@ -1,151 +1,112 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { RefreshCw, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { MenuGroupForm, type MenuGroupFormValues } from "./MenuGroupForm";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDataStore } from "@/stores/useDataStore";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import {
+  menuGroupService,
+  type MenuGroupItem,
+} from "@/services/menuGroupService";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 
-function MenuGroupEdit() {
-  const location = useLocation();
-  const item = location.state?.item;
+export default function MenuGroupEditPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { data, loading, error } = useDataStore();
 
-  const [menuGroup, setMenuGroup] = useState("");
-  const [menuName, setMenuName] = useState("");
-  const [url, setUrl] = useState("");
-  const [icon, setIcon] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
-    if (item) {
-      setMenuGroup(item.group);
-      setMenuName(item.name);
-      setUrl(item.url);
-      setIcon(item.icon);
-      setSortOrder(String(item.order));
-    }
-  }, [item]);
+    if (!id) return;
+    menuGroupService.fetchMenuGroupsByCode(id);
+  }, [id]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowSuccessModal(true);
+  function isApiResponse<T>(x: unknown): x is { isSuccess: unknown; data: T } {
+    return (
+      typeof x === "object" && x !== null && "isSuccess" in x && "data" in x
+    );
+  }
 
-    setTimeout(() => setShowSuccessModal(false), 2000);
+  const payload = isApiResponse<MenuGroupFormValues>(data)
+    ? data.data
+    : (data as unknown as MenuGroupFormValues | null);
+  const menu = (payload ?? null) as MenuGroupFormValues | null;
+
+  if (loading && !menu) {
+    return (
+      <div className="p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Edit Project</h2>
+          <Button variant="secondary" onClick={() => navigate(-1)}>
+            Back
+          </Button>
+        </div>
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Edit Project</h2>
+          <Button variant="secondary" onClick={() => navigate(-1)}>
+            Back
+          </Button>
+        </div>
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (!menu) return <div className="p-6">Menu Group not found</div>;
+
+  const initialValues: Partial<MenuGroupItem> = {
+    menuGroupCode: menu.menuGroupCode ?? "",
+    menuGroupName: menu.menuGroupName ?? "",
+    url: menu.url ?? "",
+    icon: menu.icon,
+    sortOrder: menu.sortOrder ?? undefined,
+    hasMenuItem: menu.hasMenuItem,
   };
 
   return (
     <>
-      <div className="flex flex-col w-full bg-white p-10 rounded-lg shadow-sm">
-        <h2 className="text-2xl mb-8 text-gray-800">Menu Group Information</h2>
+      <MenuGroupForm
+        key={menu.menuGroupCode}
+        mode="edit"
+        initialValues={initialValues}
+        onCancel={() => navigate(-1)}
+        onSubmit={async (vals: MenuGroupFormValues) => {
+          const body = {
+            menuGroupCode: vals.menuGroupCode,
+            menuGroupName: vals.menuGroupName,
+            url: vals.url,
+            icon: vals.icon,
+            sortOrder: vals.sortOrder,
+            hasMenuItem: vals.hasMenuItem,
+          };
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-2 gap-15">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Menu Group Name
-              </label>
-              <Input
-                type="text"
-                value={menuGroup}
-                onChange={(e) => setMenuGroup(e.target.value)}
-                placeholder="Enter Menu Group Name"
-                className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Menu Name
-              </label>
-              <Input
-                type="text"
-                value={menuName}
-                onChange={(e) => setMenuName(e.target.value)}
-                placeholder="Enter Menu Name"
-                className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
-              />
-            </div>
-          </div>
+          const resp = await menuGroupService.updateMenuGroup(id!, body);
+          const latestErr = useDataStore.getState().error;
+          const ok =
+            !latestErr &&
+            (resp?.isSuccess === undefined || resp?.isSuccess === true);
 
-          <div className="grid grid-cols-2 gap-15 mt-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">URL</label>
-              <Input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter URL"
-                className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Icon</label>
-              <Input
-                type="text"
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                placeholder="Enter Icon"
-                className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-15 mt-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Sort Order
-              </label>
-              <Input
-                type="text"
-                value={sortOrder}
-                onChange={(e) =>
-                  setSortOrder(e.target.value.replace(/\D/g, ""))
-                }
-                placeholder="Enter Sort Order"
-                className="mt-2 h-12 bg-gray-50 text-gray-600 border-gray-200 focus:ring-1 focus:ring-gray-400 placeholder:text-gray-400"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 pt-6">
-            <Button asChild type="button" className="outline-btn">
-              <Link to={"/menuitem"}>Cancel</Link>
-            </Button>
-            <Button
-              type="submit"
-              className="outline-btn"
-              onClick={() => {
-                setMenuGroup("");
-                setMenuName("");
-                setUrl("");
-                setSortOrder("");
-                setIcon("");
-              }}
-            >
-              Update
-            </Button>
-          </div>
-        </form>
-      </div>
-
-      <Dialog.Root open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 w-[380px] h-[280px] -translate-x-1/2 -translate-y-1/2 bg-[#f3f6f4] rounded-xl shadow-md p-10 flex flex-col items-center justify-center space-y-4">
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="absolute right-4 top-4 opacity-70 hover:opacity-100"
-            >
-              <X className="h-4 w-4 text-gray-600" />
-            </button>
-            <RefreshCw className="h-24 w-24 text-gray-400" />
-            <p className="text-sm font-medium text-gray-400">
-              Update Successfully
-            </p>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          if (ok) setSuccessOpen(true);
+        }}
+      />
+      <SuccessDialog
+        open={successOpen}
+        onOpenChange={setSuccessOpen}
+        title="Success!"
+        description="Your menu has been updated successfully."
+        onConfirm={() => {
+          setSuccessOpen(false);
+          navigate("/management/admin/menu-group");
+        }}
+      />
     </>
   );
 }
-
-export default MenuGroupEdit;
