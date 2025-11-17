@@ -106,16 +106,17 @@ export default function MenuItemList({ onSort, sortConfig }) {
 
   const totalPages = Math.max(1, Math.ceil(safeTotalRows / safeRowsPerPage));
   const startIndex = (safeCurrentPage - 1) * safeRowsPerPage;
-  const startRow = safeTotalRows === 0 ? 0 : startIndex + 1;
-  const endRow = Math.min(safeCurrentPage * safeRowsPerPage, safeTotalRows);
 
-  const handleSort = (column: string) => {
-    let direction = "asc";
-    if (sortConfig?.key === column && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    onSort({ key: column, direction });
-  };
+  const startRow = menuItems.length > 0 ? startIndex + 1 : 0;
+  const endRow = menuItems.length > 0 ? startIndex + menuItems.length : 0;
+
+  // const handleSort = (column: string) => {
+  //   let direction = "asc";
+  //   if (sortConfig?.key === column && sortConfig.direction === "asc") {
+  //     direction = "desc";
+  //   }
+  //   onSort({ key: column, direction });
+  // };
 
   const handleEdit = async (menuCode: string) => {
     const menuItem = await MenuItemService.fetchMenuItem(menuCode);
@@ -264,10 +265,18 @@ export default function MenuItemList({ onSort, sortConfig }) {
         </div>
 
         <div className="flex space-x-1">
-          <button onClick={goToFirst} disabled={safeCurrentPage === 1}>
+          <button
+            onClick={goToFirst}
+            disabled={safeCurrentPage === 1}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
             <ChevronsLeft />
           </button>
-          <button onClick={goPrev} disabled={safeCurrentPage === 1}>
+          <button
+            onClick={goPrev}
+            disabled={safeCurrentPage === 1}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
             <ChevronLeft />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -286,10 +295,18 @@ export default function MenuItemList({ onSort, sortConfig }) {
               {page}
             </button>
           ))}
-          <button onClick={goNext} disabled={safeCurrentPage === totalPages}>
+          <button
+            onClick={goNext}
+            disabled={safeCurrentPage === totalPages}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
             <ChevronRight />
           </button>
-          <button onClick={goToLast} disabled={safeCurrentPage === totalPages}>
+          <button
+            onClick={goToLast}
+            disabled={safeCurrentPage === totalPages}
+            className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+          >
             <ChevronsRight />
           </button>
         </div>

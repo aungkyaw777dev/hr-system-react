@@ -77,42 +77,77 @@ export default function EmployeeDetail() {
             <label className="block mb-1 font-medium text-sm">
               Employee Code
             </label>
-            <Input value={employee.employeeCode} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.employeeCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Username */}
           <div>
             <label className="block mb-1 font-medium text-sm">Username</label>
-            <Input value={employee.username} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.username}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Salary */}
           <div>
             <label className="block mb-1 font-medium text-sm">Salary</label>
-            <Input value={employee.salary} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.salary}
+              disabled
+              readOnly
+            />
           </div>
           {/* Name */}
           <div>
             <label className="block mb-1 font-medium text-sm">Name</label>
-            <Input value={employee.name} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.name}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Role */}
           <div>
             <label className="block mb-1 font-medium text-sm">Role</label>
-            <Input value={employee.roleCode} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.roleCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Email */}
           <div>
             <label className="block mb-1 font-medium text-sm">Email</label>
-            <Input value={employee.email} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.email}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Phone Number */}
           <div>
             <label className="block mb-1 font-medium text-sm">Phone No.</label>
-            <Input value={employee.phoneNo} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.phoneNo}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Start Date */}
@@ -122,7 +157,7 @@ export default function EmployeeDetail() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal w-full"
+                  className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                   disabled
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -154,7 +189,7 @@ export default function EmployeeDetail() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal w-full"
+                  className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                   disabled
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
