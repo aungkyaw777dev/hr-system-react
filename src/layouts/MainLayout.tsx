@@ -1,13 +1,39 @@
 import Header from "../components/ui/header";
 import Sidebar from "../components/ui/sidebar";
-import { Outlet } from "react-router-dom";
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  useLoaderData,
+} from "react-router-dom";
 import "../styles/index.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../assets/logo.png";
 import { X } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function MainLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const authStore = useAuthStore();
+  const from = location.pathname || "/employee";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  useEffect(() => {
+    async function check() {
+      try {
+        const isStayedLogin = await authStore.checkAuth();
+        if (!isStayedLogin) {
+          navigate("/", { replace: true });
+          return;
+        }
+        console.log("here", from);
+        navigate(from, { replace: true });
+      } catch (error) {
+        navigate("/", { replace: true });
+      }
+    }
+    check();
+  }, []);
   return (
     <div className="flex h-screen flex-col overflow-hiden">
       <header className="h-[60px] flex-shrink-0 z-20 shadow-sm">

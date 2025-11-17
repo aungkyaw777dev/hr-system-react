@@ -226,7 +226,6 @@ export default function EmployeeList({ onSort, sortConfig }) {
           </div>
         </div>
       </div>
-
       {/* Table */}
       <Table className="w-full overflow-auto shadow-sm rounded-md">
         <TableHeader className="bg-primary-400 text-center">
@@ -311,9 +310,8 @@ export default function EmployeeList({ onSort, sortConfig }) {
           )}
         </TableBody>
       </Table>
-
       {/* Pagination */}
-      <div className="flex items-center justify-between p-4 border-t">
+      {/* <div className="flex items-center justify-between p-4 border-t">
         <div className="text-sm text-muted-foreground">
           {startRow}–{endRow} of {totalRows}
         </div>
@@ -378,6 +376,77 @@ export default function EmployeeList({ onSort, sortConfig }) {
             ))}
           </select>
         </div>
+      </div> */}
+      <div className="flex flex-col md:flex-row items-center gap-2">
+        {/* Paginations */}
+        <div className="w-full flex items-center justify-center md:justify-around p-4 border-t flex-col md:flex-row gap-3 ">
+          {/* Left: Showing rows */}
+          <div className="text-sm text-muted-foreground">
+            {startRow}–{endRow} of {totalRows}
+          </div>
+          {/* Middle: Page buttons */}
+          <div className="flex space-x-1">
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronsLeft />
+            </button>
+            <button
+              onClick={goPrev}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronLeft />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-primary-500 text-natural-50"
+                    : "bg-natural-50 text-black hover:bg-gray-200"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={goNext}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronRight />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded pagination-btn disabled:opacity-50"
+            >
+              <ChevronsRight />
+            </button>
+          </div>
+          {/* Right: Rows per page */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">Rows/page:</span>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1); // reset page
+              }}
+              className="border rounded px-2 py-1 text-sm p-3"
+            >
+              {[10, 20, 30, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Delete Confirmation */}
@@ -405,7 +474,6 @@ export default function EmployeeList({ onSort, sortConfig }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
       <SuccessDialog
         open={open}
         onOpenChange={closeDialog}

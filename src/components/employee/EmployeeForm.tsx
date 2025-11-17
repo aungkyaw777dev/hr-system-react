@@ -160,7 +160,11 @@ export default function EmployeeForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter username" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter username"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,6 +179,7 @@ export default function EmployeeForm() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       type="password"
                       placeholder="Enter password"
                       {...field}
@@ -193,6 +198,7 @@ export default function EmployeeForm() {
                   <FormLabel>Salary</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       type="number"
                       placeholder="Enter salary amount"
                       {...field}
@@ -212,7 +218,11 @@ export default function EmployeeForm() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter name" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -227,10 +237,11 @@ export default function EmployeeForm() {
                   <FormLabel>Role</FormLabel>
                   <FormControl>
                     <Select
+                      className="border-natural-500 rounded-sm py-5"
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="border-natural-500 rounded-sm py-5">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-50">
@@ -254,7 +265,11 @@ export default function EmployeeForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter email address" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter email address"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -268,7 +283,11 @@ export default function EmployeeForm() {
                 <FormItem>
                   <FormLabel>Phone No.</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter phone number" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter phone number"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -285,7 +304,7 @@ export default function EmployeeForm() {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="justify-start text-left font-normal w-full"
+                          className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value
@@ -293,7 +312,7 @@ export default function EmployeeForm() {
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-white">
+                      <PopoverContent className="w-auto p-0 bg-white ">
                         <Calendar
                           mode="single"
                           selected={
@@ -323,7 +342,7 @@ export default function EmployeeForm() {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="justify-start text-left font-normal w-full"
+                          className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value

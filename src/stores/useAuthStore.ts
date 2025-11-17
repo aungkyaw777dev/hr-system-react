@@ -25,6 +25,7 @@ interface AuthState {
     setUser: (user: User) => void;
     setError: (error: Object) => void;
     getUser: () => User | null;
+    getToken: () => string | null;
     setToken: (token: string) => void;
     clearAuth: () => void;
 }
@@ -42,6 +43,7 @@ export const useAuthStore = create<AuthState>()(
             setToken: (token) => set({ token }),
             clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
             getUser: () => get().user,
+            getToken: () => get().token,
             login: async (username, password) => {
                 try {
                     const res = await fetch(`/api/Auth/Login`, {
@@ -55,7 +57,6 @@ export const useAuthStore = create<AuthState>()(
                     const { user, token, refreshToken } = data.data;
                     set({ user, token, isAuthenticated: true })
                     localStorage.setItem("refreshToken", refreshToken);
-
                     return true;
                 } catch (error:any) {
                     if(error)
@@ -71,31 +72,29 @@ export const useAuthStore = create<AuthState>()(
             },
 
             checkAuth: async () => {
-                const refreshToken = localStorage.getItem("refreshToken");
-                if (!refreshToken) {
+                const refresh = localStorage.getItem("refreshToken");
+                if (!refresh) {
                     set({ loading: false });
                     return false;
                 }
 
                 try {
-                    const res = await fetch(`/api/auth/refresh-token`, {
+                    const res = await fetch(`/api/Auth/RefreshToken`, {
                         method: "POST",
-                        headers: { Authorization: `Bearer ${refreshToken}` },
+                        headers: { "Content-Type": "application/json" },
+                        body:  JSON.stringify({ "refreshToken" : refresh }) ,
                     });
+                    
+                    const json = await res.json();
+                    if (!res.ok || !json.data) return false;
 
-                    if (!res.ok) throw new Error("Failed to refresh");
-
-                    const { token, refreshToken: newRefresh } = await res.json();
-
-                    set({ token, isAuthenticated: true });
-                    localStorage.setItem("refreshToken", newRefresh);
-
+                    const { token, refreshToken, user } =json.data;
+                    set({ token, isAuthenticated: true, user });
+                    localStorage.setItem("refreshToken", refreshToken);
                     return true;
                 } catch (error) {
-                    set({ token: null, isAuthenticated: false });
-                    return false;
-                } finally {
-                    set({ loading: false });
+                    set({ token: null, isAuthenticated: false, user: null });
+                    return false
                 }
             },
         }),

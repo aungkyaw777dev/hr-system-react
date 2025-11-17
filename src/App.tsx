@@ -63,7 +63,7 @@ import EmployeeList from "./pages/Management/Employee/Index";
 
 // company rules
 import { CompanyRulesList } from "./pages/Management/Admin/CompanyRules";
-import {CompanyRulesDetails} from "./pages/Management/Admin/CompanyRules/Detail";
+import { CompanyRulesDetails } from "./pages/Management/Admin/CompanyRules/Detail";
 import { CompanyRulesEdit } from "./pages/Management/Admin/CompanyRules/Edit";
 
 //auth
@@ -162,12 +162,7 @@ function App() {
 
             <Route
               path="/management/dashboard"
-              element={
-                <RoleGuard allowedRoles={["admin", "hr"]}>
-                  <ManagementDashboard />
-                  {/* <AdminDashboard /> */}
-                </RoleGuard>
-              }
+              element={<ManagementDashboard />}
             ></Route>
 
             <Route path="/backlog" element={<Backlog />}></Route>
