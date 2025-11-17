@@ -120,7 +120,7 @@ function App() {
               element={<MenuItemCreate />}
             />
             <Route
-              path="/management/admin/menu-item/edit"
+              path="/management/admin/menu-item/edit/:code"
               element={<MenuItemEdit />}
             />
 
