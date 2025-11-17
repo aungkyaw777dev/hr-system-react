@@ -221,9 +221,12 @@ export default function MenuItemList({ onSort, sortConfig }) {
                 key={startIndex + index + 1}
                 className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none"
                 onClick={() =>
-                  navigate(`/employee/detail/${item.menuCode}`, {
-                    state: { menuItem: item },
-                  })
+                  navigate(
+                    `/management/admin/menu-item/detail/${item.menuCode}`,
+                    {
+                      state: { menuItem: item },
+                    }
+                  )
                 }
               >
                 <TableCell>{startIndex + index + 1}</TableCell>

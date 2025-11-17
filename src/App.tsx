@@ -43,6 +43,7 @@ import MenuGroupEdit from "./pages/Management/Admin/MenuGroup/Edit";
 import MenuItemCreate from "./pages/Management/Admin/MenuGroup/MenuItem/Create";
 import MenuItemEdit from "./pages/Management/Admin/MenuGroup/MenuItem/Edit";
 import MenuItemList from "./pages/Management/Admin/MenuGroup/MenuItem/Index";
+import MenuItemDetail from "./pages/Management/Admin/MenuGroup/MenuItem/Detail";
 
 // project
 import ProjectList from "./pages/Management/Backlog/Project/Index";
@@ -122,6 +123,11 @@ function App() {
             <Route
               path="/management/admin/menu-item/edit/:code"
               element={<MenuItemEdit />}
+            />
+
+            <Route
+              path="/management/admin/menu-item/detail/:code"
+              element={<MenuItemDetail />}
             />
 
             <Route path="/management/admin/role" element={<Role />}></Route>

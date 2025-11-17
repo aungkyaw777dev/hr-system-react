@@ -28,20 +28,20 @@ export const MenuItemService = {
       endPoint: `/Menu/edit/${menuCode}`,
       method: "GET",
     });
-    console.log("Fetched Menu Item:", useDataStore.getState().data);
+    // console.log("Fetched Menu Item:", useDataStore.getState().data);
     return useDataStore.getState().data ?? {};
   },
-  updateEmployee: async (employeeCode: string, payload: {}) => {
+  updateMenuItem: async (menuCode: string, payload: {}) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Employee/update/${employeeCode}`,
+      endPoint: `/Menu/update/${menuCode}`,
       method: "PUT",
       body: payload,
     });
     return useDataStore.getState().data ?? {};
   },
-  deleteEmployee: async (employeeCode: string) => {
+  deleteMenuItem: async (menuCode: string) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Employee/delete/${employeeCode}`,
+      endPoint: `/Menu/delete/${menuCode}`,
       method: "DELETE",
     });
     return useDataStore.getState().data ?? {};
