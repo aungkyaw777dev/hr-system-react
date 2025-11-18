@@ -1,10 +1,11 @@
 import AttendanceForm from "@/components/ui/attendance-form";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { attendanceService } from "@/services/attendanceService";
 
 export function DetailsAttendance() {
   const { code } = useParams();
+  const [ searchParams ] = useSearchParams();
   const [initialValues, setInitialValues] = useState<any>(null);
 
   useEffect(() => {
@@ -14,6 +15,7 @@ export function DetailsAttendance() {
       try {
         const data = await attendanceService.editAttendanceRecord(code as string);
         const record = Array.isArray(data) ? data[0] : data;
+        record.attendance.status =  searchParams.get("status")
         setInitialValues(record.attendance);
       } catch (err) {
         console.error("Failed to load attendance record", err);
@@ -37,32 +39,9 @@ export function DetailsAttendance() {
     return `${datePart}T${timeStr}:00`;
   };
 
-  const handleUpdate = async (values: any) => {
-    const payload = {
-      attendanceCode: code,
-      employeeCode: values.employeeCode,
-      employeeName: values.employeeName,
-      checkInLocation: values.checkinLocation,
-      checkOutLocation: values.checkoutLocation,
-      checkInTime: combineDateTime(values.date, values.checkinTime),
-      checkOutTime: combineDateTime(values.date, values.checkoutTime),
-      attendanceDate: toDatePart(values.date),
-      workingHour: values.workingHour,
-      status: values.status,
-      remark: values.remark,
-    };
-
-    await attendanceService.updateAttendanceRecord(code as string, payload);
-    try {
-      await attendanceService.fetchAttendanceRecords();
-    } catch (err) {
-      console.warn("Failed to refresh attendance list cache after update", err);
-    }
-  };
-
   if (!initialValues) return <div>Loading...</div>;
 
   return (
-    <AttendanceForm mode="view" initialValues={initialValues} onSubmitExternal={handleUpdate} />
+    <AttendanceForm mode="view" initialValues={initialValues} />
   );
 }

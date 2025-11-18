@@ -8,15 +8,19 @@ interface dateFilter {
 export const attendanceService = {
 
   fetchAttendanceRecords: async (name: string = "", date: dateFilter, pageNo: number = 1, pageSize: number = 100) => {
-    let dateFilter = "";
+    const param = new URLSearchParams({
+      "EmpName": name,
+      "pageNo": pageNo.toString(),
+      "pageSize": pageSize.toString()
+    })
 
     if (date.from && date.to) {
-      console.log(date.from.toDateString());
-      dateFilter = `startDate=${date.from.toDateString()}&endDate=${date.to.toDateString()}`;
+      param.append("startDate", date.from.toDateString())
+      param.append("endDate", date.to.toDateString())
     }
 
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/AttendanceList?EmployeeName=${name}&pageNo=${pageNo}&pageSize=${pageSize}&${dateFilter}`,
+      endPoint: `/Attendance/AttendanceList?${param.toString()}`,
     });
     return useDataStore.getState().data?.data?.attendanceList ?? [];
   },
@@ -30,9 +34,9 @@ export const attendanceService = {
     return useDataStore.getState().data?.data ?? [];
   },
 
-  updateAttendanceRecord: async (code: string, data: any) => {
+  updateAttendanceRecord: async (data: any) => {
     await useDataStore.getState().fetchData({
-      endPoint: `/Attendance/update/${code}`,
+      endPoint: `/Attendance/AttendanceUpdate`,
       method: "PUT",
       body: data,
     });
