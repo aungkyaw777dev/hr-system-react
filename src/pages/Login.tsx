@@ -14,7 +14,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -102,6 +102,11 @@ export default function LoginForm() {
           {errorMessage && (
             <p className="text-red-500 mb-4 text-center">{errorMessage}</p>
           )}
+          <div className="mb-4">
+            <Link to="/forgot-password" className="text-text/40 text-xs">
+              Forgot Password?
+            </Link>
+          </div>
           <Button type="submit" className="w-full outline-btn">
             Login
           </Button>

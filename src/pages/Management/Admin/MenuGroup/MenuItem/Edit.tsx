@@ -123,6 +123,7 @@ export default function MenuItemForm() {
                   <FormLabel>Menu Group Code</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       placeholder="Enter menu group code"
                       {...field}
                       value={field.value || ""}
@@ -141,7 +142,11 @@ export default function MenuItemForm() {
                 <FormItem>
                   <FormLabel>Menu Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter menu name" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter menu name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,7 +161,11 @@ export default function MenuItemForm() {
                 <FormItem>
                   <FormLabel>URL</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter URL" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter URL"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -171,7 +180,11 @@ export default function MenuItemForm() {
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter icon" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter icon"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,6 +200,7 @@ export default function MenuItemForm() {
                   <FormLabel>Sort Order</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       type="number"
                       placeholder="Enter sort order"
                       {...field}

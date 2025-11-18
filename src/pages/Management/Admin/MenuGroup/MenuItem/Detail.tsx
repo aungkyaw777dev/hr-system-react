@@ -59,7 +59,12 @@ export default function MenuItemForm() {
           {/* Employee Code */}
           <div>
             <label className="block mb-1 font-medium text-sm">Menu Code</label>
-            <Input value={menuItem.menuCode} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={menuItem.menuCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Username */}
@@ -67,24 +72,44 @@ export default function MenuItemForm() {
             <label className="block mb-1 font-medium text-sm">
               Menu Group Code
             </label>
-            <Input value={menuItem.menuGroupCode} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={menuItem.menuGroupCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Salary */}
           <div>
             <label className="block mb-1 font-medium text-sm">Menu Name</label>
-            <Input value={menuItem.menuName} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={menuItem.menuName}
+              disabled
+              readOnly
+            />
           </div>
           {/* Name */}
           <div>
             <label className="block mb-1 font-medium text-sm">URL</label>
-            <Input value={menuItem.url} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={menuItem.url}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Role */}
           <div>
             <label className="block mb-1 font-medium text-sm">Icon</label>
-            <Input value={menuItem.icon} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={menuItem.icon}
+              disabled
+              readOnly
+            />
           </div>
         </div>
         {/* Back button */}

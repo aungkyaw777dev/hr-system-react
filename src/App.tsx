@@ -79,6 +79,7 @@ import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import { RoleMenuTreeViewCreate } from "./pages/Management/Admin/Role-Menu-Permission/Create";
 import { ScrollToTop } from "./pages/ScrollToTop";
+import AdminDashboard from "./pages/Management/Dashboard/AdminDashboard";
 
 function App() {
   return (
@@ -134,6 +135,10 @@ function App() {
               path="/management/admin/menu-item/detail/:code"
               element={<MenuItemDetail />}
             />
+            <Route
+              path="/management/admin/company-rules"
+              element={<CompanyRulesList />}
+            ></Route>
 
             <Route path="/management/admin/role" element={<Role />}></Route>
             <Route
