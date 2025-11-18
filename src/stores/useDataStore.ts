@@ -1,7 +1,8 @@
+import { handleUnauthorized } from "@/lib/utils";
 import { create } from "zustand";
 
 interface FetchConfig {
-  url: string;
+  endPoint: string;
   method?: string;
   body?: any;
   headers?: Record<string, string>;
@@ -18,35 +19,42 @@ export const useDataStore = create<DataStore>((set) => ({
   loading: false,
   error: null,
 
-  // Fetch data from API
   fetchData: async ({
-    url,
+    endPoint,
     method = "GET",
     body,
     headers = {},
   }: FetchConfig) => {
     set({ loading: true, error: null });
+
     try {
       const defaultHeaders = {
         "Content-Type": "application/json",
         ...(headers || {}),
       };
 
-      const options = {
+      const options: RequestInit = {
         method,
         headers: defaultHeaders,
         ...(body && { body: JSON.stringify(body) }),
       };
+      const response = await fetch(`/api${endPoint}`, options);
 
-      const response = await fetch(url, options);
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API Error ${response.status}: ${errorText}`);
+        throw new Error(
+          data?.message || data?.error || `API Error ${response.status}`
+        );
       }
-      set({ data: data, loading: false });
+
+      set({ data, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });
+      throw err; // optionally rethrow
     }
   },
+
+  clearError: () => set({ error: null }),
 }));

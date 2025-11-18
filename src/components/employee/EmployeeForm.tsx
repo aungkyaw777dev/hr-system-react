@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Form,
   FormControl,
@@ -10,7 +8,6 @@ import {
 } from "../../components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { Input } from "../../components/ui/input";
 import {
   Select,
@@ -28,68 +25,56 @@ import {
 } from "../../components/ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useParams, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { EmployeeService } from "@/services/employeeService";
+import { useSuccessDialogStore } from "@/stores/useSuccessDialogStore";
 
-import { useEffect } from "react";
-
-export default function EmployeeForm({
-  onSubmit: propsOnSubmit,
-  onCancel: propsOnCancel,
-}: {
-  onSubmit?: (values: unknown) => void;
-  onCancel?: () => void;
-}) {
-  const { code } = useParams();
-  const location = useLocation();
+export default function EmployeeForm() {
   const navigate = useNavigate();
-
+  const [roles, setRoles] = useState({});
+  const fetchRoles = roles?.items || [];
+  const { onConfirm, openDialog } = useSuccessDialogStore();
   const handleCancel = () => {
-    if (propsOnCancel) return propsOnCancel();
     navigate("/employee");
   };
 
   const employeeSchema = z.object({
-    EmployeeCode: z
-      .string()
-      .min(1, "EmployeeCode is required")
-      .regex(/^\d+$/, "EmployeeCode must be numeric"),
-
-    Username: z
+    // employeeCode: z
+    //   .string()
+    //   .min(1, "EmployeeCode is required")
+    //   .max(15, "EmployeeCode must be at most 15 characters"),
+    username: z
       .string()
       .min(3, "Username must be at least 3 characters")
       .max(30, "Username must be at most 30 characters"),
-
-    Password: z
+    password: z
       .string()
       .min(6, "Password must be at least 6 characters")
-      .max(15, "Password must be at most 15 characters"),
-
-    Salary: z
+      .max(30, "Password must be at most 30 characters"), // make password optional
+    salary: z
       .number()
       .positive("Salary must be a positive number")
       .max(10000000, "Salary too high"),
-
-    Name: z.string().min(2, "Name is required").max(60, "Name too long"),
-
-    Role: z.string(),
-    Email: z.string().email("Invalid email address"),
-
-    PhoneNo: z
+    name: z.string().min(2, "Name is required").max(60, "Name too long"),
+    roleCode: z.string(),
+    email: z.string().email("Invalid email address"),
+    phoneNo: z
       .string()
-      .regex(/^09\d{9}$/, "Phone number must start with 09 and have 11 digits"),
-
-    StartDate: z
+      .regex(/^[0-9]{9,11}$/, "Invalid phone number (must be 9–11 digits)"),
+    startDate: z
       .string()
       .refine(
         (val) => !isNaN(Date.parse(val)),
         "StartDate must be a valid date"
       ),
-
-    ResignDate: z
+    resignDate: z
       .string()
+      .optional()
+      .nullable()
       .refine(
-        (val) => !isNaN(Date.parse(val)),
+        (val) => !val || !isNaN(Date.parse(val)),
         "ResignDate must be a valid date"
       ),
   });
@@ -97,52 +82,44 @@ export default function EmployeeForm({
   const form = useForm<z.infer<typeof employeeSchema>>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
-      EmployeeCode: "",
-      Username: "",
-      Password: "",
-      Salary: 0,
-      Name: "",
-      Role: "",
-      Email: "",
-      PhoneNo: "",
-      StartDate: "",
-      ResignDate: "",
+      // employeeCode: "",
+      username: "",
+      password: "",
+      salary: 0,
+      name: "",
+      roleCode: "",
+      email: "",
+      phoneNo: "",
+      startDate: "",
+      resignDate: "",
     },
   });
 
-  const employeeFromState = location.state?.employee;
-
   useEffect(() => {
-    if (employeeFromState) {
-      form.reset({
-        EmployeeCode: employeeFromState.EmployeeCode ?? "",
-        Username: employeeFromState.Username ?? "",
-        Password: "",
-        Name: employeeFromState.Name ?? "",
-        Salary: employeeFromState.Salary ?? 0,
-        Role: employeeFromState.Role ?? "Developer",
-        Email: employeeFromState.Email ?? "",
-        PhoneNo: employeeFromState.PhoneNo ?? "",
-        StartDate: employeeFromState.StartDate ?? "",
-        ResignDate: employeeFromState.ResignDate ?? "",
-      });
-    }
-  }, [employeeFromState, form]);
+    (async () => {
+      const fetchRoles = await EmployeeService.fetchRoles();
+      setRoles(fetchRoles.data);
+    })();
+  }, []);
 
-  function handleFormSubmit(values: z.infer<typeof employeeSchema>) {
-    if (code) {
-      console.log("Updating employee:", code, values);
-      // prefer caller-provided submit handler
-      if (propsOnSubmit) return propsOnSubmit(values);
-      // API call to update employee by code
+  const handleFormSubmit = async (values: z.infer<typeof employeeSchema>) => {
+    const employeeData = {
+      ...values,
+      startDate: values.startDate
+        ? new Date(values.startDate).toISOString()
+        : null,
+      resignDate: values.resignDate
+        ? new Date(values.resignDate).toISOString()
+        : null,
+    };
+    try {
+      await EmployeeService.createEmployee(employeeData);
+      openDialog("Create Employee Successful!", onConfirm);
       navigate("/employee");
-    } else {
-      console.log("Creating new employee:", values);
-      if (propsOnSubmit) return propsOnSubmit(values);
-      // API call to create a new employee
-      navigate("/employee");
+    } catch (error) {
+      console.error("Error saving employee:", error);
     }
-  }
+  };
 
   function onReset() {
     form.reset();
@@ -152,55 +129,57 @@ export default function EmployeeForm({
   return (
     <div className="flex-1 p-6 bg-natural-100">
       <h2 className="text-2xl font-bold mb-6 text-center sm:text-left text-primary-500">
-        {code ? "Employee Edit" : "Employee Create"}
+        Employee Create
       </h2>
 
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}
           onReset={onReset}
-          className="space-y-6"
+          className="space-y-3"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-            {/* Employee Code */}
-            <FormField
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* <FormField
               control={form.control}
-              name="EmployeeCode"
+              name="employeeCode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Employee Code</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder="Employee Code" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
-            {/* Username */}
             <FormField
               control={form.control}
-              name="Username"
+              name="username"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter username" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter username"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Password */}
             <FormField
               control={form.control}
-              name="Password"
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       type="password"
                       placeholder="Enter password"
                       {...field}
@@ -211,62 +190,66 @@ export default function EmployeeForm({
               )}
             />
 
-            {/* Salary */}
             <FormField
               control={form.control}
-              name="Salary"
+              name="salary"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Salary</FormLabel>
                   <FormControl>
                     <Input
+                      className="border-natural-500 rounded-sm py-5"
                       type="number"
                       placeholder="Enter salary amount"
                       {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      value={field.value ?? 0}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Name */}
+
             <FormField
               control={form.control}
-              name="Name"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter Name" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Role */}
             <FormField
               control={form.control}
-              name="Role"
+              name="roleCode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                    <Select
+                      className="border-natural-500 rounded-sm py-5"
+                      value={field.value ?? ""}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="border-natural-500 rounded-sm py-5">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-50">
-                        <SelectItem value="Manager">Manager</SelectItem>
-                        <SelectItem value="Developer">Developer</SelectItem>
-                        <SelectItem value="Designer">Designer</SelectItem>
-                        <SelectItem value="HR">HR</SelectItem>
-                        <SelectItem value="Accountant">Accountant</SelectItem>
-                        <SelectItem value="Sales Executive">
-                          Sales Executive
-                        </SelectItem>
+                        {fetchRoles.map((role) => (
+                          <SelectItem id={role.roleId} value={role.roleCode}>
+                            {role.roleName}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -275,40 +258,44 @@ export default function EmployeeForm({
               )}
             />
 
-            {/* Email */}
             <FormField
               control={form.control}
-              name="Email"
+              name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter email address" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter email address"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Phone Number */}
             <FormField
               control={form.control}
-              name="PhoneNo"
+              name="phoneNo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone No.</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter phone number" {...field} />
+                    <Input
+                      className="border-natural-500 rounded-sm py-5"
+                      placeholder="Enter phone number"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Start Date */}
             <FormField
               control={form.control}
-              name="StartDate"
+              name="startDate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Start Date</FormLabel>
@@ -317,7 +304,7 @@ export default function EmployeeForm({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="justify-start text-left font-normal w-full"
+                          className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value
@@ -325,14 +312,14 @@ export default function EmployeeForm({
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-natural-50">
+                      <PopoverContent className="w-auto p-0 bg-white ">
                         <Calendar
                           mode="single"
                           selected={
                             field.value ? new Date(field.value) : undefined
                           }
                           onSelect={(date) =>
-                            field.onChange(date?.toISOString() ?? "")
+                            field.onChange(date ? date.toISOString() : "")
                           }
                           initialFocus
                         />
@@ -344,10 +331,9 @@ export default function EmployeeForm({
               )}
             />
 
-            {/* Resign Date */}
             <FormField
               control={form.control}
-              name="ResignDate"
+              name="resignDate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Resign Date</FormLabel>
@@ -356,7 +342,7 @@ export default function EmployeeForm({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="justify-start text-left font-normal w-full"
+                          className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value
@@ -364,14 +350,14 @@ export default function EmployeeForm({
                             : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-natural-50">
+                      <PopoverContent className="w-auto p-0 bg-white">
                         <Calendar
                           mode="single"
                           selected={
                             field.value ? new Date(field.value) : undefined
                           }
                           onSelect={(date) =>
-                            field.onChange(date?.toISOString() ?? "")
+                            field.onChange(date ? date.toISOString() : "")
                           }
                           initialFocus
                         />
@@ -394,12 +380,8 @@ export default function EmployeeForm({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="outline"
-              className="w-full sm:w-auto bg-primary-500 border-0 text-white"
-            >
-              {code ? "Update" : "Create"}
+            <Button type="submit" className="outline-btn">
+              Create
             </Button>
           </div>
         </form>

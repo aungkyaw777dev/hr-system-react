@@ -1,16 +1,9 @@
 "use client";
 
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,38 +12,47 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { EmployeeService } from "@/services/employeeService";
 
 interface Employee {
-  EmployeeCode: string;
-  Username: string;
-  Password?: string;
-  Salary: number;
-  Name: string;
-  Role:
-  | "Manager"
-  | "Developer"
-  | "Designer"
-  | "HR"
-  | "Accountant"
-  | "Sales Executive";
-  Email: string;
-  PhoneNo: string;
-  StartDate: string;
-  ResignDate: string;
+  employeeCode: string;
+  username: string;
+  salary: number;
+  name: string;
+  roleCode: string;
+  email: string;
+  phoneNo: string;
+  startDate: string;
+  resignDate: string;
 }
 
 export default function EmployeeDetail() {
-  const { EmployeeCode } = useParams<{ EmployeeCode: string }>();
+  const { code } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [employee, setEmployee] = useState<Employee | null>(null);
-
   useEffect(() => {
-    if (location.state?.employee) {
-      setEmployee(location.state.employee);
-    }
-  }, [location.state]);
+    const fetchEmployeeData = async () => {
+      if (!code) return;
+      try {
+        const employee = await EmployeeService.fetchEmployee(code);
+        setEmployee({
+          employeeCode: employee.employeeCode ?? "",
+          username: employee.username ?? "",
+          salary: employee.salary ?? 0,
+          name: employee.name ?? "",
+          roleCode: employee.roleCode ?? "",
+          email: employee.email ?? "",
+          phoneNo: employee.phoneNo ?? "",
+          startDate: employee.startDate ?? "",
+          resignDate: employee.resignDate ?? "",
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchEmployeeData();
+  }, [code]);
 
   const handleBack = () => navigate("/employee");
 
@@ -75,21 +77,20 @@ export default function EmployeeDetail() {
             <label className="block mb-1 font-medium text-sm">
               Employee Code
             </label>
-            <Input value={employee.EmployeeCode} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.employeeCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Username */}
           <div>
             <label className="block mb-1 font-medium text-sm">Username</label>
-            <Input value={employee.Username} disabled readOnly />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block mb-1 font-medium text-sm">Password</label>
             <Input
-              type="password"
-              value={employee.Password}
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.username}
               disabled
               readOnly
             />
@@ -99,46 +100,54 @@ export default function EmployeeDetail() {
           <div>
             <label className="block mb-1 font-medium text-sm">Salary</label>
             <Input
-              value={(employee.Salary ?? 0).toString()}
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.salary}
+              disabled
+              readOnly
+            />
+          </div>
+          {/* Name */}
+          <div>
+            <label className="block mb-1 font-medium text-sm">Name</label>
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.name}
               disabled
               readOnly
             />
           </div>
 
-          {/* Name */}
-          <div>
-            <label className="block mb-1 font-medium text-sm">Name</label>
-            <Input value={employee.Name} disabled readOnly />
-          </div>
-
           {/* Role */}
           <div>
             <label className="block mb-1 font-medium text-sm">Role</label>
-            <Select value={employee.Role} disabled>
-              <SelectTrigger>
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-50">
-                <SelectItem value="Manager">Manager</SelectItem>
-                <SelectItem value="Developer">Developer</SelectItem>
-                <SelectItem value="Designer">Designer</SelectItem>
-                <SelectItem value="HR">HR</SelectItem>
-                <SelectItem value="Accountant">Accountant</SelectItem>
-                <SelectItem value="Sales Executive">Sales Executive</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.roleCode}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Email */}
           <div>
             <label className="block mb-1 font-medium text-sm">Email</label>
-            <Input value={employee.Email} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.email}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Phone Number */}
           <div>
             <label className="block mb-1 font-medium text-sm">Phone No.</label>
-            <Input value={employee.PhoneNo} disabled readOnly />
+            <Input
+              className="border-natural-500 rounded-sm py-5"
+              value={employee.phoneNo}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* Start Date */}
@@ -148,12 +157,12 @@ export default function EmployeeDetail() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal w-full"
+                  className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                   disabled
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {employee.StartDate
-                    ? format(new Date(employee.StartDate), "PPP")
+                  {employee.startDate
+                    ? format(new Date(employee.startDate), "PPP")
                     : "No date"}
                 </Button>
               </PopoverTrigger>
@@ -161,8 +170,8 @@ export default function EmployeeDetail() {
                 <Calendar
                   mode="single"
                   selected={
-                    employee.StartDate
-                      ? new Date(employee.StartDate)
+                    employee.startDate
+                      ? new Date(employee.startDate)
                       : undefined
                   }
                   disabled
@@ -180,12 +189,12 @@ export default function EmployeeDetail() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal w-full"
+                  className="justify-start text-left font-normal w-full border-natural-500 rounded-sm py-5"
                   disabled
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {employee.ResignDate
-                    ? format(new Date(employee.ResignDate), "PPP")
+                  {employee.resignDate
+                    ? format(new Date(employee.resignDate), "PPP")
                     : "No date"}
                 </Button>
               </PopoverTrigger>
@@ -193,8 +202,8 @@ export default function EmployeeDetail() {
                 <Calendar
                   mode="single"
                   selected={
-                    employee.ResignDate
-                      ? new Date(employee.ResignDate)
+                    employee.resignDate
+                      ? new Date(employee.resignDate)
                       : undefined
                   }
                   disabled

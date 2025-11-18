@@ -1,4 +1,8 @@
-import { AlertDialogAction, AlertDialogDescription, AlertDialogTitle } from "@radix-ui/react-alert-dialog";
+import {
+  AlertDialogAction,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@radix-ui/react-alert-dialog";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -40,7 +44,7 @@ export function SuccessDialog({
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="sm:justify-center rouned-md">
+        <AlertDialogFooter className="sm:justify-center rounded-md">
           <AlertDialogAction
             onClick={onConfirm}
             className="bg-primary-500 hover:bg-emerald-600 text-white px-10 py-1 rounded-md"

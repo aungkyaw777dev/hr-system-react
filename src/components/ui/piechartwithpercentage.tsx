@@ -1,85 +1,97 @@
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-} from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
-// Full Pie Chart with percentage labels using shadcn UI + Recharts
-// Usage: <FullPieChartWithPercentage data={[{ name: 'A', value: 300 }, { name: 'B', value: 200 }, { name: 'C', value: 14 }]} />
+import { Card, CardTitle, CardContent } from "@/components/ui/card";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
 const DEFAULT_COLORS = [
-    "#60A5FA", // blue-400
-    "#34D399", // emerald-400
-    "#F59E0B", // amber-500
-    "#F472B6", // pink-400
-    "#A78BFA", // violet-400
+  "#60A5FA", // blue-400
+  "#34D399", // emerald-400
+  "#F59E0B", // amber-500
+  "#F472B6", // pink-400
+  "#A78BFA", // violet-400
 ];
 
 export default function PieChartWithPercentage({
-    data = [
-        { name: "Completed Project", value: 300 },
-        { name: "Ongoing Project", value: 200 },
-        { name: "Pending", value: 14 },
-    ],
-    colors = DEFAULT_COLORS,
-    height = 250,
+  data = [
+    { name: "Completed Project", value: 300 },
+    { name: "Ongoing Project", value: 125 },
+    { name: "Pending", value: 50 },
+  ],
+  colors = DEFAULT_COLORS,
 }) {
-    const total = data.reduce((sum, d) => sum + (d.value || 0), 0);
-    const enriched = data.map((d) => ({
-        ...d,
-        value: Number(d.value) || 0,
-        percent: total > 0 ? (Number(d.value || 0) / total) * 100 : 0,
-    }));
+  return (
+    <Card className="w-full bg-natural-50 border-none py-0 gap-2">
+      <div className="flex justify-between pt-3 px-2">
+        <CardTitle className="text-xl">Project Overview</CardTitle>
+        <div className="bg-primary-50 rounded p-2">
+          <p className="text-primary-500">Monthly</p>
+        </div>
+      </div>
 
-    const renderLabel = (entry) => {
-        const p = entry.percent;
-        return p >= 1 ? `${Math.round(p)}%` : `${p.toFixed(1)}%`;
-    };
+      <CardContent className="flex justify-center items-center w-full p-2">
+        <div className="flex justify-center items-center w-full h-[160px]">
+          <ResponsiveContainer width="90%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="40%"
+                cy="50%"
+                outerRadius={70}
+                labelLine={false}
+                label={({
+                  cx,
+                  cy,
+                  midAngle,
+                  innerRadius,
+                  outerRadius,
+                  percent,
+                }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius =
+                    innerRadius + (outerRadius - innerRadius) * 0.5;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-    return (
-        <Card className="w-full max-w-xl bg-natural-50 border-none">
-            <CardHeader className="flex items-center justify-between">
-                <CardTitle>Project Overview</CardTitle>
-                <div className="bg-primary-50 rounded">
-                    <p className="text-primary-500">Monthly</p>
-                </div>
-            </CardHeader>
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="white"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize={11}
+                    >
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  );
+                }}
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
+                ))}
+              </Pie>
 
-            <CardContent className="flex flex-col items-center w-full">
-                <div style={{ width: "100%", height }} className="flex">
-                    <ResponsiveContainer>
-                        <PieChart className="flex flex-row w-full">
-                            <Pie
-                                data={enriched}
-                                dataKey="value"
-                                nameKey="name"
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={70}
-                                labelLine={true}
-                                label={(props) => renderLabel(props.payload)}
-                            >
-                                {enriched.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip
-                                formatter={(value, name, props) => {
-                                    const percent = props && props.payload ? props.payload.percent : null;
-                                    const percentText = percent != null ? ` (${percent.toFixed(1)}%)` : "";
-                                    return [value, `${name}${percentText}`];
-                                }}
-                            />
-                            <Legend />
-
-                        </PieChart>
-
-                    </ResponsiveContainer>
-
-                </div>
-            </CardContent>
-        </Card>
-    );
+              <Legend
+                layout="vertical"
+                align="right"
+                verticalAlign="middle"
+                iconType="rect"
+                iconSize={14}
+                wrapperStyle={{
+                  right: 0,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  lineHeight: "1.5rem",
+                }}
+                formatter={(value) => <span className="text-sm">{value}</span>}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

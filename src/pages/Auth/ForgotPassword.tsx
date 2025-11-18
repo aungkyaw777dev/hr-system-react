@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
+import { sendVerificationMail } from "@/services/verificationService";
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,16 +26,16 @@ export default function ForgotPassword() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setTouched(true);
-    if (!emailRe.test(email)) return; // invalid email → stop
+    if (!emailRe.test(email)) return;
 
     try {
       setLoading(true);
 
-      // Simulate async request to send OTP
-      await new Promise((res) => setTimeout(res, 800));
+      await sendVerificationMail(email);
 
-      // Navigate to OTP page if successful
       navigate("/verify-otp", { state: { email } });
+    } catch (err: any) {
+      console.error(err);
     } finally {
       setLoading(false);
     }

@@ -1,80 +1,115 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Camera } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { ProfileService } from "@/services/profileService";
 
-
+// ✅ Zod validation schema
 const profileSchema = z.object({
+  profileImage: z.string().optional(),
+  employeeCode: z.string().nonempty("Employee code is required"),
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters")
+    .min(5, "Username must be at least 5 characters")
     .max(20, "Username must be less than 20 characters"),
-  firstName: z
+  name: z
     .string()
-    .min(2, "First name must be at least 2 characters")
-    .max(50, "First name must be less than 50 characters"),
-  lastName: z
-    .string()
-    .min(2, "Last name must be at least 2 characters")
-    .max(50, "Last name must be less than 50 characters"),
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
+  roleName: z.string(),
   email: z.string().email("Invalid email address"),
-  nationality: z.string().min(1, "Please select nationality"),
-  phoneNumber: z
+  phoneNo: z
     .string()
-    .regex(/^[0-9]{10,15}$/, "Phone number must be 10-15 digits"),
-  gender: z.string().min(1, "Please select gender"),
+    .regex(/^[0-9]{10,15}$/, "Phone number must be 10–15 digits"),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function Profile() {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
   const [profileImage, setProfileImage] = useState<string>(
-    // "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"
     "./public/image/profile-img.jpg"
   );
-
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
     reset,
+    formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: "kyawthura77",
-      firstName: "Min",
-      lastName: "Mahar",
-      email: "kyawthura@gmail.com",
-      nationality: "Myanmar",
-      phoneNumber: "09798865247",
-      gender: "Male",
+      profileImage: "",
+      employeeCode: "",
+      username: "",
+      name: "",
+      roleName: "",
+      email: "",
+      phoneNo: "",
     },
   });
 
+  // ✅ Fetch employee data from service
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      if (!user?.employeeCode) return;
+      try {
+        const result = await ProfileService.fetchEmployee(user?.employeeCode);
+        const employeeData = Array.isArray(result) ? result[0] : result;
+        if (!employeeData) return;
+        // populate form values using react-hook-form and update preview image
+        reset({
+          profileImage: employeeData.profileImage ?? "",
+          employeeCode: employeeData.employeeCode ?? "",
+          username: employeeData.username ?? "",
+          roleName: employeeData.roleName ?? "",
+          name: employeeData.name ?? "",
+          email: employeeData.email ?? "",
+          phoneNo: employeeData.phoneNo ?? "",
+        });
+        // if (employeeData.profileImage) {
+        //   setProfileImage(employeeData.profileImage);
+        // }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchEmployeeData();
+  }, [user?.employeeCode]);
 
-  const onSubmit = (data: ProfileFormData) => {
-    console.log("Form submitted:", data);
-    alert(
-      "Profile updated successfully! / ပရိုဖိုင် အောင်မြင်စွာ update လုပ်ပြီးပါပြီ!"
-    );
+  // ✅ Submit handler
+  const onSubmit = async () => {
+    try {
+      // await ProfileService.updateProfile(data); // You can define this method in your service
+      alert("✅ Profile updated successfully!");
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      alert("❌ Failed to update profile. Please try again.");
+    }
   };
 
+  // ✅ Handle image change (preview)
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
+      reader.onloadend = () => setProfileImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  // ✅ Cancel button handler
+  const handleCancel = () => navigate("/employee");
+
   return (
-    <div className="min-h-screen w-full bg-[#ced6d2] flex items-center justify-center px-10 py-14">
-      <div className="bg-[#E8EDEB] rounded-2xl shadow-lg p-8 md:px-20 md:py-10 w-full h-full  ">
+    <div className="min-h-screen w-full bg-[#ced6d2] flex items-center justify-center px-5 py-5">
+      <div className="bg-[#E8EDEB] rounded-2xl shadow-lg p-8 md:px-20 md:py-10 w-full h-full">
         {/* Profile Image Section */}
         <div className="flex flex-col items-center md:items-start mb-8">
           <div className="relative">
@@ -90,7 +125,7 @@ export default function Profile() {
               className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md cursor-pointer hover:bg-gray-50"
             >
               <Camera className="w-5 h-5 text-gray-700" />
-              <input
+              <Input
                 id="photo-upload"
                 type="file"
                 accept="image/*"
@@ -101,20 +136,41 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Form Section */}
-        <div onSubmit={handleSubmit(onSubmit)}>
+        {/* ✅ Form Section */}
+        <form onSubmit={handleSubmit(onSubmit)}>
           <h2 className="text-xl font-semibold mb-6">Personal Information</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-6">
-            {/* Username Field */}
+            {/* Employee Code */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Employee Code
+              </label>
+              <Input
+                {...register("employeeCode")}
+                type="text"
+                disabled
+                readOnly
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
+                  errors.employeeCode ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.employeeCode && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.employeeCode.message}
+                </p>
+              )}
+            </div>
+
+            {/* Username */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Username
               </label>
-              <input
+              <Input
                 {...register("username")}
                 type="text"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
                   errors.username ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -125,55 +181,55 @@ export default function Profile() {
               )}
             </div>
 
-            {/* First Name Field */}
+            {/* Role Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                First Name
+                Role Name
               </label>
-              <input
-                {...register("firstName")}
+              <Input
+                {...register("roleName")}
                 type="text"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
-                  errors.firstName ? "border-red-500" : "border-gray-300"
+                disabled
+                readOnly
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
+                  errors.roleName ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.firstName && (
+              {errors.roleName && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.firstName.message}
+                  {errors.roleName.message}
                 </p>
               )}
             </div>
 
-            {/* Last Name Field */}
+            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Last Name
+                Name
               </label>
-              <input
-                {...register("lastName")}
+              <Input
+                {...register("name")}
                 type="text"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
-                  errors.lastName ? "border-red-500" : "border-gray-300"
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
+                  errors.name ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.lastName && (
+              {errors.name && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.lastName.message}
+                  {errors.name.message}
                 </p>
               )}
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3  gap-12 mb-6">
-            {/* Email Field */}
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
-              <input
+              <Input
                 {...register("email")}
                 type="email"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
                   errors.email ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -184,71 +240,21 @@ export default function Profile() {
               )}
             </div>
 
-            {/* Nationality Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nationality
-              </label>
-              <select
-                {...register("nationality")}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
-                  errors.nationality ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">Select nationality</option>
-                <option value="Myanmar">Myanmar</option>
-                <option value="Thailand">Thailand</option>
-                <option value="Singapore">Singapore</option>
-                <option value="Malaysia">Malaysia</option>
-                <option value="Vietnam">Vietnam</option>
-              </select>
-              {errors.nationality && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.nationality.message}
-                </p>
-              )}
-            </div>
-
-            {/* Phone Number Field */}
+            {/* Phone Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
-              <input
-                {...register("phoneNumber")}
+              <Input
+                {...register("phoneNo")}
                 type="tel"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
-                  errors.phoneNumber ? "border-red-500" : "border-gray-300"
+                className={`w-full px-4 py-2 border rounded-md bg-[#FAFBFB] ${
+                  errors.phoneNo ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.phoneNumber && (
+              {errors.phoneNo && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.phoneNumber.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
-            {/* Gender Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender
-              </label>
-              <select
-                {...register("gender")}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 bg-[#FAFBFB] focus:ring-[#D8DFDC] ${
-                  errors.gender ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-              {errors.gender && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.gender.message}
+                  {errors.phoneNo.message}
                 </p>
               )}
             </div>
@@ -258,20 +264,19 @@ export default function Profile() {
           <div className="flex justify-end gap-4">
             <button
               type="button"
-              onClick={() => reset()}
+              onClick={handleCancel}
               className="outline-btn px-6 py-2 rounded-lg border-none"
             >
               Cancel
             </button>
             <button
-              type="button"
-              onClick={handleSubmit(onSubmit)}
+              type="submit"
               className="px-6 py-2 pagination-btn rounded-lg"
             >
               Save changes
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
