@@ -129,7 +129,7 @@ export function AttendanceList() {
     return () => clearTimeout(handler);
   }, [searchName, date, currentPage, rowsPerPage]);
 
-  if (loading) return;
+  // if (loading) return;
 
   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -150,8 +150,8 @@ export function AttendanceList() {
     navigate(`/attendance/${code}/update`);
   };
 
-  const handleRowClick = (code: string) => {
-    navigate(`/attendance/${code}/detail`);
+  const handleRowClick = (code: string, status: string) => {
+    navigate(`/attendance/${code}/detail?status=${status}`);
   }
 
   const handleDelete = (e: React.MouseEvent, attendanceCode: string) => {
@@ -254,15 +254,12 @@ export function AttendanceList() {
         </DropdownMenu>
         <Button className="outline-btn" onClick={goToCreatForm}>
           <Plus />
-          Add new
+          Add
         </Button> 
       </div>
       </div>
       <>
-        {!loading ? (
-          !attendanceList ? (
-            <div>No data to show</div>
-          ) : (
+        
             <>
               <Table className="w-full overflow-auto">
                 <TableHeader className="bg-primary-300">
@@ -291,7 +288,7 @@ export function AttendanceList() {
                       <TableRow
                         key={index}
                         className="odd:bg-primary-100 even:bg-primary-50 hover:bg-primary-200 transition-colors border-none py-3 text-center"
-                        onClick={() => handleRowClick(user.attendanceCode)}
+                        onClick={() => handleRowClick(user.attendanceCode, user.status)}
                       >
                         <TableCell>{startIndex + index + 1}</TableCell>
                         <TableCell>{user.employeeName}</TableCell>
@@ -406,12 +403,6 @@ export function AttendanceList() {
                 </div>
               </div>
             </>
-          )
-        ) : (
-          <div className="flex items-center justify-center">
-            <SpinnerCustom /> Loading ...{" "}
-          </div>
-        )}
       </>
 
       {/* Delete Confirmation */}
