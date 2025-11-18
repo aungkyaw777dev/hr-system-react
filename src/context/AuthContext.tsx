@@ -11,14 +11,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function check() {
       try {
-        await authStore.checkAuth(); // sets Zustand state internally
+        await authStore.checkAuth();
       } catch (error) {
         console.error("Auth check failed:", error);
       } finally {
         setLoading(false);
       }
     }
-
     check();
   }, []);
 
