@@ -44,7 +44,6 @@ export const useDataStore = create<DataStore>((set) => ({
       const data = text ? JSON.parse(text) : null;
 
       if (!response.ok) {
-        // if (response.status === 401) handleUnauthorized();
         throw new Error(
           data?.message || data?.error || `API Error ${response.status}`
         );
