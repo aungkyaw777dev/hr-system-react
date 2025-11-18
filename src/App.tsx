@@ -74,7 +74,6 @@ import PasswordChanged from "./pages/Auth/PasswordChanged";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import LoginPage from "./pages/Login";
 
-import { RoleGuard } from "./components/ui/RoleGuard";
 import Profile from "./pages/Profile/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
@@ -102,7 +101,7 @@ function App() {
             <Route path="*" element={<Unauthorized />} />
           </Route>
 
-          {/*Main Layou */}
+          {/*Main Layout */}
           <Route element={<MainLayout />}>
             {/* Admin Only */}
             <Route

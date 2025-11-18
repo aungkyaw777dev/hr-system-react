@@ -1,11 +1,6 @@
 import Header from "../components/ui/header";
 import Sidebar from "../components/ui/sidebar";
-import {
-  Outlet,
-  useNavigate,
-  useLocation,
-  useLoaderData,
-} from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "../styles/index.css";
 import { useEffect, useState } from "react";
 import Logo from "../assets/logo.png";
@@ -26,7 +21,7 @@ export default function MainLayout() {
           navigate("/", { replace: true });
           return;
         }
-        console.log("here", from);
+        console.log(from);
         navigate(from, { replace: true });
       } catch (error) {
         navigate("/", { replace: true });
