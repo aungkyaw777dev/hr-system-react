@@ -31,11 +31,8 @@ const formSchema = z.object({
   checkoutLocation: z.string().nonempty("Check out location cannot be empty!"),
   checkinTime: z.string().nonempty("Checkin Time cannot be empty!"),
   checkoutTime: z.string().nonempty("Checkout Time cannot be empty!"),
-  workingHour: z
-    .float32()
-    .min(0, "Working hour cannot be negative")
-    .max(24, "Too many hours"),
-  status: z.string().nonempty("checkin and checkout time incorrect"),
+  workingHour: z.any(),
+  status: z.any(),
   date: z.date(),
   remark: z.string(),
 });
@@ -132,70 +129,70 @@ export default function AttendanceForm({
     return () => clearTimeout(t);
   }, [employeeCode]);
 
-  useEffect(() => {
-    if (!checkinTime || !checkoutTime) return;
-    const status = calculateAttendanceStatus(checkinTime, checkoutTime);
-    setValue("status", status);
-    console.log(form.getValues("status"));
-  }, [checkinTime, checkoutTime]);
+  // useEffect(() => {
+  //   if (!checkinTime || !checkoutTime) return;
+  //   const status = calculateAttendanceStatus(checkinTime, checkoutTime);
+  //   setValue("status", status);
+  //   console.log(form.getValues("status"));
+  // }, [checkinTime, checkoutTime]);
 
   const title = mode === "create" ? "Add New Attendance" : mode === "edit" ? "Edit Attendance" : "Attendance Detail";
-  const calculateAttendanceStatus = (checkIn: string, checkOut: string) => {
-    const toMinutes = (timeStr: string) => {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      return hours * 60 + minutes;
-    };
+  // const calculateAttendanceStatus = (checkIn: string, checkOut: string) => {
+  //   const toMinutes = (timeStr: string) => {
+  //     const [hours, minutes] = timeStr.split(":").map(Number);
+  //     return hours * 60 + minutes;
+  //   };
 
-    // Reference points
-    const START_TIME = toMinutes("09:00");
-    const LATE_THRESHOLD = toMinutes("10:00");
-    const EARLY_DEPARTURE_THRESHOLD = toMinutes("16:30");
-    const END_TIME = toMinutes("17:00");
+  //   // Reference points
+  //   const START_TIME = toMinutes("09:00");
+  //   const LATE_THRESHOLD = toMinutes("10:00");
+  //   const EARLY_DEPARTURE_THRESHOLD = toMinutes("16:30");
+  //   const END_TIME = toMinutes("17:00");
 
-    // Validate inputs
-    if (!checkIn || !checkOut) return "absent";
+  //   // Validate inputs
+  //   if (!checkIn || !checkOut) return "absent";
 
-    const checkInMinutes = toMinutes(checkIn);
-    const checkOutMinutes = toMinutes(checkOut);
-    const hours = (checkOutMinutes - checkInMinutes) / 60;
-    form.setValue("workingHour", parseFloat(hours.toFixed(2)));
+  //   const checkInMinutes = toMinutes(checkIn);
+  //   const checkOutMinutes = toMinutes(checkOut);
+  //   const hours = (checkOutMinutes - checkInMinutes) / 60;
+  //   form.setValue("workingHour", parseFloat(hours.toFixed(2)));
 
-    // Validation: Check-out must be after check-in
-    if (checkOutMinutes <= checkInMinutes) {
-      form?.setError?.("checkinTime", {
-        message: "Checkout time must be later than checkin time",
-      });
-      return "";
-    }
+  //   // Validation: Check-out must be after check-in
+  //   if (checkOutMinutes <= checkInMinutes) {
+  //     form?.setError?.("checkinTime", {
+  //       message: "Checkout time must be later than checkin time",
+  //     });
+  //     return "";
+  //   }
 
-    // --- Determine status ---
-    let status = "absent";
+  //   // --- Determine status ---
+  //   let status = "absent";
 
-    // Check-in based logic
-    if (checkInMinutes < START_TIME && checkOutMinutes > END_TIME) {
-      status = "present";
-    } else if (checkInMinutes <= LATE_THRESHOLD) {
-      status = "late";
-    } else if (checkInMinutes > LATE_THRESHOLD) {
-      status = "half-day";
-    }
+  //   // Check-in based logic
+  //   if (checkInMinutes < START_TIME && checkOutMinutes > END_TIME) {
+  //     status = "present";
+  //   } else if (checkInMinutes <= LATE_THRESHOLD) {
+  //     status = "late";
+  //   } else if (checkInMinutes > LATE_THRESHOLD) {
+  //     status = "half-day";
+  //   }
 
-    if (
-      checkOutMinutes >= EARLY_DEPARTURE_THRESHOLD &&
-      checkOutMinutes < END_TIME &&
-      (status === "present" || status === "late")
-    ) {
-      status = "early-departure";
-    } else if (checkOutMinutes >= END_TIME && status === "present") {
-      status = "present";
-    } else if (checkOutMinutes >= END_TIME && status === "late") {
-      status = "late";
-    } else if (checkOutMinutes < EARLY_DEPARTURE_THRESHOLD) {
-      status = "absent";
-    }
-    form.setValue("status", status);
-    return status;
-  };
+  //   if (
+  //     checkOutMinutes >= EARLY_DEPARTURE_THRESHOLD &&
+  //     checkOutMinutes < END_TIME &&
+  //     (status === "present" || status === "late")
+  //   ) {
+  //     status = "early-departure";
+  //   } else if (checkOutMinutes >= END_TIME && status === "present") {
+  //     status = "present";
+  //   } else if (checkOutMinutes >= END_TIME && status === "late") {
+  //     status = "late";
+  //   } else if (checkOutMinutes < EARLY_DEPARTURE_THRESHOLD) {
+  //     status = "absent";
+  //   }
+  //   form.setValue("status", status);
+  //   return status;
+  // };
 
   const handleSuccessConfirm = () => {
     setSuccessDialogOpen(false);
@@ -305,6 +302,7 @@ export default function AttendanceForm({
               />
 
               {/* Working Hour */}
+              { (mode === 'view') ?
               <FormField
                 control={form.control}
                 name="workingHour"
@@ -327,6 +325,7 @@ export default function AttendanceForm({
                   </FormItem>
                 )}
               />
+               : ''}
             </div>
 
             {/* Right Column */}
@@ -353,46 +352,6 @@ export default function AttendanceForm({
                   </FormItem>
                 )}
               />
-
-              {/* Date Picker */}
-              {/* <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="block text-sm font-medium text-gray-700 mb-2">
-                  Date
-                </FormLabel>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <div className="relative">
-                      <Input
-                        value={
-                          field.value
-                            ? field.value.toLocaleDateString()
-                            : ""
-                        }
-                        readOnly
-                        className="pr-8 cursor-pointer bg-natural-50 border-natural-500 h-10 text-natural-800"
-                        placeholder="Select date"
-                      />
-                      <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-white" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      captionLayout="dropdown"
-                      onSelect={field.onChange}
-                      className="bg-white"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
 
               {/* Check-in Time */}
               <FormField
@@ -477,6 +436,7 @@ export default function AttendanceForm({
               />
 
               {/* Status */}
+              { (mode === 'view') ?
               <FormField
                 control={form.control}
                 name="status"
@@ -499,6 +459,7 @@ export default function AttendanceForm({
                   </FormItem>
                 )}
               />
+              : ''}
             </div>
           </div>
 

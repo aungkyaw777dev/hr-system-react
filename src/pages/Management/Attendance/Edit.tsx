@@ -52,12 +52,12 @@ export function UpdateAttendance() {
       remark: values.remark,
     };
 
-    await attendanceService.updateAttendanceRecord(code as string, payload);
-    try {
-      await attendanceService.fetchAttendanceRecords();
-    } catch (err) {
-      console.warn("Failed to refresh attendance list cache after update", err);
-    }
+    await attendanceService.updateAttendanceRecord(payload);
+    // try {
+    //   await attendanceService.fetchAttendanceRecords();
+    // } catch (err) {
+    //   console.warn("Failed to refresh attendance list cache after update", err);
+    // }
   };
 
   if (!initialValues) return <div>Loading...</div>;
