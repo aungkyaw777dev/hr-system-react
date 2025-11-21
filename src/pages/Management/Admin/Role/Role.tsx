@@ -114,7 +114,7 @@ const Role: React.FC = () => {
   const handelOpenModal = (role: RoleType) => {
     setRoleToDelete(role);
     setIsModalOpen(true);
-  };  
+  };
 
   const handelCloseModal = () => {
     setIsModalOpen(false);
@@ -131,8 +131,6 @@ const Role: React.FC = () => {
     handelCloseModal();
   };
 
-
-
   return (
     <div className="p-3 sm:p-6 md:p-8 w-full">
       {/* Main content wrapper */}
@@ -147,7 +145,7 @@ const Role: React.FC = () => {
             className="flex items-center gap-2 text-white bg-[rgba(2,177,108,1)] py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
           >
             <Plus size={20} />
-            Create
+            Add
           </Link>
         </div>
 
