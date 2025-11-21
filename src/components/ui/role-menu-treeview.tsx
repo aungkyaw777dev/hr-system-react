@@ -68,38 +68,66 @@ export default function RoleMenuPermissionPanel() {
       setRoles(fetchedRoles.items ?? []);
       setPermissions(fetchedPermissions ?? []);
 
-      // Initialize newPermissions
       const flatPermissions: MenuPermissionItem[] = [];
+
       (fetchRMP ?? []).forEach((group: MenuPermissionItem) => {
-        !!group.childMenus.length
-          ? group.childMenus.forEach((menu: any) => {
-              (fetchedPermissions ?? []).forEach((p: any) => {
-                flatPermissions.push({
-                  menuGroupCode: group.menuGroupCode,
-                  menuItemCode: menu.menuItemCode,
-                  permissionCode: p.permissionCode,
-                  isChecked: menu.permissions?.includes(p.permissionCode),
-                });
+        // If it has child menus
+        if (group.childMenus?.length) {
+          group.childMenus.forEach((menu: any) => {
+            (fetchedPermissions ?? []).forEach((p: any) => {
+              flatPermissions.push({
+                menuGroupCode: group.menuGroupCode,
+                menuItemCode: menu.menuItemCode,
+                permissionCode: p.permissionCode,
+                isChecked: menu.permissions?.includes(p.permissionCode),
               });
-            })
-          : (fetchedPermissions ?? []).forEach((p: any) => {
-              if (group.menuGroupCode === "DASHBOARD") {
-                flatPermissions.push({
-                  menuGroupCode: group.menuGroupCode,
-                  menuItemCode: null,
-                  permissionCode: null,
-                  isChecked: group.isChecked,
-                });
-              } else {
-                flatPermissions.push({
-                  menuGroupCode: group.menuGroupCode,
-                  menuItemCode: null,
-                  permissionCode: p.permissionCode,
-                  isChecked: group.isChecked,
-                });
-              }
             });
+          });
+
+          return;
+        }
+
+        // DASHBOARD → no permission code
+        if (group.menuGroupCode === "DASHBOARD") {
+          flatPermissions.push({
+            menuGroupCode: group.menuGroupCode,
+            menuItemCode: null,
+            permissionCode: null,
+            isChecked: group.isChecked,
+          });
+
+          return;
+        }
+
+        // CompanyRules / Payroll → ONLY LIST + UPDATE
+        if (
+          group.menuGroupCode === "COMPANY_RULES" ||
+          group.menuGroupCode === "PAYROLL"
+        ) {
+          ["LIST", "UPDATE"].forEach((code) => {
+            flatPermissions.push({
+              menuGroupCode: group.menuGroupCode,
+              menuItemCode: null,
+              permissionCode: code,
+              isChecked: group.isChecked,
+            });
+          });
+          return;
+        }
+        console.log(group.menuGroupCode);
+
+        // Default behavior → loop all permissions
+        (fetchedPermissions ?? []).forEach((p: any) => {
+          flatPermissions.push({
+            menuGroupCode: group.menuGroupCode,
+            menuItemCode: null,
+            permissionCode: p.permissionCode,
+            isChecked: group.isChecked,
+          });
+          console.log(flatPermissions);
+        });
       });
+
       setNewPermissions({
         roleCode: selectedRole ?? "",
         menuPermissions: flatPermissions,
@@ -179,7 +207,7 @@ export default function RoleMenuPermissionPanel() {
       <div className="flex-1">
         <Card className="border-none shadow-none">
           <CardContent className="flex flex-col gap-4">
-            {roleMenuPermission.length === 0 && (
+            {roleMenuPermission.length < 1 && (
               <div className="p-4 text-sm text-muted-foreground">
                 No menus matched.
               </div>
