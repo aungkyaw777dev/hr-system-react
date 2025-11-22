@@ -337,20 +337,47 @@ export default function RoleMenuPermissionPanel() {
                                   key={p.permissionCode}
                                   className="flex items-center gap-2"
                                 >
-                                  <Checkbox
-                                    className="check-menus"
-                                    checked={permChecked}
-                                    onCheckedChange={(v) =>
-                                      togglePermission(
-                                        null,
-                                        p.permissionCode,
-                                        v === true
-                                      )
-                                    }
-                                  />
-                                  <div className="font-medium">
-                                    {p.permissionCode}
-                                  </div>
+                                  {["COMPANY_RULES", "PAYROLL"].includes(
+                                    menuGroup.menuGroupCode
+                                  ) ? (
+                                    ["LIST", "UPDATE"].includes(
+                                      p.permissionCode
+                                    ) && (
+                                      <div className="flex items-center gap-2">
+                                        <Checkbox
+                                          className="check-menus"
+                                          checked={permChecked}
+                                          onCheckedChange={(v) =>
+                                            togglePermission(
+                                              null,
+                                              p.permissionCode,
+                                              v === true
+                                            )
+                                          }
+                                        />
+                                        <div className="font-medium">
+                                          {p.permissionCode}
+                                        </div>
+                                      </div>
+                                    )
+                                  ) : (
+                                    <div className="flex items-center gap-2">
+                                      <Checkbox
+                                        className="check-menus"
+                                        checked={permChecked}
+                                        onCheckedChange={(v) =>
+                                          togglePermission(
+                                            null,
+                                            p.permissionCode,
+                                            v === true
+                                          )
+                                        }
+                                      />
+                                      <div className="font-medium">
+                                        {p.permissionCode}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               )
                             );
