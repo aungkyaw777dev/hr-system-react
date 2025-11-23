@@ -1,4 +1,3 @@
-import { handleUnauthorized } from "@/lib/utils";
 import { create } from "zustand";
 
 interface FetchConfig {

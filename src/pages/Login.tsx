@@ -47,12 +47,14 @@ export default function LoginForm() {
         values.password
       );
       if (authorized && authStore.user) {
-        if (
-          authStore.user.username.toLocaleLowerCase() === "admin" ||
-          authStore.user.username.toLocaleLowerCase() === "hr"
-        ) {
-          navigate("/management/dashboard");
-        } else navigate("/employee/dashboard");
+        switch (authStore.user.roleName.toLocaleLowerCase()) {
+          case "administrator":
+            navigate("/management/admin-dashboard");
+          case "hr specialist":
+            navigate("/management/hr-dashboard");
+          default:
+            navigate("/employee");
+        }
       }
     } catch (error) {
       if (error) setErrorMessage(error.message);

@@ -205,7 +205,7 @@ export default function Location() {
           </Button>
           <Button className="outline-btn" onClick={goToCreateForm}>
             <Plus />
-            Add new
+            Add
           </Button>
         </div>
       </div>

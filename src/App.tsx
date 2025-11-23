@@ -14,7 +14,9 @@ import Backlog from "./pages/Management/Backlog/Index";
 
 // layout and dashboard
 import MainLayout from "./layouts/MainLayout";
-import ManagementDashboard from "./pages/Management/Dashboard/HRDashboard";
+import HRDashboard from "./pages/Management/Dashboard/HRDashboard";
+import AdminDashboard from "./pages/Management/Dashboard/AdminDashboard";
+import EmployeeDashboard from "./pages/Employee/Dashboard";
 
 // location
 import Location from "./pages/Management/Attendance/Location/Index";
@@ -63,7 +65,6 @@ import EmployeeList from "./pages/Management/Employee/Index";
 
 // company rules
 import { CompanyRulesList } from "./pages/Management/Admin/CompanyRules";
-import { CompanyRulesDetails } from "./pages/Management/Admin/CompanyRules/Detail";
 import { CompanyRulesEdit } from "./pages/Management/Admin/CompanyRules/Edit";
 
 //auth
@@ -158,8 +159,18 @@ function App() {
           ></Route>
 
           <Route
-            path="/management/dashboard"
-            element={<ManagementDashboard />}
+            path="/management/hr-dashboard"
+            element={<HRDashboard />}
+          ></Route>
+
+          <Route
+            path="/management/admin-dashboard"
+            element={<AdminDashboard />}
+          ></Route>
+
+          <Route
+            path="/management/employee-dashboard"
+            element={<EmployeeDashboard />}
           ></Route>
 
           <Route path="/backlog" element={<Backlog />}></Route>

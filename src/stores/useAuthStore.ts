@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface User {
-  createAat: string;
+  createAt: string;
   email: string;
   employeeCode: string;
   name: string;
@@ -11,6 +11,7 @@ interface User {
   profileImage: string;
   roleName: string;
   username: string;
+  menuTree: {};
 }
 interface AuthState {
   user: User | null;
@@ -53,6 +54,7 @@ export const useAuthStore = create<AuthState>()(
 
           if (!res.ok) throw new Error("Invalid credentials");
           const data = await res.json();
+          console.log(data);
           const { user, accessToken, refreshToken } = data.data;
           set({ user, token: accessToken, isAuthenticated: true });
           localStorage.setItem("refreshToken", refreshToken);

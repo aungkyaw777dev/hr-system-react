@@ -220,7 +220,7 @@ export default function EmployeeList({ onSort, sortConfig }) {
             <Link to="/employee/new">
               <Button className="outline-btn">
                 <Plus className="h-4 w-4" />
-                Create
+                Add
               </Button>
             </Link>
           </div>

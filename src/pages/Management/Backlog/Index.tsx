@@ -65,7 +65,7 @@ export default function BacklogList() {
           currentPage,
           rowsPerPage
         );
-        console.log('API Response:', result);
+        console.log("API Response:", result);
         // FIX: Access tasks from result.data.tasks
         setTasks(result.data?.tasks ?? []);
       } catch (error) {
@@ -190,7 +190,7 @@ export default function BacklogList() {
         </Button>
         <Link to="/backlog/create">
           <Button className="outline-btn">
-            <Plus /> Create
+            <Plus /> Add
           </Button>
         </Link>
       </div>
