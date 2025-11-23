@@ -16,6 +16,7 @@ import Backlog from "./pages/Management/Backlog/Index";
 import MainLayout from "./layouts/MainLayout";
 import HRDashboard from "./pages/Management/Dashboard/HRDashboard";
 import AdminDashboard from "./pages/Management/Dashboard/AdminDashboard";
+import EmployeeDashboard from "./pages/Employee/Dashboard";
 
 // location
 import Location from "./pages/Management/Attendance/Location/Index";
@@ -165,6 +166,11 @@ function App() {
           <Route
             path="/management/admin-dashboard"
             element={<AdminDashboard />}
+          ></Route>
+
+          <Route
+            path="/management/employee-dashboard"
+            element={<EmployeeDashboard />}
           ></Route>
 
           <Route path="/backlog" element={<Backlog />}></Route>
