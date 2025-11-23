@@ -14,7 +14,7 @@ import Backlog from "./pages/Management/Backlog/Index";
 
 // layout and dashboard
 import MainLayout from "./layouts/MainLayout";
-import ManagementDashboard from "./pages/Management/Dashboard/Index";
+import ManagementDashboard from "./pages/Management/Dashboard/HRDashboard";
 
 // location
 import Location from "./pages/Management/Attendance/Location/Index";
